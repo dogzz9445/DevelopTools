@@ -23,14 +23,14 @@ DevelopTools 는 다음 사항들을 목적으로 구성되어 있습니다.
 
 | Namespace | Framework | Description | Version
 | --- | --- | --- | --- |
-| DDTMonitor | WPF | Grafana 를 이용한 WPF 모니터링 툴 | None
+| DDTBorder | WPF | Grafana 를 이용한 WPF 모니터링 툴 | None
 
 📁 Projects
 -
 
 | Namespace | Framework | Description | Version
 | --- | --- | --- | --- |
-| DDTMonitor | WPF | Grafana 를 이용한 WPF 모니터링 툴 | None
+| DDT.Apps.DDTMonitor | WPF | Grafana 를 이용한 WPF 모니터링 툴 | None
 
 📕 library to use
 -
