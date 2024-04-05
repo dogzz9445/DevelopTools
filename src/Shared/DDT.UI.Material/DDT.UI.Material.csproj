@@ -8,8 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\DDT.Core.WPF\DDT.Core.WPF.csproj" />
-    <ProjectReference Include="..\..\Shared\DDT.Core\DDT.Core.csproj" />
+    <PackageReference Include="MaterialDesign.Icons" Version="1.1.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.0.0" />
+    <PackageReference Include="MaterialDesignThemes.MahApps" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
