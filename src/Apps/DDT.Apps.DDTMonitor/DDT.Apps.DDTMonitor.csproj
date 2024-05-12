@@ -8,4 +8,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\DDT.Core.WPF\DDT.Core.WPF.csproj" />
+    <ProjectReference Include="..\..\Shared\DDT.Core\DDT.Core.csproj" />
+  </ItemGroup>
+
 </Project>
