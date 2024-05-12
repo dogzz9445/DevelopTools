@@ -1,0 +1,22 @@
+<<<<<<<< HEAD:src/Apps/DDT.Apps.DDTWPFSample/MainWindow.xaml
+﻿<Window x:Class="DDT.Apps.DDTWPFSample.MainWindow"
+========
+﻿<Window x:Class="DDT.Apps.DDTOrganizer.MainWindow"
+>>>>>>>> ef6bd0cbd9c41844c47d9921fda9de3a9a8f9007:src/Apps/DDT.Apps.DDTOrganizer/MainWindow.xaml
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+<<<<<<<< HEAD:src/Apps/DDT.Apps.DDTWPFSample/MainWindow.xaml
+        xmlns:local="clr-namespace:DDT.Apps.DDTWPFSample"
+========
+        xmlns:local="clr-namespace:DDT.Apps.DDTOrganizer"
+>>>>>>>> ef6bd0cbd9c41844c47d9921fda9de3a9a8f9007:src/Apps/DDT.Apps.DDTOrganizer/MainWindow.xaml
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <GroupBox Header="헬로우" Width="100" Height="100">
+
+        </GroupBox>
+    </Grid>
+</Window>

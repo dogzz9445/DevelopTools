@@ -1,7 +1,14 @@
+<<<<<<<< HEAD:src/Apps/DDT.Apps.DDTWPFSample/App.xaml
 ﻿<Application x:Class="DDT.Apps.DDTWPFSample.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:DDT.Apps.DDTWPFSample"
+========
+﻿<Application x:Class="DDT.Apps.DDTOrganizer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:DDT.Apps.DDTOrganizer"
+>>>>>>>> ef6bd0cbd9c41844c47d9921fda9de3a9a8f9007:src/Apps/DDT.Apps.DDTOrganizer/App.xaml
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          
