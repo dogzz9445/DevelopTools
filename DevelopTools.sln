@@ -25,17 +25,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDT.Core", "src\Shared\DDT.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDT.Core.WPF", "src\Shared\DDT.Core.WPF\DDT.Core.WPF.csproj", "{4B30645A-8F3C-4BDB-BCB0-57BDD7C952CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDT.Apps.DDTAccessServer", "src\Apps\DDT.Apps.DDTAccessServer\DDT.Apps.DDTAccessServer.csproj", "{00517DCB-1EB9-46FF-8400-E7082C1DCACF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDT.Apps.DDTAccessServer", "src\Apps\DDT.Apps.DDTAccessServer\DDT.Apps.DDTAccessServer.csproj", "{00517DCB-1EB9-46FF-8400-E7082C1DCACF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{0A4DD44D-8D9C-4DA0-A0CD-0FCD7CDEAC52}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{0340F091-7D40-4373-B156-4F195846A680}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDT.Apps.DDTOrganizer", "src\Apps\DDT.Apps.DDTOrganizer\DDT.Apps.DDTOrganizer.csproj", "{031168D3-10C8-4082-AA60-0FB00AC8EF0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDT.Apps.DDTOrganizer", "src\Apps\DDT.Apps.DDTOrganizer\DDT.Apps.DDTOrganizer.csproj", "{031168D3-10C8-4082-AA60-0FB00AC8EF0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDT.Apps.DDTWPFSample", "src\Apps\DDT.Apps.DDTWPFSample\DDT.Apps.DDTWPFSample.csproj", "{EF3E7A80-75CA-491A-904C-61BF4E5FD720}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDT.Apps.DDTWPFSample", "src\Apps\DDT.Apps.DDTWPFSample\DDT.Apps.DDTWPFSample.csproj", "{EF3E7A80-75CA-491A-904C-61BF4E5FD720}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDT.UI.Material", "src\Shared\DDT.UI.Material\DDT.UI.Material.csproj", "{424FE451-C78B-4B7A-9D0B-4C2469304DC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDT.UI.Material", "src\Shared\DDT.UI.Material\DDT.UI.Material.csproj", "{424FE451-C78B-4B7A-9D0B-4C2469304DC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +71,14 @@ Global
 		{031168D3-10C8-4082-AA60-0FB00AC8EF0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{031168D3-10C8-4082-AA60-0FB00AC8EF0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{031168D3-10C8-4082-AA60-0FB00AC8EF0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF3E7A80-75CA-491A-904C-61BF4E5FD720}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF3E7A80-75CA-491A-904C-61BF4E5FD720}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF3E7A80-75CA-491A-904C-61BF4E5FD720}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF3E7A80-75CA-491A-904C-61BF4E5FD720}.Release|Any CPU.Build.0 = Release|Any CPU
+		{424FE451-C78B-4B7A-9D0B-4C2469304DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{424FE451-C78B-4B7A-9D0B-4C2469304DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{424FE451-C78B-4B7A-9D0B-4C2469304DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{424FE451-C78B-4B7A-9D0B-4C2469304DC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
