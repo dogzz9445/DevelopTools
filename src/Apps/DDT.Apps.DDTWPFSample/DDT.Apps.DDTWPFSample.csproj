@@ -9,7 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Controls\DDT.Controls.Customs\DDT.Controls.Customs.csproj" />
     <ProjectReference Include="..\..\Shared\DDT.Core.WPF\DDT.Core.WPF.csproj" />
     <ProjectReference Include="..\..\Shared\DDT.Core\DDT.Core.csproj" />
   </ItemGroup>

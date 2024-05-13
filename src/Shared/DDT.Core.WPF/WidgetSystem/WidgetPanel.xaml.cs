@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DDT.Controls.Customs.TitlebarControl
+namespace DDT.Core.WPF.WidgetSystem
 {
     /// <summary>
-    /// Interaction logic for TitlebarControl.xaml
+    /// Interaction logic for WidgetPanel.xaml
     /// </summary>
-    public partial class TitlebarControl : UserControl
+    public partial class WidgetPanel : ItemsControl
     {
-        public TitlebarControl()
+        public WidgetPanel()
         {
             InitializeComponent();
         }
