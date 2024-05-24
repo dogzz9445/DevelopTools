@@ -35,9 +35,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDT.Apps.DDTOrganizer", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDT.Apps.DDTWPFSample", "src\Apps\DDT.Apps.DDTWPFSample\DDT.Apps.DDTWPFSample.csproj", "{EF3E7A80-75CA-491A-904C-61BF4E5FD720}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDT.Core.AuthDataAccess", "src\Shared\DDT.Core.AuthDataAccess\DDT.Core.AuthDataAccess.csproj", "{F9F95B3A-FD64-44A1-8E98-5630A51696DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDT.Core.AuthDataAccess", "src\Shared\DDT.Core.AuthDataAccess\DDT.Core.AuthDataAccess.csproj", "{F9F95B3A-FD64-44A1-8E98-5630A51696DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDT.Core.AuthServices", "src\Shared\DDT.Core.AuthServices\DDT.Core.AuthServices.csproj", "{F5BE49AC-ABCD-4D5E-B839-DA97B8840D41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDT.Core.AuthServices", "src\Shared\DDT.Core.AuthServices\DDT.Core.AuthServices.csproj", "{F5BE49AC-ABCD-4D5E-B839-DA97B8840D41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDT.Core.WidgetSystems.WPF", "src\Shared\DDT.Core.WidgetSystems.WPF\DDT.Core.WidgetSystems.WPF.csproj", "{6272EFF5-1DC4-48DE-B401-9457EFA2AE50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +87,10 @@ Global
 		{F5BE49AC-ABCD-4D5E-B839-DA97B8840D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5BE49AC-ABCD-4D5E-B839-DA97B8840D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5BE49AC-ABCD-4D5E-B839-DA97B8840D41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6272EFF5-1DC4-48DE-B401-9457EFA2AE50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6272EFF5-1DC4-48DE-B401-9457EFA2AE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6272EFF5-1DC4-48DE-B401-9457EFA2AE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6272EFF5-1DC4-48DE-B401-9457EFA2AE50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,6 +106,7 @@ Global
 		{EF3E7A80-75CA-491A-904C-61BF4E5FD720} = {0A4DD44D-8D9C-4DA0-A0CD-0FCD7CDEAC52}
 		{F9F95B3A-FD64-44A1-8E98-5630A51696DD} = {0340F091-7D40-4373-B156-4F195846A680}
 		{F5BE49AC-ABCD-4D5E-B839-DA97B8840D41} = {0340F091-7D40-4373-B156-4F195846A680}
+		{6272EFF5-1DC4-48DE-B401-9457EFA2AE50} = {0340F091-7D40-4373-B156-4F195846A680}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1166F246-CF4A-4AC8-82FA-580EC92325D9}

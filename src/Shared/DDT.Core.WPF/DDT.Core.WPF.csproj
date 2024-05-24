@@ -41,4 +41,13 @@
     <Resource Include="Fonts\NotoSansKR-Thin.ttf" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="Themes\Dark.xaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Page>
+    <Page Update="Themes\Light.xaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Page>
+  </ItemGroup>
+
 </Project>

@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace DDT.Core.WPF.WidgetSystem;
+namespace DDT.Core.WidgetSystems.WPF;
 
 public partial class WidgetSettings : ObservableObject
 {

@@ -17,7 +17,7 @@ using DataObject = System.Windows.DataObject;
 using DragDropEffects = System.Windows.DragDropEffects;
 using Point = System.Windows.Point;
 
-namespace DDT.Core.WPF.WidgetSystem;
+namespace DDT.Core.WidgetSystems.WPF;
 
 /// <summary>
 /// Interaction logic for WidgetBox.xaml

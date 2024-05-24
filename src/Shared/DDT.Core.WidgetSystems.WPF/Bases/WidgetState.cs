@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DDT.Core.WPF.WidgetSystem.Bases;
+namespace DDT.Core.WidgetSystems.WPF.Bases;
 
 internal class WidgetState
 {

@@ -4,6 +4,15 @@
              xmlns:local="clr-namespace:DDT.Apps.DDTOrganizer"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <!--<ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="ThemeDictionary">
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="pack://application:,,,/DDT.Core.WPF;component/Themes/Light.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/DDT.Core.WPF;component/Themes/Dark.xaml" />
+                    </ResourceDictionary.MergedDictionaries>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>-->
     </Application.Resources>
 </Application>

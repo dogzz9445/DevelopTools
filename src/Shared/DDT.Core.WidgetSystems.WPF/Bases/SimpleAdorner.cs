@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Documents;
 using Pen = System.Windows.Media.Pen;
 
-namespace DDT.Core.WPF.WidgetSystem;
+namespace DDT.Core.WidgetSystems.WPF;
 
 // Adorners must subclass the abstract base class Adorner.
 public class SimpleCircleAdorner : Adorner

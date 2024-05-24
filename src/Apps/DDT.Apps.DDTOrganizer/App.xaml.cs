@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using DDT.Core.WPF.Utilities;
+using System.Configuration;
 using System.Data;
 using System.Windows;
 
@@ -22,13 +23,10 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        
 
         // Set the theme
         var theme = ConfigurationManager.AppSettings["Theme"];
-        if (!string.IsNullOrEmpty(theme))
-        {
-            var themeUri = new Uri($"/Themes/{theme}.xaml", UriKind.Relative);
-            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = themeUri });
-        }
+        ThemeHelper.ChangeTheme(Resources, "Dark");
     }
 }

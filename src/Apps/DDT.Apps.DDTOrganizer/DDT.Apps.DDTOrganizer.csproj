@@ -9,8 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Shared\DDT.Core.WidgetSystems.WPF\DDT.Core.WidgetSystems.WPF.csproj" />
     <ProjectReference Include="..\..\Shared\DDT.Core.WPF\DDT.Core.WPF.csproj" />
     <ProjectReference Include="..\..\Shared\DDT.Core\DDT.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UseCases\" />
   </ItemGroup>
 
 </Project>
