@@ -12,8 +12,31 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DDT.Core.WPF.WidgetSystem;
+
+public partial class WidgetSettings : ObservableObject
+{
+    [ObservableProperty]
+    private int? _rowIndex;
+    [ObservableProperty]
+    private int? _columnIndex;
+    [ObservableProperty]
+    private int? _rowSpan;
+    [ObservableProperty]
+    private int? _columnSpan;
+    [ObservableProperty]
+    private string _name;
+    [ObservableProperty]
+    private bool? _isSelecting;
+    [ObservableProperty]
+    private bool? _isDragging;
+    [ObservableProperty]
+    private bool? _isResizing;
+    [ObservableProperty]
+    private bool? _isEditing;
+}
 
 /// <summary>
 /// Interaction logic for Widget.xaml
@@ -27,6 +50,11 @@ public partial class Widget : ListBoxItem
     {
         InitializeComponent();
 
+        Loaded += (s, e) =>
+        {
+            var myAdornerLayer = AdornerLayer.GetAdornerLayer(this);
+            myAdornerLayer.Add(new SimpleCircleAdorner(this));
+        };
     }
 
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
