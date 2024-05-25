@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DDT.Core.WidgetSystems.WPF.Bases
+namespace DDT.Core.WidgetSystems.WPF.Controls
 {
     /// <summary>
-    /// Interaction logic for WidgetSettingsView.xaml
+    /// TempWidgetHost.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class WidgetSettingsView : UserControl
+    public partial class TempWidgetHost : ContentControl
     {
-        public WidgetSettingsView()
+        public TempWidgetHost()
         {
             InitializeComponent();
         }

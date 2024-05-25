@@ -51,7 +51,7 @@ public partial class WidgetBox : System.Windows.Controls.ListBox
                 || Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance))
         {
             // Get the dragged ListViewItem
-            var widgets = SelectedItems.Cast<Widget>().ToArray();
+            var widgets = SelectedItems.Cast<WidgetItem>().ToArray();
             //var items = string.Join(", ", SelectedItems.Cast<Widget>().ToArray());
             var texts = widgets.Select(w => w.Name).ToArray();
 

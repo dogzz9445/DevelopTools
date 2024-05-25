@@ -123,3 +123,19 @@ reports:
 
 
 
+# 기타 정리 필요
+
+
+카피 프로젝트
+- Freeter
+- https://github.com/DustinBryant/WpfDashboardControl.git
+
+HW Monitoring
+- https://github.com/JettFlat/WPF-hardware-monitor/tree/master
+- https://github.com/openhardwaremonitor/openhardwaremonitor
+- https://github.com/marcoswada/hwmonitor
+- https://github.com/marcoswada/hwmonitor/tree/main/hwmonitor-service
+- https://github.com/LibreHardwareMonitor/LibreHardwareMonitor
+- https://github.com/ChristianBenner/HardwareMonitor
+- https://github.com/chris1111/HWSensors
+

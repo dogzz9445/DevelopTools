@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace DDT.Core.WidgetSystems.WPF.Bases;
 
-internal class WidgetState
+public interface IEntity
 {
+    // Assuming the Entity interface has an Id property
+    Guid Id { get; set; }
 }

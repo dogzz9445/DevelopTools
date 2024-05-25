@@ -5,16 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:widgetSystems="clr-namespace:DDT.Core.WidgetSystems.WPF;assembly=DDT.Core.WidgetSystems.WPF"
         xmlns:local="clr-namespace:DDT.Apps.DDTOrganizer"
+        xmlns:components="clr-namespace:DDT.Core.WidgetSystems.WPF.Components;assembly=DDT.Core.WidgetSystems.WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-	<StackPanel>
-		<widgetSystems:WidgetBox>
-			<widgetSystems:Widget/>
-			<widgetSystems:Widget/>
-			<widgetSystems:Widget/>
-			<widgetSystems:Widget/>
-		</widgetSystems:WidgetBox>
+        Title="MainWindow" Height="1000" Width="1600">
+    <components:DashboardView DockPanel.Dock="Bottom" />
+    <!--<StackPanel>
+        <widgetSystems:WidgetBox>
+            <widgetSystems:WidgetItem />
+            <widgetSystems:WidgetItem />
+            <widgetSystems:WidgetItem />
+            <widgetSystems:WidgetItem />
+        </widgetSystems:WidgetBox>
 
-		<TextBox Text="Drop here"/>
-	</StackPanel>
+        <TextBox Text="Drop here" />
+        --><!--  Dashboards  --><!--
+    </StackPanel>-->
 </Window>
