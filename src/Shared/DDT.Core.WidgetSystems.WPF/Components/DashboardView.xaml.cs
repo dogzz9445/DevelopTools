@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using DDT.Core.WidgetSystems.WPF.Bases;
 using DDT.Core.WidgetSystems.WPF.Controls;
+using DDT.Core.WidgetSystems.WPF.Widgets.Commanders;
 using DDT.Core.WidgetSystems.WPF.Widgets.FileOpeners;
 using System;
 using System.Collections.Generic;
@@ -385,15 +386,7 @@ namespace DDT.Core.WidgetSystems.WPF.Components
 
             AvailableWidgets = new List<Widget> {
                 new Widget("One By One", "Provides a one by one square widget.",
-                    () => new FileOpenerWidgetViewModel(_widgetNumber++)),
-                new Widget("One By One", "Provides a one by one square widget.",
-                    () => new FileOpenerWidgetViewModel(_widgetNumber++)),
-                new Widget("One By One", "Provides a one by one square widget.",
-                    () => new FileOpenerWidgetViewModel(_widgetNumber++)),
-                new Widget("One By One", "Provides a one by one square widget.",
-                    () => new FileOpenerWidgetViewModel(_widgetNumber++)),
-                new Widget("One By One", "Provides a one by one square widget.",
-                    () => new FileOpenerWidgetViewModel(_widgetNumber++)),
+                    () => new CommanderWidgetViewModel(_widgetNumber++)),
                 new Widget("One By One", "Provides a one by one square widget.",
                     () => new FileOpenerWidgetViewModel(_widgetNumber++)),
             };
@@ -419,6 +412,7 @@ namespace DDT.Core.WidgetSystems.WPF.Components
 
             Loaded += (s, e) =>
             {
+                ViewModel.EditMode = false;
                 ViewModel.Start();
             };
         }

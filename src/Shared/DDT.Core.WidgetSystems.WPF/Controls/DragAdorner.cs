@@ -12,6 +12,7 @@ using Size = System.Windows.Size;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Media.Media3D;
+using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace DDT.Core.WidgetSystems.WPF.Controls
 {
@@ -81,19 +82,17 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         /// <param name="adornedElement">The adorned element.</param>
         /// <param name="content">The content.</param>
         /// <param name="startPoint">The start point.</param>
-        public DragAdorner(UIElement adornedElement, FrameworkElement content, Point startPoint) : base(adornedElement)
+        public DragAdorner(UIElement adornedElement, Point startPoint) : base(adornedElement)
         {
+            var content = adornedElement as FrameworkElement;
+
             _startPoint = startPoint;
-            // TODO:
-            // 검토
-            //_child = new Rectangle
-            //{
-            //    Width = (int)content.RenderSize.Width,
-            //    Height = (int)content.RenderSize.Height,
-            //    // FIXME: 이미지로 수정
-            //    //Fill = new ImageBrush(BitmapFrame.Create(RenderToBitmap(content)))
-            //};
-            AddVisualChild(content);
+            _child = new Rectangle
+            {
+                Width = (int)content.RenderSize.Width,
+                Height = (int)content.RenderSize.Height,
+                Fill = new ImageBrush(BitmapFrame.Create(RenderToBitmap(content)))
+            };
         }
 
         #endregion Public Constructors
@@ -116,37 +115,37 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
         #region Protected Methods
 
-        ///// <summary>
-        ///// When overridden in a derived class, positions child elements and determines a size for a <see cref="T:System.Windows.FrameworkElement" /> derived class.
-        ///// </summary>
-        ///// <param name="finalSize">The final area within the parent that this element should use to arrange itself and its children.</param>
-        ///// <returns>The actual size used.</returns>
-        //protected override Size ArrangeOverride(Size finalSize)
-        //{
-        //    _child.Arrange(new Rect(finalSize));
-        //    return finalSize;
-        //}
+        /// <summary>
+        /// When overridden in a derived class, positions child elements and determines a size for a <see cref="T:System.Windows.FrameworkElement" /> derived class.
+        /// </summary>
+        /// <param name="finalSize">The final area within the parent that this element should use to arrange itself and its children.</param>
+        /// <returns>The actual size used.</returns>
+        protected override Size ArrangeOverride(Size finalSize)
+        {
+            _child.Arrange(new Rect(finalSize));
+            return finalSize;
+        }
 
-        ///// <summary>
-        ///// Overrides <see cref="M:System.Windows.Media.Visual.GetVisualChild(System.Int32)" />, and returns a child at the specified index from a collection of child elements.
-        ///// </summary>
-        ///// <param name="index">The zero-based index of the requested child element in the collection.</param>
-        ///// <returns>The requested child element. This should not return <see langword="null" />; if the provided index is out of range, an exception is thrown.</returns>
-        //protected override Visual GetVisualChild(int index)
-        //{
-        //    return _child;
-        //}
+        /// <summary>
+        /// Overrides <see cref="M:System.Windows.Media.Visual.GetVisualChild(System.Int32)" />, and returns a child at the specified index from a collection of child elements.
+        /// </summary>
+        /// <param name="index">The zero-based index of the requested child element in the collection.</param>
+        /// <returns>The requested child element. This should not return <see langword="null" />; if the provided index is out of range, an exception is thrown.</returns>
+        protected override Visual GetVisualChild(int index)
+        {
+            return _child;
+        }
 
-        ///// <summary>
-        ///// Implements any custom measuring behavior for the adorner.
-        ///// </summary>
-        ///// <param name="constraint">A size to constrain the adorner to.</param>
-        ///// <returns>A <see cref="T:System.Windows.Size" /> object representing the amount of layout space needed by the adorner.</returns>
-        //protected override Size MeasureOverride(Size constraint)
-        //{
-        //    _child.Measure(constraint);
-        //    return _child.DesiredSize;
-        //}
+        /// <summary>
+        /// Implements any custom measuring behavior for the adorner.
+        /// </summary>
+        /// <param name="constraint">A size to constrain the adorner to.</param>
+        /// <returns>A <see cref="T:System.Windows.Size" /> object representing the amount of layout space needed by the adorner.</returns>
+        protected override Size MeasureOverride(Size constraint)
+        {
+            _child.Measure(constraint);
+            return _child.DesiredSize;
+        }
 
         #endregion Protected Methods
 
@@ -180,63 +179,6 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
             adornerLayer.Update(AdornedElement);
         }
-
-        //public static byte[] DrawingToBytes(Drawing drawing)
-        //{
-        //    DrawingVisual visual = new DrawingVisual();
-        //    using (DrawingContext context = visual.RenderOpen())
-        //    {
-        //        // If using the BitmapEncoder uncomment the following line to get a white background.
-        //        // context.DrawRectangle(Brushes.White, null, drawing.bounds);
-        //        context.DrawDrawing(drawing);
-        //    }
-
-        //    int width = (int)(drawing.Bounds.Width);
-        //    int height = (int)(drawing.Bounds.Height);
-        //    Bitmap bmp = new Bitmap(width, height);
-        //    Bitmap bmpOut;
-
-        //    using (Graphics g = Graphics.FromImage(bmp))
-        //    {
-        //        g.Clear(System.Drawing.Color.White);
-        //        RenderTargetBitmap rtBmp = new RenderTargetBitmap(width, height,
-        //                                           bmp.HorizontalResolution,
-        //                                           bmp.VerticalResolution,
-        //                                           PixelFormats.Pbgra32);
-        //        rtBmp.Render(visual);
-
-        //        // Alternative using BmpBitmapEncoder, use in place of what comes after if you wish.
-        //        // MemoryStream stream = new MemoryStream();
-        //        // BitmapEncoder encoder = new BmpBitmapEncoder();
-        //        // encoder.Frames.Add(BitmapFrame.Create(rtBmp));
-        //        // encoder.save(stream);
-
-        //        int stride = width * ((rtBmp.Format.BitsPerPixel + 7) / 8);
-        //        byte[] bits = new byte[height * stride];
-        //        bitmapSource.CopyPixels(bits, stride, 0);
-
-        //        unsafe
-        //        {
-        //            fixed (byte* pBits = bits)
-        //            {
-        //                IntPtr ptr = new IntPtr(pBits);
-        //                bmpOut = new Bitmap(width, height, stride,
-        //                                    System.Drawing.Imaging.PixelFormat.Format32bppPArgb, ptr);
-        //            }
-        //        }
-
-        //        g.DrawImage(bmpOut, 0, 0, bmp.Width, bmp.Height);
-        //    }
-
-        //    byte[] bytes;
-        //    using (MemoryStream ms = new MemoryStream())
-        //    {
-        //        bmp.Save(ms, ImageFormat.bmp);
-        //        data = ms.ToArray();
-        //    }
-
-        //    return bytes;
-        //}
 
         #endregion Private Methods
     }

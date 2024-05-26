@@ -562,13 +562,13 @@
         </Grid>
 
         <!--  Dashboard Configuration  -->
-        <Grid Visibility="{Binding ConfiguringDashboard, Converter={StaticResource NullToVisibilityConverter}}">
+        <!--<Grid Visibility="{Binding ConfiguringDashboard, Converter={StaticResource NullToVisibilityConverter}}">
             <Border Background="Black"
                     Opacity="0.3" />
 
             <UserControl HorizontalAlignment="Center"
                          VerticalAlignment="Center"
                          Content="{Binding ConfiguringDashboard}" />
-        </Grid>
+        </Grid>-->
     </Grid>
 </UserControl>

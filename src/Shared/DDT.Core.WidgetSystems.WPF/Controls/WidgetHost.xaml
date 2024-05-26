@@ -25,8 +25,9 @@
         <ControlTemplate TargetType="{x:Type ContentControl}">
             <Border Background="White"
                     BorderBrush="LightGray"
-                    BorderThickness="1">
-                <Border.Style>
+                    BorderThickness="1"
+                    Cursor="">
+                <!--<Border.Style>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="Cursor"
                                 Value="Arrow" />
@@ -36,9 +37,19 @@
                                 <Setter Property="Cursor"
                                         Value="SizeAll" />
                             </DataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding DataContext.EditMode, RelativeSource={RelativeSource AncestorType={x:Type local:DashboardHost}, Mode=FindAncestor}}"
+                                               Value="True" />
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type local:WidgetHost}, Mode=FindAncestor}}"
+                                               Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="BorderBrush"
+                                        Value="Black" />
+                            </MultiDataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Border.Style>
+                </Border.Style>-->
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

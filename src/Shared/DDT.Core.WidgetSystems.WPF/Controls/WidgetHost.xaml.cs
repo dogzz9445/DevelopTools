@@ -30,6 +30,12 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
         [ObservableProperty]
         private string _title;
+
+        public WidgetHostViewModel()
+        {
+            RowIndexColumnIndex = new RowIndexColumnIndex(0, 0);
+            RowSpanColumnSpan = new RowSpanColumnSpan(1, 1);
+        }
     }
 
     /// <summary>
@@ -37,6 +43,12 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
     /// </summary>
     /// <param name="widgetHost">The widget host.</param>
     public delegate void DragEventHandler(WidgetHost widgetHost);
+
+    /// <summary>
+    /// Delegate for creating drag events providing a widgetHost as the parameter
+    /// </summary>
+    /// <param name="widgetHost">The widget host.</param>
+    public delegate void MouseEnterEventHandler(WidgetHost widgetHost);
 
     /// <summary>
     /// WidgetHost.xaml에 대한 상호 작용 논리
@@ -55,6 +67,11 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         /// Occurs when [drag started].
         /// </summary>
         public event DragEventHandler DragStarted;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public event MouseEnterEventHandler MouseOver;
 
         #endregion Public Events
 
@@ -79,6 +96,8 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
             Loaded += WidgetHost_Loaded;
             Unloaded += WidgetHost_Unloaded;
+
+            MouseEnter += (s, e) => MouseOver?.Invoke(this);
         }
 
         #endregion Public Constructors

@@ -27,6 +27,7 @@ using Point = System.Windows.Point;
 using Rectangle = System.Windows.Shapes.Rectangle;
 using Size = System.Windows.Size;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
+using System.Data.Common;
 
 namespace DDT.Core.WidgetSystems.WPF.Controls
 {
@@ -60,7 +61,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         private Border _widgetDestinationHighlight;
 
         // To change the overall size of the widgets change the value here. This size is considered a block.
-        private Size _widgetHostMinimumSize = new Size(165, 165);
+        private Size _widgetHostMinimumSize = new Size(64, 64);
 
         private List<WidgetHostData> _widgetHostsData = new List<WidgetHostData>();
         private Canvas _widgetsCanvasHost;
@@ -158,6 +159,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             if (!(element is WidgetHost widgetHost))
                 return;
 
+            widgetHost.MouseOver -= WidgetHost_MouseOver;
             widgetHost.DragStarted -= WidgetHost_DragStarted;
             _widgetHosts.Remove(widgetHost);
             _widgetHostsData = _widgetHostsData.Where(widgetData => widgetData.HostIndex != widgetHost.HostIndex)
@@ -215,6 +217,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
             // Subscribe to the widgets drag started and add the widget
             // to the _widgetHosts to keep tabs on it
+            widgetHost.MouseOver += WidgetHost_MouseOver;
             widgetHost.DragStarted += WidgetHost_DragStarted;
             _widgetHosts.Add(widgetHost);
             _widgetHostsData.Add(new WidgetHostData(widgetHost.HostIndex, widgetBase, widgetSpans));
@@ -223,19 +226,24 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             // If it isn't new then just set its location
             if (widgetBase.RowIndexColumnIndex != null)
             {
-                SetWidgetRowAndColumn(widgetHost, widgetBase.RowIndexColumnIndex.Row, widgetBase.RowIndexColumnIndex.Column, widgetSpans);
-                return;
+                var widgetAlreadyThere = WidgetAtLocation(widgetSpans, widgetBase.RowIndexColumnIndex);
+
+                if (widgetAlreadyThere == null || !widgetAlreadyThere.Any())
+                {
+                    SetWidgetRowAndColumn(widgetHost, widgetBase.RowIndexColumnIndex, widgetSpans);
+                    return;
+                }
             }
 
             // widget is new. Find the next available row and column and place the
             // widget then scroll to it if it's offscreen
             var nextAvailable = GetNextAvailableRowColumn(widgetSpans);
 
-            SetWidgetRowAndColumn(widgetHost, nextAvailable.Row, nextAvailable.Column, widgetSpans);
+            SetWidgetRowAndColumn(widgetHost, nextAvailable, widgetSpans);
 
             // Scroll to the new item if it is off screen
             var widgetsHeight = widgetSpans.RowSpan * _widgetHostMinimumSize.Height;
-            var widgetEndVerticalLocation = nextAvailable.Row * _widgetHostMinimumSize.Height + widgetsHeight;
+            var widgetEndVerticalLocation = nextAvailable.Row * _widgetHostMinimumSize.Height + widgetsHeight; 
 
             var scrollViewerVerticalScrollPosition =
                 DashboardScrollViewer.ViewportHeight + DashboardScrollViewer.VerticalOffset;
@@ -397,8 +405,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                 .ToArray();
 
             // Set the _dragging host into its dragging position
-            SetWidgetRowAndColumn(_draggingHost, closestRowColumn.Row, closestRowColumn.Column,
-                _draggingHostData.WidgetSpans);
+            SetWidgetRowAndColumn(_draggingHost, closestRowColumn, _draggingHostData.WidgetSpans);
 
             // Move the movingWidgets down in rows the same amount of the _dragging hosts row span
             // unless there is a widget already there in that case increment until there isn't. We
@@ -430,8 +437,9 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                 var movingHost =
                     _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetData.HostIndex);
 
-                SetWidgetRowAndColumn(movingHost, (int)widgetData.WidgetBase.RowIndexColumnIndex.Row + rowIncrease,
-                    (int)widgetData.WidgetBase.RowIndexColumnIndex.Column, widgetData.WidgetSpans);
+                SetWidgetRowAndColumn(movingHost,
+                    new RowIndexColumnIndex((widgetData.WidgetBase.RowIndexColumnIndex.Row + rowIncrease), widgetData.WidgetBase.RowIndexColumnIndex.Column),
+                    widgetData.WidgetSpans);
 
                 movedWidgets.Add(widgetData);
             }
@@ -571,11 +579,12 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
             if (_draggingHostData.WidgetBase.RowIndexColumnIndex.Row == realClosestRow && _draggingHostData.WidgetBase.RowIndexColumnIndex.Column == realClosestColumn)
                 return realClosestRowAndColumn;
-
+            return realClosestRowAndColumn;
             // We need to find all the widgets that land within the column that the adorner is currently
             // placed and if that dragging widget has a span we need to calculate that into this.
             // Once we have all those widgets we need to get the max row out of all the widgets
-            var lastRowForColumn = _widgetHostsData
+            int lastRowForColumn = 0;
+            var lastRowForColumns = _widgetHostsData
                 .Where(widgetData =>
                 {
                     if (widgetData == _draggingHostData)
@@ -597,9 +606,13 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                 })
                 // Get the row index and its span and calculated that number as being the row it's actually on
                 // this helps in finding the max row the dragging widget can reside
-                .Select(widgetData => widgetData.WidgetBase.RowIndexColumnIndex.Row + widgetData.WidgetSpans.RowSpan - 1)
-                // If there aren't any widgets is when this comes back null. In that case return 0 to the variable
-                .Max() + 1;
+                .Select(widgetData => widgetData.WidgetBase.RowIndexColumnIndex.Row + widgetData.WidgetSpans.RowSpan - 1);
+
+            // If there aren't any widgets is when this comes back null. In that case return 0 to the variable
+            if (lastRowForColumns.Any())
+            {
+                lastRowForColumn = lastRowForColumns.Max() + 1;
+            }
 
             // If the adorner position is on the outside of other widgets and within the columns of that
             // position then return back the last used row + 1 (equates to being lastRowForColumn)
@@ -971,8 +984,9 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
                             // Now we have a good candidate lets see if it'll fit at the location of the empty spot from mainRowIndex and
                             // mainColumnIndex + additionalColumnNumber
+                            var mainRowColumnIndex = new RowIndexColumnIndex(mainRowIndex, mainColumnIndex);
                             var canSecondaryWidgetBePlacedMainRowColumn =
-                                WidgetAtLocation(possibleCandidateWidgetData.WidgetSpans, new RowIndexColumnIndex(mainRowIndex, mainColumnIndex))
+                                WidgetAtLocation(possibleCandidateWidgetData.WidgetSpans, mainRowColumnIndex)
                                     .All(widget => widget == secondaryWidgetAtLocation.First());
 
                             if (!canSecondaryWidgetBePlacedMainRowColumn)
@@ -986,8 +1000,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                             var movingWidgetHost = _widgetHosts.FirstOrDefault(widgetHost =>
                                 widgetHost.HostIndex == possibleCandidateWidgetData.HostIndex);
 
-                            SetWidgetRowAndColumn(movingWidgetHost, mainRowIndex, mainColumnIndex,
-                                possibleCandidateWidgetData.WidgetSpans);
+                            SetWidgetRowAndColumn(movingWidgetHost, mainRowColumnIndex, possibleCandidateWidgetData.WidgetSpans);
                             return true;
                         }
 
@@ -1074,8 +1087,10 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         /// <param name="rowNumber">The row number.</param>
         /// <param name="columnNumber">The column number.</param>
         /// <param name="rowColumnSpan">The row column span.</param>
-        private void SetWidgetRowAndColumn(WidgetHost widgetHost, int rowNumber, int columnNumber, RowSpanColumnSpan rowColumnSpan)
+        private void SetWidgetRowAndColumn(WidgetHost widgetHost, RowIndexColumnIndex rowColumnIndex, RowSpanColumnSpan rowColumnSpan)
         {
+            int rowNumber = rowColumnIndex.Row;
+            int columnNumber = rowColumnIndex.Column;
             var widgetBase = widgetHost.DataContext as WidgetHostViewModel;
 
             Debug.Assert(widgetBase != null, nameof(widgetBase) + " != null");
@@ -1118,7 +1133,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         /// </summary>
         /// <param name="widgetSpan">The widget span.</param>
         /// <param name="rowAndColumnToCheck">The row and column to check.</param>
-        /// <returns>List&lt;WidgetHost&gt;.</returns>
+        /// <returns>List<WidgetHost></returns>
         private IEnumerable<WidgetHostData> WidgetAtLocation(RowSpanColumnSpan widgetSpan, RowIndexColumnIndex rowAndColumnToCheck)
         {
             // Need to see if a widget is already at the specific row and column
@@ -1192,7 +1207,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                 Canvas.SetLeft(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Column * _widgetHostMinimumSize.Width);
 
                 // Need to create the adorner that will be used to drag a control around the DashboardHost
-                _draggingAdorner = new DragAdorner(_draggingHost, _draggingHost, Mouse.GetPosition(_draggingHost));
+                _draggingAdorner = new DragAdorner(_draggingHost, Mouse.GetPosition(_draggingHost));
                 _draggingHost.GiveFeedback += DraggingHost_GiveFeedback;
                 AdornerLayer.GetAdornerLayer(_draggingHost)?.Add(_draggingAdorner);
 
@@ -1212,6 +1227,50 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                 _draggingHostData = null;
                 _draggingHost = null;
                 _widgetDestinationHighlight.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void WidgetHost_MouseOver(WidgetHost widgetHost)
+        {
+            if (!EditMode)
+                return;
+
+            try
+            {
+                // We need to make the DashboardHost allowable to have items dropped on it
+                AllowDrop = true;
+
+                _draggingHost = widgetHost;
+                _draggingHostData =
+                    _widgetHostsData.FirstOrDefault(widgetData => widgetData.HostIndex == _draggingHost.HostIndex);
+
+                _widgetDestinationHighlight.Width =
+                    _draggingHost.ActualWidth + _draggingHost.Margin.Left + _draggingHost.Margin.Right;
+                _widgetDestinationHighlight.Height =
+                    _draggingHost.ActualHeight + _draggingHost.Margin.Top + _draggingHost.Margin.Bottom;
+                _widgetDestinationHighlight.Visibility = Visibility.Visible;
+
+                Debug.Assert(_draggingHostData.WidgetBase.RowIndexColumnIndex.Row != null, "_draggingHostData.WidgetBase.RowIndexColumnIndex.Row != null");
+                Debug.Assert(_draggingHostData.WidgetBase.RowIndexColumnIndex.Column != null, "_draggingHostData.WidgetBase.RowIndexColumnIndex.Column != null");
+
+                // Need to create the adorner that will be used to drag a control around the DashboardHost
+                var adorner = new ResizingAdorner(_draggingHost, _draggingHost.BorderThickness);
+                AdornerLayer.GetAdornerLayer(_draggingHost)?.Add(adorner);
+
+                // Need to hide the _draggingHost to give off the illusion that we're moving it somewhere
+                //_draggingHost.Visibility = Visibility.Hidden;
+
+                //DragDrop.DoDragDrop(_draggingHost, new DataObject(_draggingHost), DragDropEffects.Move);
+            }
+            finally
+            {
+                // Need to cleanup after the DoDragDrop ends by setting back everything to its default state
+                Mouse.SetCursor(Cursors.Arrow);
+                //AllowDrop = false;
+                //_draggingHost.Visibility = Visibility.Visible;
+                _draggingHostData = null;
+                _draggingHost = null;
+                //_widgetDestinationHighlight.Visibility = Visibility.Hidden;
             }
         }
 
