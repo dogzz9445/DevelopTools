@@ -38,17 +38,52 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
     {
         #region Public Fields
 
+        public static readonly DependencyProperty EnableColumnLimitProperty = DependencyProperty.Register(
+            nameof(EnableColumnLimit),
+            typeof(bool),
+            typeof(DashboardHost),
+            new PropertyMetadata(true));
+
+        public bool EnableColumnLimit
+        {
+            get => (bool)GetValue(EnableColumnLimitProperty);
+            set => SetValue(EnableColumnLimitProperty, value);
+        }
+
+        public static readonly DependencyProperty MaxNumColumnsProperty = DependencyProperty.Register(
+            nameof(MaxNumColumns),
+            typeof(int),
+            typeof(DashboardHost),
+            new PropertyMetadata(16));
+
+        public int MaxNumColumns
+        {
+            get => (int)GetValue(MaxNumColumnsProperty);
+            set => SetValue(MaxNumColumnsProperty, value);
+        }
+
         /// <summary>
         /// The edit mode property
         /// </summary>
-        public static readonly DependencyProperty EditModeProperty = DependencyProperty.Register("EditMode",
-            typeof(bool), typeof(DashboardHost),
+        public static readonly DependencyProperty EditModeProperty = DependencyProperty.Register(
+            nameof(EditMode),
+            typeof(bool),
+            typeof(DashboardHost),
             new PropertyMetadata(false, (d, e) => ((DashboardHost)d).EditEnabler()));
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the dashboard is in [edit mode].
+        /// </summary>
+        /// <value><c>true</c> if [edit mode]; otherwise, <c>false</c>.</value>
+        public bool EditMode
+        {
+            get => (bool)GetValue(EditModeProperty);
+            set => SetValue(EditModeProperty, value);
+        }
 
         #endregion Public Fields
 
         #region Private Fields
-
         private const int ScrollIncrement = 15;
         private readonly PropertyChangeNotifier _itemsSourceChangeNotifier;
         private readonly List<WidgetHost> _widgetHosts = new List<WidgetHost>();
@@ -67,20 +102,6 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         private Canvas _widgetsCanvasHost;
 
         #endregion Private Fields
-
-        #region Public Properties
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the dashboard is in [edit mode].
-        /// </summary>
-        /// <value><c>true</c> if [edit mode]; otherwise, <c>false</c>.</value>
-        public bool EditMode
-        {
-            get => (bool)GetValue(EditModeProperty);
-            set => SetValue(EditModeProperty, value);
-        }
-
-        #endregion Public Properties
 
         #region Private Properties
 
@@ -159,7 +180,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             if (!(element is WidgetHost widgetHost))
                 return;
 
-            widgetHost.MouseOver -= WidgetHost_MouseOver;
+            //widgetHost.MouseOver -= WidgetHost_MouseOver;
             widgetHost.DragStarted -= WidgetHost_DragStarted;
             _widgetHosts.Remove(widgetHost);
             _widgetHostsData = _widgetHostsData.Where(widgetData => widgetData.HostIndex != widgetHost.HostIndex)
@@ -217,7 +238,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
             // Subscribe to the widgets drag started and add the widget
             // to the _widgetHosts to keep tabs on it
-            widgetHost.MouseOver += WidgetHost_MouseOver;
+            //widgetHost.MouseOver += WidgetHost_MouseOver;
             widgetHost.DragStarted += WidgetHost_DragStarted;
             _widgetHosts.Add(widgetHost);
             _widgetHostsData.Add(new WidgetHostData(widgetHost.HostIndex, widgetBase, widgetSpans));
@@ -398,14 +419,13 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             Canvas.SetTop(_widgetDestinationHighlight, top);
             Canvas.SetLeft(_widgetDestinationHighlight, left);
 
-            // Get all the widgets in the path of where the _dragging host will be set
-            var movingWidgets = GetWidgetMoveList(_widgetHostsData
-                    .FirstOrDefault(widgetData => widgetData == _draggingHostData), closestRowColumn, null)
-                .OrderBy(widgetData => widgetData.WidgetBase?.RowIndexColumnIndex.Row)
-                .ToArray();
-
             // Set the _dragging host into its dragging position
             SetWidgetRowAndColumn(_draggingHost, closestRowColumn, _draggingHostData.WidgetSpans);
+
+            // Get all the widgets in the path of where the _dragging host will be set
+            var movingWidgets = GetWidgetMoveList(_widgetHostsData.FirstOrDefault(widgetData => widgetData == _draggingHostData), closestRowColumn, null)
+                .OrderBy(widgetData => widgetData.WidgetBase?.RowIndexColumnIndex.Row)
+                .ToArray();
 
             // Move the movingWidgets down in rows the same amount of the _dragging hosts row span
             // unless there is a widget already there in that case increment until there isn't. We
@@ -499,16 +519,18 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         {
             var visibleColumns = GetFullyVisibleColumn() + 1;
             var visibleRows = GetFullyVisibleRow() + 1;
-
+            // FIXME:
+            // 제대로 백그라운드를 수정하지 않는 오류가 있음 수정 필요
             // Fill Visible Columns
             var rowCountForColumnAdditions = GetCanvasEditingBackgroundRowCount();
             while (true)
             {
                 var columnCount = GetCanvasEditingBackgroundColumnCount();
 
+                if (EnableColumnLimit || MaxNumColumns >= visibleColumns)
+                    break;
                 if (columnCount >= visibleColumns)
                     break;
-
                 AddCanvasEditingBackgroundColumn(rowCountForColumnAdditions, columnCount);
             }
 
@@ -541,7 +563,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         /// <returns>System.Int32.</returns>
         private int GetCanvasEditingBackgroundColumnCount()
         {
-            return (int)Math.Floor(CanvasEditingBackground.Width / _widgetHostMinimumSize.Width);
+            return EnableColumnLimit ? MaxNumColumns : (int)Math.Floor(CanvasEditingBackground.Width / _widgetHostMinimumSize.Width);
         }
 
         /// <summary>
@@ -574,6 +596,10 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             // We need to set any negatives to 0 since we can't place anything off screen
             realClosestRow = realClosestRow < 0 ? 0 : realClosestRow;
             realClosestColumn = realClosestColumn < 0 ? 0 : realClosestColumn;
+            if (EnableColumnLimit)
+            {
+                realClosestColumn = realClosestColumn + _draggingHostData.WidgetSpans.ColumnSpan > MaxNumColumns ? MaxNumColumns - _draggingHostData.WidgetSpans.ColumnSpan : realClosestColumn;
+            }
 
             var realClosestRowAndColumn = new RowIndexColumnIndex(realClosestRow, realClosestColumn);
 
@@ -750,7 +776,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             var maxRows = widgetsRowsAndColumns
                 .Select(rowColumn => rowColumn.Row)
                 .Max();
-            var maxColumns = widgetsRowsAndColumns
+            var maxColumns = EnableColumnLimit ? MaxNumColumns : widgetsRowsAndColumns
                 .Select(rowColumn => rowColumn.Column)
                 .Max();
 
@@ -1105,16 +1131,16 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             Canvas.SetTop(widgetHost, rowNumber * _widgetHostMinimumSize.Height);
             Canvas.SetLeft(widgetHost, columnNumber * _widgetHostMinimumSize.Width);
 
-            var rowCountForColumnAdditions = GetCanvasEditingBackgroundRowCount();
-            while (true)
-            {
-                var columnCount = GetCanvasEditingBackgroundColumnCount();
+            //var rowCountForColumnAdditions = GetCanvasEditingBackgroundRowCount();
+            //while (true)
+            //{
+            //    var columnCount = GetCanvasEditingBackgroundColumnCount();
 
-                if (columnCount - 1 >= columnNumber + rowColumnSpan.ColumnSpan - 1)
-                    break;
+            //    if (columnCount - 1 >= columnNumber + rowColumnSpan.ColumnSpan - 1)
+            //        break;
 
-                AddCanvasEditingBackgroundColumn(rowCountForColumnAdditions, columnCount);
-            }
+            //    AddCanvasEditingBackgroundColumn(rowCountForColumnAdditions, columnCount);
+            //}
 
             var columnCountForRowAdditions = GetCanvasEditingBackgroundColumnCount();
             while (GetCanvasEditingBackgroundRowCount() - 1 < rowNumber + rowColumnSpan.RowSpan - 1)
