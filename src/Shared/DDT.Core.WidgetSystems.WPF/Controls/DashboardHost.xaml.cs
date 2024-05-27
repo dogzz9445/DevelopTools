@@ -62,6 +62,18 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             set => SetValue(MaxNumColumnsProperty, value);
         }
 
+        public static readonly DependencyProperty VisibleRowsProperty = DependencyProperty.Register(
+            nameof(VisibleRows),
+            typeof(int),
+            typeof(DashboardHost),
+            new PropertyMetadata(8));
+
+        public int VisibleRows
+        {
+            get => (int)GetValue(VisibleRowsProperty);
+            set => SetValue(VisibleRowsProperty, value);
+        }
+
         /// <summary>
         /// The edit mode property
         /// </summary>
@@ -87,6 +99,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         private const int ScrollIncrement = 15;
         private readonly PropertyChangeNotifier _itemsSourceChangeNotifier;
         private readonly List<WidgetHost> _widgetHosts = new List<WidgetHost>();
+        private readonly List<WidgetHostData> _beforeDragWidgetHostDatas = new List<WidgetHostData>();
         private Canvas _canvasEditingBackground;
         private ScrollViewer _dashboardScrollViewer;
         private DragAdorner _draggingAdorner;
@@ -186,8 +199,8 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             _widgetHostsData = _widgetHostsData.Where(widgetData => widgetData.HostIndex != widgetHost.HostIndex)
                 .ToList();
 
-            if (EditMode)
-                FixArrangements();
+            //if (EditMode)
+            //    FixArrangements();
         }
 
         /// <summary>
@@ -355,6 +368,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
             SizeChanged += DashboardHost_SizeChanged;
             PreviewDragOver += DashboardHost_PreviewDragOver;
+            //DragLeave
         }
 
         /// <summary>
@@ -399,8 +413,8 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             // We do this by getting the width of the host and then divide this by the span + 1
             // In a 1x1 widget this would essentially give us the half way point to which would change the _closestRowColumn
             // In a larger widget (2x2) this would give us the point at 1/3 of the size ensuring the widget can get to its destination more seamlessly
-            var addToPositionX = draggingWidgetHost.ActualWidth / (_draggingHostData.WidgetSpans.ColumnSpan + 1);
-            var addToPositionY = draggingWidgetHost.ActualHeight / (_draggingHostData.WidgetSpans.RowSpan + 1);
+            var addToPositionX = draggingWidgetHost.ActualWidth / (_draggingHostData.WidgetBase.RowSpanColumnSpan.ColumnSpan + 1);
+            var addToPositionY = draggingWidgetHost.ActualHeight / (_draggingHostData.WidgetBase.RowSpanColumnSpan.RowSpan + 1);
 
             // Get the closest row/column to the adorner "imaginary" position
             var closestRowColumn =
@@ -420,7 +434,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             Canvas.SetLeft(_widgetDestinationHighlight, left);
 
             // Set the _dragging host into its dragging position
-            SetWidgetRowAndColumn(_draggingHost, closestRowColumn, _draggingHostData.WidgetSpans);
+            SetWidgetRowAndColumn(_draggingHost, closestRowColumn, _draggingHostData.WidgetBase.RowSpanColumnSpan);
 
             // Get all the widgets in the path of where the _dragging host will be set
             var movingWidgets = GetWidgetMoveList(_widgetHostsData.FirstOrDefault(widgetData => widgetData == _draggingHostData), closestRowColumn, null)
@@ -435,7 +449,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             foreach (var widgetData in movingWidgets)
             {
                 // Use the initial amount the dragging widget row size is
-                var rowIncrease = _draggingHostData.WidgetSpans.RowSpan;
+                var rowIncrease = _draggingHostData.WidgetBase.RowSpanColumnSpan.RowSpan;
 
                 // Find a row to move it
                 Debug.Assert(widgetData.WidgetBase.RowIndexColumnIndex.Row != null, "widgetData.WidgetBase.RowIndexColumnIndex.Row != null");
@@ -443,7 +457,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
                 while (true)
                 {
-                    var widgetAtLoc = WidgetAtLocation(widgetData.WidgetSpans,
+                    var widgetAtLoc = WidgetAtLocation(widgetData.WidgetBase.RowSpanColumnSpan,
                         new RowIndexColumnIndex((int)widgetData.WidgetBase.RowIndexColumnIndex.Row + rowIncrease,
                             (int)widgetData.WidgetBase.RowIndexColumnIndex.Column))
                         .Where(widgetHostData => !movingWidgets.Contains(widgetHostData) || movedWidgets.Contains(widgetHostData));
@@ -459,12 +473,12 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
                 SetWidgetRowAndColumn(movingHost,
                     new RowIndexColumnIndex((widgetData.WidgetBase.RowIndexColumnIndex.Row + rowIncrease), widgetData.WidgetBase.RowIndexColumnIndex.Column),
-                    widgetData.WidgetSpans);
+                    widgetData.WidgetBase.RowSpanColumnSpan);
 
                 movedWidgets.Add(widgetData);
             }
 
-            FixArrangements();
+            // FixArrangements();
         }
 
         /// <summary>
@@ -598,7 +612,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             realClosestColumn = realClosestColumn < 0 ? 0 : realClosestColumn;
             if (EnableColumnLimit)
             {
-                realClosestColumn = realClosestColumn + _draggingHostData.WidgetSpans.ColumnSpan > MaxNumColumns ? MaxNumColumns - _draggingHostData.WidgetSpans.ColumnSpan : realClosestColumn;
+                realClosestColumn = realClosestColumn + _draggingHostData.WidgetBase.RowSpanColumnSpan.ColumnSpan > MaxNumColumns ? MaxNumColumns - _draggingHostData.WidgetBase.RowSpanColumnSpan.ColumnSpan : realClosestColumn;
             }
 
             var realClosestRowAndColumn = new RowIndexColumnIndex(realClosestRow, realClosestColumn);
@@ -617,10 +631,10 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                         return false;
 
                     // Loop through each span of the draggingBase
-                    for (var i = 0; i < _draggingHostData.WidgetSpans.ColumnSpan; i++)
+                    for (var i = 0; i < _draggingHostData.WidgetBase.RowSpanColumnSpan.ColumnSpan; i++)
                     {
                         // Then loop through each span of the current widget being evaluated
-                        for (var j = 0; j < widgetData.WidgetSpans.ColumnSpan; j++)
+                        for (var j = 0; j < widgetData.WidgetBase.RowSpanColumnSpan.ColumnSpan; j++)
                         {
                             // If the column is within the adorner position and its span then include it
                             if (widgetData.WidgetBase.RowIndexColumnIndex.Column + j == realClosestColumn + i)
@@ -632,7 +646,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                 })
                 // Get the row index and its span and calculated that number as being the row it's actually on
                 // this helps in finding the max row the dragging widget can reside
-                .Select(widgetData => widgetData.WidgetBase.RowIndexColumnIndex.Row + widgetData.WidgetSpans.RowSpan - 1);
+                .Select(widgetData => widgetData.WidgetBase.RowIndexColumnIndex.Row + widgetData.WidgetBase.RowSpanColumnSpan.RowSpan - 1);
 
             // If there aren't any widgets is when this comes back null. In that case return 0 to the variable
             if (lastRowForColumns.Any())
@@ -652,7 +666,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             if (realClosestColumn == _draggingHostData.WidgetBase.RowIndexColumnIndex.Column &&
                 realClosestRow > _draggingHostData.WidgetBase.RowIndexColumnIndex.Row)
             {
-                var widgetsAtLocation = WidgetAtLocation(_draggingHostData.WidgetSpans, realClosestRowAndColumn)
+                var widgetsAtLocation = WidgetAtLocation(_draggingHostData.WidgetBase.RowSpanColumnSpan, realClosestRowAndColumn)
                     .Where(widgetData => widgetData != _draggingHostData)
                     .OrderBy(widgetData => widgetData.WidgetBase.RowIndexColumnIndex.Row);
 
@@ -666,21 +680,21 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                     Debug.Assert(widgetHostData.WidgetBase.RowIndexColumnIndex.Column != null, "widgetHostData.WidgetBase.RowIndexColumnIndex.Column != null");
 
                     var difference = realClosestRow + (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Row +
-                        _draggingHostData.WidgetSpans.RowSpan - 1;
+                        _draggingHostData.WidgetBase.RowSpanColumnSpan.RowSpan - 1;
                     for (var i = difference; i >= realClosestRow; i--)
                     {
-                        var widgetsAtWidgetHostDataLocation = WidgetAtLocation(widgetHostData.WidgetSpans,
+                        var widgetsAtWidgetHostDataLocation = WidgetAtLocation(widgetHostData.WidgetBase.RowSpanColumnSpan,
                             new RowIndexColumnIndex(i, (int)widgetHostData.WidgetBase.RowIndexColumnIndex.Column))
                             .Where(widgetData => widgetData != _draggingHostData)
                             .ToArray();
 
                         if (widgetsAtWidgetHostDataLocation.Contains(widgetHostData))
                         {
-                            if (_draggingHostData.WidgetBase.RowIndexColumnIndex.Row + widgetHostData.WidgetSpans.RowSpan <=
+                            if (_draggingHostData.WidgetBase.RowIndexColumnIndex.Row + widgetHostData.WidgetBase.RowSpanColumnSpan.RowSpan <=
                                 realClosestRow)
                             {
                                 checkedGoodRow = widgetHostData.WidgetBase.RowIndexColumnIndex.Row;
-                                if (!WidgetAtLocation(widgetHostData.WidgetSpans,
+                                if (!WidgetAtLocation(widgetHostData.WidgetBase.RowSpanColumnSpan,
                                     new RowIndexColumnIndex((int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Row,
                                         (int)widgetHostData.WidgetBase.RowIndexColumnIndex.Column)).Any(widgetData =>
                                    widgetData != widgetHostData && widgetData != _draggingHostData))
@@ -692,11 +706,11 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
                         if (_draggingHostData.WidgetBase.RowIndexColumnIndex.Row + 1 >= realClosestRow &&
                             realClosestRow <= _draggingHostData.WidgetBase.RowIndexColumnIndex.Row +
-                            _draggingHostData.WidgetSpans.RowSpan - 1)
+                            _draggingHostData.WidgetBase.RowSpanColumnSpan.RowSpan - 1)
                             continue;
 
                         if (!widgetsAtWidgetHostDataLocation.Any() &&
-                            i < realClosestRow + _draggingHostData.WidgetSpans.RowSpan - 1)
+                            i < realClosestRow + _draggingHostData.WidgetBase.RowSpanColumnSpan.RowSpan - 1)
                             return realClosestRowAndColumn;
                     }
                 }
@@ -715,7 +729,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                 var rowAndColumnToCheck = new RowIndexColumnIndex(i, realClosestColumn);
 
                 // See if we can use the location. We keep iterating after this to see if there is even a better spot we can occupy
-                var widgetAtLocation = WidgetAtLocation(_draggingHostData.WidgetSpans, rowAndColumnToCheck)
+                var widgetAtLocation = WidgetAtLocation(_draggingHostData.WidgetBase.RowSpanColumnSpan, rowAndColumnToCheck)
                     .Where(widgetData =>
                         !potentialMovingWidgets.Contains(widgetData) && widgetData != _draggingHostData);
 
@@ -764,8 +778,8 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                     Debug.Assert(widgetData.WidgetBase.RowIndexColumnIndex.Row != null, "widgetData.WidgetBase.RowIndexColumnIndex.Row != null");
                     Debug.Assert(widgetData.WidgetBase.RowIndexColumnIndex.Column != null, "widgetData.WidgetBase.RowIndexColumnIndex.Column != null");
 
-                    return new RowIndexColumnIndex((int)widgetData.WidgetBase.RowIndexColumnIndex.Row + widgetData.WidgetSpans.RowSpan,
-                        (int)widgetData.WidgetBase.RowIndexColumnIndex.Column + widgetData.WidgetSpans.ColumnSpan);
+                    return new RowIndexColumnIndex((int)widgetData.WidgetBase.RowIndexColumnIndex.Row + widgetData.WidgetBase.RowSpanColumnSpan.RowSpan,
+                        (int)widgetData.WidgetBase.RowIndexColumnIndex.Column + widgetData.WidgetBase.RowSpanColumnSpan.ColumnSpan);
                 })
                 .ToArray();
 
@@ -850,7 +864,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             if (widgetData == _draggingHostData)
             {
                 widgetsAtLocation
-                    .AddRange(WidgetAtLocation(widgetData.WidgetSpans, rowAndColumnPlacement)
+                    .AddRange(WidgetAtLocation(widgetData.WidgetBase.RowSpanColumnSpan, rowAndColumnPlacement)
                         .Where(widgetAtLocationData => widgetAtLocationData != _draggingHostData)
                         .ToList());
             }
@@ -865,9 +879,8 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                 for (var i = 0; i < widgetRowMovementCount; i++)
                 {
                     widgetsAtLocation
-                        .AddRange(WidgetAtLocation(widgetData.WidgetSpans,
-                            new RowIndexColumnIndex((int)widgetData.WidgetBase.RowIndexColumnIndex.Row + i, rowAndColumnPlacement.Column)).Where(
-                            widgetHostData => widgetHostData != widgetData && widgetHostData != _draggingHostData));
+                        .AddRange(WidgetAtLocation(widgetData.WidgetBase.RowSpanColumnSpan, new RowIndexColumnIndex((int)widgetData.WidgetBase.RowIndexColumnIndex.Row + i, rowAndColumnPlacement.Column))
+                        .Where(widgetHostData => widgetHostData != widgetData && widgetHostData != _draggingHostData));
                 }
             }
 
@@ -877,9 +890,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
             // Since we have widgets at the designated location we need add to the list any widgets that
             // could potentially move as a result of the widgetHost movement
-            for (var widgetAtLocationIndex = 0;
-                widgetAtLocationIndex < widgetsAtLocation.Count;
-                widgetAtLocationIndex++)
+            for (var widgetAtLocationIndex = 0; widgetAtLocationIndex < widgetsAtLocation.Count; widgetAtLocationIndex++)
             {
                 // If we're already tracking the widget then continue to the next
                 if (widgetsThatNeedToMove.IndexOf(widgetsAtLocation[widgetAtLocationIndex]) >= 0)
@@ -891,12 +902,12 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
                 // Need to recursively check if any widgets that are now in the place that this widget was also get moved down to
                 // make room
-                var proposedRowAndColumn = new RowIndexColumnIndex(rowAndColumnPlacement.Row + widgetData.WidgetSpans.RowSpan,
+                var proposedRowAndColumn = new RowIndexColumnIndex(rowAndColumnPlacement.Row + widgetData.WidgetBase.RowSpanColumnSpan.RowSpan,
                     (int)widgetDataAtLocation.WidgetBase.RowIndexColumnIndex.Column);
 
                 // Get the widgets at the new location this one is moving to
                 var currentWidgetsAtNewLocation =
-                    WidgetAtLocation(widgetDataAtLocation.WidgetSpans, proposedRowAndColumn)
+                    WidgetAtLocation(widgetDataAtLocation.WidgetBase.RowSpanColumnSpan, proposedRowAndColumn)
                         .Where(widget =>
                         {
                             if (widget == widgetsAtLocation[widgetAtLocationIndex])
@@ -913,14 +924,13 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                 if (!currentWidgetsAtNewLocation.Any())
                 {
                     widgetsThatNeedToMove.Add(widgetsAtLocation[widgetAtLocationIndex]);
-                    GetWidgetMoveList(widgetsAtLocation[widgetAtLocationIndex], proposedRowAndColumn,
-                        widgetsThatNeedToMove);
+                    GetWidgetMoveList(widgetsAtLocation[widgetAtLocationIndex], proposedRowAndColumn, widgetsThatNeedToMove);
                     continue;
                 }
 
                 // We need to get the max row span or size we're dealing with to offset the change
                 var maxAdditionalRows = currentWidgetsAtNewLocation
-                    .Select(widgetAtNewLocationData => widgetAtNewLocationData.WidgetSpans.RowSpan)
+                    .Select(widgetAtNewLocationData => widgetAtNewLocationData.WidgetBase.RowSpanColumnSpan.RowSpan)
                     .Max();
 
                 // Add the widget to the list and move to the next item
@@ -1012,7 +1022,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                             // mainColumnIndex + additionalColumnNumber
                             var mainRowColumnIndex = new RowIndexColumnIndex(mainRowIndex, mainColumnIndex);
                             var canSecondaryWidgetBePlacedMainRowColumn =
-                                WidgetAtLocation(possibleCandidateWidgetData.WidgetSpans, mainRowColumnIndex)
+                                WidgetAtLocation(possibleCandidateWidgetData.WidgetBase.RowSpanColumnSpan, mainRowColumnIndex)
                                     .All(widget => widget == secondaryWidgetAtLocation.First());
 
                             if (!canSecondaryWidgetBePlacedMainRowColumn)
@@ -1026,7 +1036,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                             var movingWidgetHost = _widgetHosts.FirstOrDefault(widgetHost =>
                                 widgetHost.HostIndex == possibleCandidateWidgetData.HostIndex);
 
-                            SetWidgetRowAndColumn(movingWidgetHost, mainRowColumnIndex, possibleCandidateWidgetData.WidgetSpans);
+                            SetWidgetRowAndColumn(movingWidgetHost, mainRowColumnIndex, possibleCandidateWidgetData.WidgetBase.RowSpanColumnSpan);
                             return true;
                         }
 
@@ -1131,16 +1141,19 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             Canvas.SetTop(widgetHost, rowNumber * _widgetHostMinimumSize.Height);
             Canvas.SetLeft(widgetHost, columnNumber * _widgetHostMinimumSize.Width);
 
-            //var rowCountForColumnAdditions = GetCanvasEditingBackgroundRowCount();
-            //while (true)
-            //{
-            //    var columnCount = GetCanvasEditingBackgroundColumnCount();
+            if (!EnableColumnLimit)
+            {
+                var rowCountForColumnAdditions = GetCanvasEditingBackgroundRowCount();
+                while (true)
+                {
+                    var columnCount = GetCanvasEditingBackgroundColumnCount();
 
-            //    if (columnCount - 1 >= columnNumber + rowColumnSpan.ColumnSpan - 1)
-            //        break;
+                    if (columnCount - 1 >= columnNumber + rowColumnSpan.ColumnSpan - 1)
+                        break;
 
-            //    AddCanvasEditingBackgroundColumn(rowCountForColumnAdditions, columnCount);
-            //}
+                    AddCanvasEditingBackgroundColumn(rowCountForColumnAdditions, columnCount);
+                }
+            }
 
             var columnCountForRowAdditions = GetCanvasEditingBackgroundColumnCount();
             while (GetCanvasEditingBackgroundRowCount() - 1 < rowNumber + rowColumnSpan.RowSpan - 1)
@@ -1173,9 +1186,9 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
                     // We need to look at the widgetHost being checked right now
                     // to see if its spans cover up a specific row/column
-                    for (var i = 0; i < widgetData.WidgetSpans.RowSpan; i++)
+                    for (var i = 0; i < widgetData.WidgetBase.RowSpanColumnSpan.RowSpan; i++)
                     {
-                        for (var j = 0; j < widgetData.WidgetSpans.ColumnSpan; j++)
+                        for (var j = 0; j < widgetData.WidgetBase.RowSpanColumnSpan.ColumnSpan; j++)
                         {
                             // If the span of the widgetHost covers up the next available
                             // row or column then we should consider this widget row/column
@@ -1239,6 +1252,11 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
                 // Need to hide the _draggingHost to give off the illusion that we're moving it somewhere
                 _draggingHost.Visibility = Visibility.Hidden;
+                _widgetHostsData.ForEach(widgetHostData =>
+                {
+                    widgetHostData.WidgetBase.PreviewRowIndexColumnIndex =
+                        new RowIndexColumnIndex(widgetHostData.WidgetBase.RowIndexColumnIndex.Row, widgetHostData.WidgetBase.RowIndexColumnIndex.Column);
+                });
 
                 DragDrop.DoDragDrop(_draggingHost, new DataObject(_draggingHost), DragDropEffects.Move);
             }

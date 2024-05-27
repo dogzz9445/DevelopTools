@@ -26,14 +26,21 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         private RowIndexColumnIndex? _rowIndexColumnIndex;
 
         [ObservableProperty]
+        private RowIndexColumnIndex? _previewRowIndexColumnIndex;
+
+        [ObservableProperty]
         private RowSpanColumnSpan? _rowSpanColumnSpan;
 
         [ObservableProperty]
         private string _title;
 
+        [ObservableProperty]
+        private string _type;
+
         public WidgetHostViewModel()
         {
             RowIndexColumnIndex = new RowIndexColumnIndex(0, 0);
+            PreviewRowIndexColumnIndex = new RowIndexColumnIndex(0, 0);
             RowSpanColumnSpan = new RowSpanColumnSpan(1, 1);
         }
     }

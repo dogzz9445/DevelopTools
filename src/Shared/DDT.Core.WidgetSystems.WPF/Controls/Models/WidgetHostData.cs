@@ -21,11 +21,11 @@ public class WidgetHostData
     /// <value>The widget base.</value>
     public WidgetHostViewModel WidgetBase { get; }
 
-    /// <summary>
-    /// Gets the widget spans.
-    /// </summary>
-    /// <value>The widget spans.</value>
-    public RowSpanColumnSpan WidgetSpans { get; }
+    ///// <summary>
+    ///// Gets the widget spans.
+    ///// </summary>
+    ///// <value>The widget spans.</value>
+    //public RowSpanColumnSpan WidgetSpans { get; }
 
     #endregion Public Properties
 
@@ -41,7 +41,6 @@ public class WidgetHostData
     {
         HostIndex = hostIndex;
         WidgetBase = widgetBase;
-        WidgetSpans = widgetSpans;
     }
 
     #endregion Public Constructors
