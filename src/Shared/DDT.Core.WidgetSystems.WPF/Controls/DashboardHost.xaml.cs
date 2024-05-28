@@ -28,6 +28,8 @@ using Rectangle = System.Windows.Shapes.Rectangle;
 using Size = System.Windows.Size;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using System.Data.Common;
+using System.Windows.Media.Animation;
+using System.Numerics;
 
 namespace DDT.Core.WidgetSystems.WPF.Controls
 {
@@ -422,9 +424,9 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
             // If there is no change to the stored closestRowColumn against the dragging RowIndex and ColumnIndex then there isn't
             // anything to set or arrange.
-            if (_draggingHostData.WidgetBase.RowIndexColumnIndex.Row == closestRowColumn.Row &&
-                _draggingHostData.WidgetBase.RowIndexColumnIndex.Column == closestRowColumn.Column)
-                return;
+            //if (_draggingHostData.WidgetBase.RowIndexColumnIndex.Row == closestRowColumn.Row &&
+            //    _draggingHostData.WidgetBase.RowIndexColumnIndex.Column == closestRowColumn.Column)
+            //    return;
 
             // Use the canvas to draw a square around the closestRowColumn to indicate where the _draggingWidgetHost will be when mouse is released
             var top = closestRowColumn.Row < 0 ? 0 : closestRowColumn.Row * _widgetHostMinimumSize.Height;
@@ -449,7 +451,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             foreach (var widgetData in movingWidgets)
             {
                 // Use the initial amount the dragging widget row size is
-                var rowIncrease = _draggingHostData.WidgetBase.RowSpanColumnSpan.RowSpan;
+                var rowIncrease = 1;
 
                 // Find a row to move it
                 Debug.Assert(widgetData.WidgetBase.RowIndexColumnIndex.Row != null, "widgetData.WidgetBase.RowIndexColumnIndex.Row != null");
@@ -467,8 +469,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                     rowIncrease++;
                 }
 
-                var movingHost =
-                    _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetData.HostIndex);
+                var movingHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetData.HostIndex);
 
                 SetWidgetRowAndColumn(movingHost,
                     new RowIndexColumnIndex((widgetData.WidgetBase.RowIndexColumnIndex.Row + rowIncrease), widgetData.WidgetBase.RowIndexColumnIndex.Column),
@@ -531,28 +532,19 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         /// </summary>
         private void FillCanvasEditingBackground()
         {
-            var visibleColumns = EnableColumnLimit ? MaxNumColumns : GetFullyVisibleColumn() + 1;
+            var visibleColumns = EnableColumnLimit ? MaxNumColumns + 1 : GetFullyVisibleColumn() + 1;
             var visibleRows = GetFullyVisibleRow() + 1;
             // FIXME:
             // 제대로 백그라운드를 수정하지 않는 오류가 있음 수정 필요
             // Fill Visible Columns
-            if (EnableColumnLimit)
+            var rowCountForColumnAdditions = GetCanvasEditingBackgroundRowCount();
+            while (true)
             {
-                var rowCountForColumnAdditions = GetCanvasEditingBackgroundRowCount();
                 var columnCount = GetCanvasEditingBackgroundColumnCount();
-                AddCanvasEditingBackgroundColumn(rowCountForColumnAdditions, columnCount);
-            }
-            else
-            {
-                var rowCountForColumnAdditions = GetCanvasEditingBackgroundRowCount();
-                while (true)
-                {
-                    var columnCount = GetCanvasEditingBackgroundColumnCount();
 
-                    if (columnCount >= visibleColumns)
-                        break;
-                    AddCanvasEditingBackgroundColumn(rowCountForColumnAdditions, columnCount);
-                }
+                if (columnCount >= visibleColumns)
+                    break;
+                AddCanvasEditingBackgroundColumn(rowCountForColumnAdditions, columnCount);
             }
 
             // Fill Visible Rows
@@ -584,7 +576,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         /// <returns>System.Int32.</returns>
         private int GetCanvasEditingBackgroundColumnCount()
         {
-            return EnableColumnLimit ? MaxNumColumns : (int)Math.Floor(CanvasEditingBackground.Width / _widgetHostMinimumSize.Width);
+            return (int)Math.Floor(CanvasEditingBackground.Width / _widgetHostMinimumSize.Width);
         }
 
         /// <summary>
@@ -1059,30 +1051,25 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
         /// <summary>
         /// 
-        /// 
-        /// that can move. If it gets to the end and no more widgets can be moved it returns false indicated
-        /// 
         /// </summary>
         /// <returns><c>true</c> if a widget was moved, <c>false</c> otherwise.</returns>
         private void ReArrangeToPreviewLocation()
         {
-            // Need to get all rows and columns taking up space
-            var maxRowsAndColumn = GetMaxRowsAndColumns();
-
-            foreach (var widgetHostData in _widgetHostsData)
+            foreach (var widgetHostData in _widgetHostsData.OrderBy(widgetHostData => widgetHostData.WidgetBase?.RowIndexColumnIndex.Row))
             {
                 if (widgetHostData == _draggingHostData)
                     continue;
 
-                var widgetHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetHostData.HostIndex);
+                for (int row = widgetHostData.WidgetBase.PreviewRowIndexColumnIndex.Row; row < widgetHostData.WidgetBase.RowIndexColumnIndex.Row; row++)
+                {
+                    var reArragnedIndex = new RowIndexColumnIndex(row, widgetHostData.WidgetBase.PreviewRowIndexColumnIndex.Column);
+                    if (!WidgetAtLocation(widgetHostData.WidgetBase.RowSpanColumnSpan, reArragnedIndex).Any())
+                    {
+                        var widgetHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetHostData.HostIndex);
 
-                if (widgetHost == null)
-                    continue;
-
-                if (WidgetAtLocation(widgetHostData.WidgetBase.RowSpanColumnSpan, widgetHostData.WidgetBase.PreviewRowIndexColumnIndex).Count() > 0)
-                    continue;
-
-                SetWidgetRowAndColumn(widgetHost, widgetHostData.WidgetBase.PreviewRowIndexColumnIndex, widgetHostData.WidgetBase.RowSpanColumnSpan);
+                        SetWidgetRowAndColumn(widgetHost, reArragnedIndex, widgetHostData.WidgetBase.RowSpanColumnSpan);
+                    }
+                }
             }
         }
 
@@ -1151,6 +1138,14 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             Canvas.SetLeft(rectangle, 0);
         }
 
+        private void AnimateWidget(WidgetHost widgetHost, double fromLeft, double toLeft, double fromTop, double toTop, int durationFromTo)
+        {
+            DoubleAnimation animationLeft = new DoubleAnimation(fromLeft, toLeft, TimeSpan.FromMilliseconds(100 * durationFromTo));
+            DoubleAnimation animationTop = new DoubleAnimation(fromTop, toTop, TimeSpan.FromMilliseconds(100 * durationFromTo));
+            widgetHost.BeginAnimation(Canvas.LeftProperty, animationLeft);
+            widgetHost.BeginAnimation(Canvas.TopProperty, animationTop);
+        }
+
         /// <summary>
         /// Sets the widget row and column for the WidgetsCanvasHost and changes the RowIndex and ColumnIndex of
         /// the widgetHost's WidgetBase context.
@@ -1167,15 +1162,25 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
             Debug.Assert(widgetBase != null, nameof(widgetBase) + " != null");
 
+            int originalRowNumber = widgetBase.RowIndexColumnIndex.Row;
+            int originalColumnNumber = widgetBase.RowIndexColumnIndex.Column;
             widgetBase.RowIndexColumnIndex.Row = rowNumber;
             widgetBase.RowIndexColumnIndex.Column = columnNumber;
+            int distanceFromTo = Math.Abs(rowNumber - originalRowNumber) + Math.Abs(columnNumber - originalColumnNumber);
 
             var maxRowsAndColumns = GetMaxRowsAndColumns();
             WidgetsCanvasHost.Height = maxRowsAndColumns.Row * _widgetHostMinimumSize.Height;
             WidgetsCanvasHost.Width = maxRowsAndColumns.Column * _widgetHostMinimumSize.Width;
 
-            Canvas.SetTop(widgetHost, rowNumber * _widgetHostMinimumSize.Height);
-            Canvas.SetLeft(widgetHost, columnNumber * _widgetHostMinimumSize.Width);
+            AnimateWidget(widgetHost,
+                originalColumnNumber * _widgetHostMinimumSize.Width,
+                columnNumber * _widgetHostMinimumSize.Width,
+                originalRowNumber * _widgetHostMinimumSize.Height,
+                rowNumber * _widgetHostMinimumSize.Height,
+                distanceFromTo);
+
+            //Canvas.SetTop(widgetHost, rowNumber * _widgetHostMinimumSize.Height);
+            //Canvas.SetLeft(widgetHost, columnNumber * _widgetHostMinimumSize.Width);
 
             var columnCount = GetCanvasEditingBackgroundColumnCount();
             if (!EnableColumnLimit)
@@ -1189,10 +1194,6 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
                     AddCanvasEditingBackgroundColumn(rowCountForColumnAdditions, columnCount);
                 }
-            }
-            else
-            {
-                AddCanvasEditingBackgroundColumn(1, columnCount);
             }
 
             var columnCountForRowAdditions = GetCanvasEditingBackgroundColumnCount();
