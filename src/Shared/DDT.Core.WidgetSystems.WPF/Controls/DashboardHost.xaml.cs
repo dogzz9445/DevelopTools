@@ -441,14 +441,14 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             // Get all the widgets in the path of where the _dragging host will be set
             var movingWidgets = GetWidgetMoveList(_widgetHostsData.FirstOrDefault(widgetData => widgetData == _draggingHostData), closestRowColumn, null)
                 .OrderBy(widgetData => widgetData.WidgetBase?.RowIndexColumnIndex.Row)
-                .ToArray();
+                .ToList();
 
             // Move the movingWidgets down in rows the same amount of the _dragging hosts row span
             // unless there is a widget already there in that case increment until there isn't. We
             // used the OrderBy on the movingWidgets to make this work against widgets that have
             // already moved
             var movedWidgets = new List<WidgetHostData>();
-            foreach (var widgetData in movingWidgets)
+            foreach (var widgetData in movingWidgets.ToArray())
             {
                 // Use the initial amount the dragging widget row size is
                 var rowIncrease = 1;
@@ -477,7 +477,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                     var reArragnedIndex = new RowIndexColumnIndex(row, widgetData.WidgetBase.PreviewRowIndexColumnIndex.Column);
 
                     var widgetAlreadyThere = WidgetAtLocation(widgetData.WidgetBase.RowSpanColumnSpan, reArragnedIndex)
-                        .Where(widgetHostDataThere => widgetData != widgetHostDataThere);
+                        .Where(widgetHostDataThere => widgetData != widgetHostDataThere && !movingWidgets.Contains(widgetHostDataThere));
 
                     if (widgetAlreadyThere.Any())
                         continue;
@@ -485,6 +485,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                     var widgetHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetData.HostIndex);
 
                     SetWidgetRowAndColumn(widgetHost, reArragnedIndex, widgetData.WidgetBase.RowSpanColumnSpan);
+                    movingWidgets.Remove(widgetData);
                     break;
                 }
 

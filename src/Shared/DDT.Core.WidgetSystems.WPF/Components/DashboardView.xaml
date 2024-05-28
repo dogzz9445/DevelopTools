@@ -9,6 +9,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/DDT.Core.WidgetSystems.WPF;component/Widgets/DataTemplates.xaml" />
+            </ResourceDictionary.MergedDictionaries>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <converters:InvertBoolToVisibilityConverter x:Key="InvertBoolToVis" />
         <converters:DashboardSelectorIsCheckedConverter x:Key="DashboardSelectorIsCheckedConverter" />
@@ -153,8 +157,9 @@
                TargetType="{x:Type Path}">
             <Setter Property="Fill"
                     Value="DodgerBlue" />
-        </Style>
-        
+            </Style>
+        </ResourceDictionary>
+
     </UserControl.Resources>
 
     <Grid>

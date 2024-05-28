@@ -27,7 +27,7 @@ public partial class App : Application
 
         // Set the theme
         var theme = ConfigurationManager.AppSettings["Theme"];
-        ThemeHelper.ChangeTheme(Resources, "Dark");
+        ThemeHelper.ChangeTheme(Resources, "Light");
 
         // Create a new MainWindow and set its DataContext to a new MainWindowViewModel which binds the view to the viewmodel
         new MainWindow { DataContext = new MainWindowViewModel() }.Show();

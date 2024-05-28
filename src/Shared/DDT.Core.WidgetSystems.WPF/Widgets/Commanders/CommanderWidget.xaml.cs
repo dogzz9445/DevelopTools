@@ -27,7 +27,7 @@ namespace DDT.Core.WidgetSystems.WPF.Widgets.Commanders
         public CommanderWidgetViewModel(int widgetNumber) : base()
         {
             Title = $"Commander{widgetNumber}";
-            RowSpanColumnSpan = new RowSpanColumnSpan(2, 2);
+            RowSpanColumnSpan = new RowSpanColumnSpan(6, 6);
         }
     }
 
