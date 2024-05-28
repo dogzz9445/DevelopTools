@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:local="clr-namespace:DDT.Core.WidgetSystems.WPF.Controls"
             mc:Ignorable="d" 
+                Margin="4"
              d:DesignHeight="400"
                 d:DesignWidth="400">
     <ContentControl.Resources>
@@ -24,6 +25,7 @@
     <ContentControl.Template>
         <ControlTemplate TargetType="{x:Type ContentControl}">
             <Border Background="White"
+                    Margin="4"
                     BorderBrush="LightGray"
                     BorderThickness="1"
                     Cursor="">

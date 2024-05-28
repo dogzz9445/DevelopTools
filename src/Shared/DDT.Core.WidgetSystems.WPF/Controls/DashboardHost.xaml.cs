@@ -315,13 +315,13 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         {
             CanvasEditingBackground.Width += _widgetHostMinimumSize.Width;
 
-            for (var i = 0; i < rowCount; i++)
-            {
-                var rectangleBackground = CreateGrayRectangleBackground();
-                CanvasEditingBackground.Children.Add(rectangleBackground);
-                Canvas.SetTop(rectangleBackground, i * _widgetHostMinimumSize.Height);
-                Canvas.SetLeft(rectangleBackground, columnCount * _widgetHostMinimumSize.Width);
-            }
+            //for (var i = 0; i < rowCount; i++)
+            //{
+            //    var rectangleBackground = CreateGrayRectangleBackground();
+            //    CanvasEditingBackground.Children.Add(rectangleBackground);
+            //    Canvas.SetTop(rectangleBackground, i * _widgetHostMinimumSize.Height);
+            //    Canvas.SetLeft(rectangleBackground, columnCount * _widgetHostMinimumSize.Width);
+            //}
         }
 
         /// <summary>
@@ -331,13 +331,13 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         {
             CanvasEditingBackground.Height += _widgetHostMinimumSize.Height;
 
-            for (var i = 0; i < columnCount; i++)
-            {
-                var rectangleBackground = CreateGrayRectangleBackground();
-                CanvasEditingBackground.Children.Add(rectangleBackground);
-                Canvas.SetTop(rectangleBackground, rowCount * _widgetHostMinimumSize.Height);
-                Canvas.SetLeft(rectangleBackground, i * _widgetHostMinimumSize.Width);
-            }
+            //for (var i = 0; i < columnCount; i++)
+            //{
+            //    var rectangleBackground = CreateGrayRectangleBackground();
+            //    CanvasEditingBackground.Children.Add(rectangleBackground);
+            //    Canvas.SetTop(rectangleBackground, rowCount * _widgetHostMinimumSize.Height);
+            //    Canvas.SetLeft(rectangleBackground, i * _widgetHostMinimumSize.Width);
+            //}
         }
 
         /// <summary>
@@ -471,9 +471,22 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
                 var movingHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetData.HostIndex);
 
-                SetWidgetRowAndColumn(movingHost,
-                    new RowIndexColumnIndex((widgetData.WidgetBase.RowIndexColumnIndex.Row + rowIncrease), widgetData.WidgetBase.RowIndexColumnIndex.Column),
-                    widgetData.WidgetBase.RowSpanColumnSpan);
+                var proposedRow = widgetData.WidgetBase.RowIndexColumnIndex.Row + rowIncrease;
+                for (int row = widgetData.WidgetBase.PreviewRowIndexColumnIndex.Row; row <= proposedRow; row++)
+                {
+                    var reArragnedIndex = new RowIndexColumnIndex(row, widgetData.WidgetBase.PreviewRowIndexColumnIndex.Column);
+
+                    var widgetAlreadyThere = WidgetAtLocation(widgetData.WidgetBase.RowSpanColumnSpan, reArragnedIndex)
+                        .Where(widgetHostDataThere => widgetData != widgetHostDataThere);
+
+                    if (widgetAlreadyThere.Any())
+                        continue;
+
+                    var widgetHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetData.HostIndex);
+
+                    SetWidgetRowAndColumn(widgetHost, reArragnedIndex, widgetData.WidgetBase.RowSpanColumnSpan);
+                    break;
+                }
 
                 movedWidgets.Add(widgetData);
             }
@@ -878,7 +891,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                 for (var i = 0; i < widgetRowMovementCount; i++)
                 {
                     widgetsAtLocation
-                        .AddRange(WidgetAtLocation(widgetData.WidgetBase.RowSpanColumnSpan, new RowIndexColumnIndex((int)widgetData.WidgetBase.RowIndexColumnIndex.Row + i, rowAndColumnPlacement.Column))
+                        .AddRange(WidgetAtLocation(widgetData.WidgetBase.RowSpanColumnSpan, new RowIndexColumnIndex(widgetData.WidgetBase.RowIndexColumnIndex.Row + i, rowAndColumnPlacement.Column))
                         .Where(widgetHostData => widgetHostData != widgetData && widgetHostData != _draggingHostData));
                 }
             }
@@ -1053,7 +1066,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         /// 
         /// </summary>
         /// <returns><c>true</c> if a widget was moved, <c>false</c> otherwise.</returns>
-        private void ReArrangeToPreviewLocation()
+        private bool ReArrangeToPreviewLocation()
         {
             foreach (var widgetHostData in _widgetHostsData.OrderBy(widgetHostData => widgetHostData.WidgetBase?.RowIndexColumnIndex.Row))
             {
@@ -1063,14 +1076,22 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
                 for (int row = widgetHostData.WidgetBase.PreviewRowIndexColumnIndex.Row; row < widgetHostData.WidgetBase.RowIndexColumnIndex.Row; row++)
                 {
                     var reArragnedIndex = new RowIndexColumnIndex(row, widgetHostData.WidgetBase.PreviewRowIndexColumnIndex.Column);
-                    if (!WidgetAtLocation(widgetHostData.WidgetBase.RowSpanColumnSpan, reArragnedIndex).Any())
-                    {
-                        var widgetHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetHostData.HostIndex);
 
-                        SetWidgetRowAndColumn(widgetHost, reArragnedIndex, widgetHostData.WidgetBase.RowSpanColumnSpan);
-                    }
+                    var widgetAlreadyThere = WidgetAtLocation(widgetHostData.WidgetBase.RowSpanColumnSpan, reArragnedIndex)
+                        .Where(widgetHostDataThere => widgetHostData != widgetHostDataThere);
+
+                    if (widgetAlreadyThere.Any())
+                        continue;
+
+                    var widgetHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetHostData.HostIndex);
+
+                    SetWidgetRowAndColumn(widgetHost, reArragnedIndex, widgetHostData.WidgetBase.RowSpanColumnSpan);
+                    widgetHostData.WidgetBase.RowIndexColumnIndex = reArragnedIndex;
+
+                    return true;
                 }
             }
+            return false;
         }
 
         /// <summary>
@@ -1140,8 +1161,8 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
         private void AnimateWidget(WidgetHost widgetHost, double fromLeft, double toLeft, double fromTop, double toTop, int durationFromTo)
         {
-            DoubleAnimation animationLeft = new DoubleAnimation(fromLeft, toLeft, TimeSpan.FromMilliseconds(100 * durationFromTo));
-            DoubleAnimation animationTop = new DoubleAnimation(fromTop, toTop, TimeSpan.FromMilliseconds(100 * durationFromTo));
+            DoubleAnimation animationLeft = new DoubleAnimation(fromLeft, toLeft, TimeSpan.FromMilliseconds(200 * (int)Math.Log10(durationFromTo * 10)));
+            DoubleAnimation animationTop = new DoubleAnimation(fromTop, toTop, TimeSpan.FromMilliseconds(200 * (int)Math.Log10(durationFromTo * 10)));
             widgetHost.BeginAnimation(Canvas.LeftProperty, animationLeft);
             widgetHost.BeginAnimation(Canvas.TopProperty, animationTop);
         }
