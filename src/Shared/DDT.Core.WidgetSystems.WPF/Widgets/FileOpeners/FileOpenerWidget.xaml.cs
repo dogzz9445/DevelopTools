@@ -139,7 +139,7 @@ namespace DDT.Core.WidgetSystems.WPF.Widgets.FileOpeners
     /// <summary>
     /// FileOpenerWidget.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class FileOpenerWidget : System.Windows.Controls.UserControl
+    public partial class FileOpenerWidget
     {
         public FileOpenerWidget()
         {

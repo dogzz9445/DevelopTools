@@ -89,6 +89,9 @@
                             </Style>
                         </StackPanel.Style>
 
+                        <TextBlock Text="{Binding DataContext.RowIndexColumnIndex.Row}" />
+                        <TextBlock Text="{Binding DataContext.RowIndexColumnIndex.Column}" />
+
                         <Button Command="{Binding DataContext.CommandConfigureWidget, RelativeSource={RelativeSource AncestorType={x:Type local:DashboardHost}, Mode=FindAncestor}}"
                                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WidgetHost}}}"
                                 Cursor="Arrow"
