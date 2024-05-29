@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "DDT.RemoteProtocols";
+
+service RemoteService
+{
+    rpc GetResponse (google.protobuf.Empty) returns (RemoteResponse);
+}
+
+message RemoteResponse 
+{
+	enum RemoteResponseType {
+		NONE = 0;
+		SUCCESS = 1;
+		ERROR = 2;
+	}
+	RemoteResponseType responseType = 1;
+	string responseMessage = 2;
+}
