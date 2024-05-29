@@ -17,21 +17,21 @@ public class WorkflowSettings : IWorkflowSettings
     public string Name { get; set; }
 }
 
-public interface IWorkflow : IEntity
+public interface IWorkflowOption : IEntity
 {
     List<WidgetLayoutItem> Layout { get; }
     IWorkflowSettings Settings { get; }
 }
 
-public class Workflow : IWorkflow
+public class WorkflowOption : IWorkflowOption
 {
     public Guid Id { get; set; }
     public List<WidgetLayoutItem> Layout { get; set; }
     public IWorkflowSettings Settings { get; set; }
 
-    public static Workflow CreateWorkflow(Guid id, string name)
+    public static WorkflowOption CreateWorkflow(Guid id, string name)
     {
-        return new Workflow
+        return new WorkflowOption
         {
             Id = id,
             Layout = new List<WidgetLayoutItem>(),
@@ -47,9 +47,9 @@ public class Workflow : IWorkflow
         return NameGenerationHelper.GenerateUniqueName("Workflow", usedNames);
     }
 
-    public static Workflow UpdateWorkflowSettings(Workflow workflow, IWorkflowSettings settings)
+    public static WorkflowOption UpdateWorkflowSettings(WorkflowOption workflow, IWorkflowSettings settings)
     {
-        return new Workflow
+        return new WorkflowOption
         {
             Id = workflow.Id,
             Layout = workflow.Layout,
@@ -57,9 +57,9 @@ public class Workflow : IWorkflow
         };
     }
 
-    public static Workflow UpdateWorkflowLayout(Workflow workflow, List<WidgetLayoutItem> layout)
+    public static WorkflowOption UpdateWorkflowLayout(WorkflowOption workflow, List<WidgetLayoutItem> layout)
     {
-        return new Workflow
+        return new WorkflowOption
         {
             Id = workflow.Id,
             Layout = layout,

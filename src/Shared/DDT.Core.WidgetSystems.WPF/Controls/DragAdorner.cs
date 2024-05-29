@@ -13,6 +13,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Media.Media3D;
 using Rectangle = System.Windows.Shapes.Rectangle;
+using Pen = System.Windows.Media.Pen;
 
 namespace DDT.Core.WidgetSystems.WPF.Controls
 {
@@ -146,6 +147,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             _child.Measure(constraint);
             return _child.DesiredSize;
         }
+
 
         #endregion Protected Methods
 

@@ -7,6 +7,7 @@ option csharp_namespace = "DDT.RemoteProtocols";
 
 service RemoteService
 {
+	// 
     rpc GetResponse (google.protobuf.Empty) returns (RemoteResponse);
 }
 
@@ -19,4 +20,360 @@ message RemoteResponse
 	}
 	RemoteResponseType responseType = 1;
 	string responseMessage = 2;
+}
+
+message MenuItem
+{
+	enum MenuItemRole {
+		Undo = 0;
+		Redo = 1;
+		Cut = 2;
+		Copy = 3;
+		Paste = 4;
+		PasteAndMatchStyle = 5;
+		Delete = 6;
+		SelectAll = 7;
+		ToggleSpellChecker = 8;
+		ToggleFullScreen = 9;
+		Window = 10;
+		Minimize = 11;
+		Close = 12;
+		Help = 13;
+		About = 14;
+		Services = 15;
+		Hide = 16;
+		HideOthers = 17;
+		Unhide = 18;
+		Quit = 19;
+		StartSpeaking = 20;
+		StopSpeaking = 21;
+		AppMenu = 22;
+		FileMenu = 23;
+		EditMenu = 24;
+		ViewMenu = 25;
+		ShareMenu = 26;
+		RecentDocuments = 27;
+		ToggleTabBar = 28;
+		SelectNextTab = 29;
+		SelectPreviousTab = 30;
+		MergeAllWindows = 31;
+		ClearRecentDocuments = 32;
+		MoveTabToNewWindow = 33;
+		WindowMenu = 34;
+		Reload = 35;
+		ForceReload = 36;
+		ToggleDevTools = 37;
+	}
+	enum MenuItemType {
+		Normal = 0;
+		Separtor = 1;
+		Submenu = 2;
+		Checkbox = 3;
+		Radio = 4;
+	}
+	MenuItemRole role = 1;
+	MenuItemType type = 2;
+	string accelerator = 3;
+	string label = 4;
+	string icon = 5;
+	bool enabled = 6;
+	MenuItem submenu = 7;
+	int32 actionId = 8;
+}
+
+// App Data Storage
+message AppDataStorageGetTextArgs {
+    string key = 1;
+}
+message AppDataStorageGetTextRes {
+    string text = 1;
+}
+
+message AppDataStorageSetTextArgs {
+    string key = 1;
+    string text = 2;
+}
+message AppDataStorageSetTextRes {}
+
+message AppDataStorageDeleteArgs {
+    string key = 1;
+}
+message AppDataStorageDeleteRes {}
+
+message AppDataStorageClearArgs {}
+message AppDataStorageClearRes {}
+
+message AppDataStorageGetKeysArgs {}
+message AppDataStorageGetKeysRes {
+    repeated string keys = 1;
+}
+
+// Widget Data Storage
+message WidgetDataStorageGetTextArgs {
+    string widgetId = 1;
+    string key = 2;
+}
+message WidgetDataStorageGetTextRes {
+    string text = 1;
+}
+
+message WidgetDataStorageSetTextArgs {
+    string widgetId = 1;
+    string key = 2;
+    string text = 3;
+}
+message WidgetDataStorageSetTextRes {}
+
+message WidgetDataStorageDeleteArgs {
+    string widgetId = 1;
+    string key = 2;
+}
+message WidgetDataStorageDeleteRes {}
+
+message WidgetDataStorageClearArgs {
+    string widgetId = 1;
+}
+message WidgetDataStorageClearRes {}
+
+message WidgetDataStorageGetKeysArgs {
+    string widgetId = 1;
+}
+message WidgetDataStorageGetKeysRes {
+    repeated string keys = 1;
+}
+
+message CopyWidgetDataStorageArgs {
+    string srcWidgetId = 1;
+    string toWidgetId = 2;
+}
+message CopyWidgetDataStorageRes {
+    bool success = 1;
+}
+
+// OS Context Menu
+message PopupOsContextMenuArgs {
+    repeated MenuItem menuItems = 1;
+}
+message PopupOsContextMenuRes {
+    int32 selectedItemId = 1;
+}
+
+// Shell
+message ShellOpenAppArgs {
+    string appPath = 1;
+    repeated string args = 2;
+}
+message ShellOpenAppRes {}
+
+message ShellOpenExternalUrlArgs {
+    string url = 1;
+}
+message ShellOpenExternalUrlRes {}
+
+message ShellOpenPathArgs {
+    string path = 1;
+}
+message ShellOpenPathRes {
+    string result = 1;
+}
+
+// Clipboard
+message WriteBookmarkIntoClipboardArgs {
+    string title = 1;
+    string url = 2;
+}
+message WriteBookmarkIntoClipboardRes {}
+
+message WriteTextIntoClipboardArgs {
+    string text = 1;
+}
+message WriteTextIntoClipboardRes {}
+
+// Process Info
+message GetProcessInfoArgs {}
+message GetProcessInfoRes {
+    // Define the structure of ProcessInfo here
+}
+
+// OS Message Box
+message MessageBoxConfig {
+    string message = 1;
+    string type = 2;
+    repeated string buttons = 3;
+    int32 defaultId = 4;
+    string checkboxLabel = 5;
+    bool checkboxChecked = 6;
+    int32 cancelId = 7;
+}
+
+message MessageBoxResult {
+    int32 response = 1;
+    bool checkboxChecked = 2;
+}
+
+message ShowOsMessageBoxArgs {
+    MessageBoxConfig config = 1;
+}
+message ShowOsMessageBoxRes {
+    MessageBoxResult result = 1;
+}
+
+// File Dialogs
+message FileDialogFilter {
+    string name = 1;
+    repeated string extensions = 2;
+}
+
+message OpenFileDialogConfig {
+    bool multiSelect = 1;
+    string defaultPath = 2;
+    repeated FileDialogFilter filters = 3;
+    string title = 4;
+}
+
+message SaveFileDialogConfig {
+    string defaultPath = 1;
+    repeated FileDialogFilter filters = 2;
+    string title = 3;
+}
+
+message OpenDirDialogConfig {
+    bool multiSelect = 1;
+    string defaultPath = 2;
+    string title = 3;
+}
+
+message OpenDialogResult {
+    bool canceled = 1;
+    repeated string filePaths = 2;
+}
+
+message SaveDialogResult {
+    bool canceled = 1;
+    string filePath = 2;
+}
+
+message ShowOsOpenFileDialogArgs {
+    OpenFileDialogConfig config = 1;
+}
+message ShowOsOpenFileDialogRes {
+    OpenDialogResult result = 1;
+}
+
+message ShowOsSaveFileDialogArgs {
+    SaveFileDialogConfig config = 1;
+}
+message ShowOsSaveFileDialogRes {
+    SaveDialogResult result = 1;
+}
+
+message ShowOsOpenDirDialogArgs {
+    OpenDirDialogConfig config = 1;
+}
+message ShowOsOpenDirDialogRes {
+    OpenDialogResult result = 1;
+}
+
+// App Menu
+message SetAppMenuArgs {
+    repeated MenuItem menuItems = 1;
+}
+message SetAppMenuRes {}
+
+message SetAppMenuAutoHideArgs {
+    bool autoHide = 1;
+}
+message SetAppMenuAutoHideRes {}
+
+message ClickAppMenuActionArgs {
+    int32 actionId = 1;
+}
+
+// Tray Menu
+message SetTrayMenuArgs {
+    repeated MenuItem menuItems = 1;
+}
+message SetTrayMenuRes {}
+
+message ClickTrayMenuActionArgs {
+    int32 actionId = 1;
+}
+
+// Browser Window
+message ShowBrowserWindowArgs {}
+message ShowBrowserWindowRes {}
+
+// Terminal
+message ExecCmdLinesInTerminalArgs {
+    repeated string cmdLines = 1;
+    string cwd = 2;
+}
+message ExecCmdLinesInTerminalRes {}
+
+// MenuItem definition
+message MenuItem
+{
+	enum MenuItemRole {
+		Undo = 0;
+		Redo = 1;
+		Cut = 2;
+		Copy = 3;
+		Paste = 4;
+		PasteAndMatchStyle = 5;
+		Delete = 6;
+		SelectAll = 7;
+		ToggleSpellChecker = 8;
+		ToggleFullScreen = 9;
+		Window = 10;
+		Minimize = 11;
+		Close = 12;
+		Help = 13;
+		About = 14;
+		Services = 15;
+		Hide = 16;
+		HideOthers = 17;
+		Unhide = 18;
+		Quit = 19;
+		StartSpeaking = 20;
+		StopSpeaking = 21;
+		AppMenu = 22;
+		FileMenu = 23;
+		EditMenu = 24;
+		ViewMenu = 25;
+		ShareMenu = 26;
+		RecentDocuments = 27;
+		ToggleTabBar = 28;
+		SelectNextTab = 29;
+		SelectPreviousTab = 30;
+		MergeAllWindows = 31;
+		ClearRecentDocuments = 32;
+		MoveTabToNewWindow = 33;
+		WindowMenu = 34;
+		Reload = 35;
+		ForceReload = 36;
+		ToggleDevTools = 37;
+	}
+	enum MenuItemType {
+		Normal = 0;
+		Separtor = 1;
+		Submenu = 2;
+		Checkbox = 3;
+		Radio = 4;
+	}
+	MenuItemRole role = 1;
+	MenuItemType type = 2;
+	string accelerator = 3;
+	string label = 4;
+	string icon = 5;
+	bool enabled = 6;
+	MenuItem submenu = 7;
+	int32 actionId = 8;
+}
+
+// Main Shortcut
+message SetMainShortcutArgs {
+    string accelerator = 1;
+}
+message SetMainShortcutRes {
+    bool success = 1;
 }

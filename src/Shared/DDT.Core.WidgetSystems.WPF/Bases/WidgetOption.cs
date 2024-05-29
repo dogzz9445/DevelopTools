@@ -14,11 +14,6 @@ public interface IWidgetCoreSettings
 
 public class WidgetSettings : Dictionary<string, object> { }
 
-public enum MenuItemRole
-{
-    // Define all the roles here excluding the ones specified in the TypeScript code
-}
-
 public class WidgetMenuItem : MenuItem
 {
     public MenuItemRole? Role { get; set; }
@@ -31,7 +26,7 @@ public class WidgetMenuItems : ReadOnlyCollection<WidgetMenuItem>
 
 public delegate WidgetMenuItems WidgetContextMenuFactory(string contextId, object contextData);
 
-public interface IWidget<TSettings> : IEntity
+public interface IWidgetOption<TSettings> : IEntity
 {
     string Type { get; }
     IWidgetCoreSettings CoreSettings { get; }
@@ -63,19 +58,19 @@ public interface IWidgetEnv : IWidgetEnvAreaShelf, IWidgetEnvAreaWorkflow
 public class WidgetInEnv<TSettings>
 {
     public IWidgetEnv Env { get; set; }
-    public IWidget<TSettings> Widget { get; set; }
+    public IWidgetOption<TSettings> Widget { get; set; }
 }
 
-public class Widget<TSettings> : IWidget<TSettings>
+public class WidgetOption<TSettings> : IWidgetOption<TSettings>
 {
     public Guid Id { get; set; }
     public string Type { get; set; }
     public IWidgetCoreSettings CoreSettings { get; set; }
     public TSettings Settings { get; set; }
 
-    public static IWidget<TSettings> CreateWidget<TSettings>(IWidgetType<TSettings> type, Guid id, string name)
+    public static IWidgetOption<TSettings> CreateWidget<TSettings>(IWidgetType<TSettings> type, Guid id, string name)
     {
-        return new Widget<TSettings>
+        return new WidgetOption<TSettings>
         {
             Id = id,
             Type = type.Id.ToString(),
@@ -90,9 +85,9 @@ public class Widget<TSettings> : IWidget<TSettings>
         return GenerateUniqueName(widgetTypeName, usedNames);
     }
 
-    public static IWidget<TSettings> UpdateWidgetSettings<TSettings>(IWidget<TSettings> widget, TSettings settings)
+    public static IWidgetOption<TSettings> UpdateWidgetSettings<TSettings>(IWidgetOption<TSettings> widget, TSettings settings)
     {
-        return new Widget<TSettings>
+        return new WidgetOption<TSettings>
         {
             Id = widget.Id,
             Type = widget.Type,
@@ -101,9 +96,9 @@ public class Widget<TSettings> : IWidget<TSettings>
         };
     }
 
-    public static IWidget<TSettings> UpdateWidgetCoreSettings<TSettings>(IWidget<TSettings> widget, IWidgetCoreSettings coreSettings)
+    public static WidgetOption<TSettings> UpdateWidgetCoreSettings<TSettings>(IWidgetOption<TSettings> widget, IWidgetCoreSettings coreSettings)
     {
-        return new Widget<TSettings>
+        return new WidgetOption<TSettings>
         {
             Id = widget.Id,
             Type = widget.Type,
@@ -134,7 +129,7 @@ public class Widget<TSettings> : IWidget<TSettings>
         return widgetEnv;
     }
 
-    public static string GetWidgetDisplayName<TSettings>(IWidget<TSettings> widget = null, IWidgetType<TSettings> type = null)
+    public static string GetWidgetDisplayName<TSettings>(IWidgetOption<TSettings> widget = null, IWidgetType<TSettings> type = null)
     {
         if (widget != null && !string.IsNullOrEmpty(widget.CoreSettings.Name))
         {

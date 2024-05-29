@@ -16,23 +16,23 @@ public class ProjectSettings : IProjectSettings
     public string Name { get; set; }
 }
 
-public interface IProject : IEntity
+public interface IProjectOption : IEntity
 {
     IProjectSettings Settings { get; }
     List<Guid> WorkflowIds { get; }
     Guid CurrentWorkflowId { get; }
 }
 
-public class Project : IProject
+public class ProjectOption : IProjectOption
 {
     public Guid Id { get; set; }
     public IProjectSettings Settings { get; set; }
     public List<Guid> WorkflowIds { get; set; }
     public Guid CurrentWorkflowId { get; set; }
 
-    public static Project CreateProject(Guid id, string projectName)
+    public static ProjectOption CreateProject(Guid id, string projectName)
     {
-        return new Project
+        return new ProjectOption
         {
             Id = id,
             Settings = new ProjectSettings
@@ -49,9 +49,9 @@ public class Project : IProject
         return NameGenerationHelper.GenerateUniqueName("Project", usedNames);
     }
 
-    public static Project UpdateProjectSettings(Project project, IProjectSettings settings)
+    public static ProjectOption UpdateProjectSettings(ProjectOption project, IProjectSettings settings)
     {
-        return new Project
+        return new ProjectOption
         {
             Id = project.Id,
             Settings = settings,
@@ -60,9 +60,9 @@ public class Project : IProject
         };
     }
 
-    public static Project UpdateProjectWorkflows(Project project, List<Guid> workflowIds)
+    public static ProjectOption UpdateProjectWorkflows(ProjectOption project, List<Guid> workflowIds)
     {
-        return new Project
+        return new ProjectOption
         {
             Id = project.Id,
             Settings = project.Settings,

@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DDT.Core.WidgetSystems.WPF.Controls.Models;
+﻿using DDT.Core.WidgetSystems.WPF.Controls.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Point = System.Windows.Point;
