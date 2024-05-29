@@ -19,7 +19,7 @@ using UserControl = System.Windows.Controls.UserControl;
 
 namespace DDT.Core.WidgetSystems.WPF.Widgets.Commanders
 {
-    public partial class CommanderWidgetViewModel : WidgetHostViewModel
+    public partial class CommanderWidgetViewModel : WidgetViewModelBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="OneByOneViewModel"/> class.

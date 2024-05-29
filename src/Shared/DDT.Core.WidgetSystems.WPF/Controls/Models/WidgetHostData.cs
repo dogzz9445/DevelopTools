@@ -19,7 +19,7 @@ public class WidgetHostData
     /// Gets the widget base.
     /// </summary>
     /// <value>The widget base.</value>
-    public WidgetHostViewModel WidgetBase { get; }
+    public WidgetViewModelBase WidgetBase { get; }
 
     ///// <summary>
     ///// Gets the widget spans.
@@ -37,7 +37,7 @@ public class WidgetHostData
     /// <param name="hostIndex">Index of the host.</param>
     /// <param name="widgetBase">The widget base.</param>
     /// <param name="widgetSpans">The widget spans.</param>
-    public WidgetHostData(int hostIndex, WidgetHostViewModel widgetBase, RowSpanColumnSpan widgetSpans)
+    public WidgetHostData(int hostIndex, WidgetViewModelBase widgetBase, RowSpanColumnSpan widgetSpans)
     {
         HostIndex = hostIndex;
         WidgetBase = widgetBase;

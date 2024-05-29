@@ -236,7 +236,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             if (!(element is WidgetHost widgetHost) || WidgetsCanvasHost == null)
                 return;
 
-            var widgetBase = widgetHost.DataContext as WidgetHostViewModel;
+            var widgetBase = widgetHost.DataContext as WidgetViewModelBase;
 
             Debug.Assert(widgetBase != null, nameof(widgetBase) + " != null");
 
@@ -266,7 +266,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
 
                 if (widgetAlreadyThere == null || !widgetAlreadyThere.Any())
                 {
-                    SetWidgetRowAndColumn(widgetHost, widgetBase.RowIndexColumnIndex, widgetSpans);
+                    SetWidgetRowAndColumn(widgetHost, widgetBase.RowIndexColumnIndex, widgetSpans, false);
                     return;
                 }
             }
@@ -275,7 +275,7 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             // widget then scroll to it if it's offscreen
             var nextAvailable = GetNextAvailableRowColumn(widgetSpans);
 
-            SetWidgetRowAndColumn(widgetHost, nextAvailable, widgetSpans);
+            SetWidgetRowAndColumn(widgetHost, nextAvailable, widgetSpans, false);
 
             // Scroll to the new item if it is off screen
             var widgetsHeight = widgetSpans.RowSpan * _widgetHostMinimumSize.Height;
@@ -967,9 +967,9 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         {
             // Enforce the ItemsSource be of type ICollect<WidgetBase> as most of the code behind
             // relies on there being a WidgetBase as the item
-            if (!(ItemsSource is ICollection<WidgetHostViewModel>))
+            if (!(ItemsSource is ICollection<WidgetViewModelBase>))
                 throw new InvalidOperationException(
-                    $"{nameof(DashboardHost)} ItemsSource binding must be an ICollection of {nameof(WidgetHostViewModel)} type");
+                    $"{nameof(DashboardHost)} ItemsSource binding must be an ICollection of {nameof(WidgetViewModelBase)} type");
         }
 
         /// <summary>
@@ -1176,11 +1176,15 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
         /// <param name="rowNumber">The row number.</param>
         /// <param name="columnNumber">The column number.</param>
         /// <param name="rowColumnSpan">The row column span.</param>
-        private void SetWidgetRowAndColumn(WidgetHost widgetHost, RowIndexColumnIndex rowColumnIndex, RowSpanColumnSpan rowColumnSpan)
+        private void SetWidgetRowAndColumn(
+            WidgetHost widgetHost,
+            RowIndexColumnIndex rowColumnIndex,
+            RowSpanColumnSpan rowColumnSpan,
+            bool withAnimate = true)
         {
             int rowNumber = rowColumnIndex.Row;
             int columnNumber = rowColumnIndex.Column;
-            var widgetBase = widgetHost.DataContext as WidgetHostViewModel;
+            var widgetBase = widgetHost.DataContext as WidgetViewModelBase;
 
             Debug.Assert(widgetBase != null, nameof(widgetBase) + " != null");
 
@@ -1194,15 +1198,20 @@ namespace DDT.Core.WidgetSystems.WPF.Controls
             WidgetsCanvasHost.Height = maxRowsAndColumns.Row * _widgetHostMinimumSize.Height;
             WidgetsCanvasHost.Width = maxRowsAndColumns.Column * _widgetHostMinimumSize.Width;
 
-            AnimateWidget(widgetHost,
-                originalColumnNumber * _widgetHostMinimumSize.Width,
-                columnNumber * _widgetHostMinimumSize.Width,
-                originalRowNumber * _widgetHostMinimumSize.Height,
-                rowNumber * _widgetHostMinimumSize.Height,
-                distanceFromTo);
-
-            //Canvas.SetTop(widgetHost, rowNumber * _widgetHostMinimumSize.Height);
-            //Canvas.SetLeft(widgetHost, columnNumber * _widgetHostMinimumSize.Width);
+            if (withAnimate)
+            {
+                AnimateWidget(widgetHost,
+                    originalColumnNumber * _widgetHostMinimumSize.Width,
+                    columnNumber * _widgetHostMinimumSize.Width,
+                    originalRowNumber * _widgetHostMinimumSize.Height,
+                    rowNumber * _widgetHostMinimumSize.Height,
+                    distanceFromTo);
+            }
+            else
+            {
+                Canvas.SetTop(widgetHost, rowNumber * _widgetHostMinimumSize.Height);
+                Canvas.SetLeft(widgetHost, columnNumber * _widgetHostMinimumSize.Width);
+            }
 
             var columnCount = GetCanvasEditingBackgroundColumnCount();
             if (!EnableColumnLimit)

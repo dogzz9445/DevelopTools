@@ -18,7 +18,7 @@ using DDT.Core.WidgetSystems.WPF.Controls;
 
 namespace DDT.Core.WidgetSystems.WPF.Widgets.FileOpeners
 {
-    public partial class FileOpenerWidgetViewModel : WidgetHostViewModel
+    public partial class FileOpenerWidgetViewModel : WidgetViewModelBase
     {
         [ObservableProperty]
         private string? _filePath;

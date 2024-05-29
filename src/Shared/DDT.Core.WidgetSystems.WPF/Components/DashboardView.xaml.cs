@@ -58,11 +58,11 @@ namespace DDT.Core.WidgetSystems.WPF.Components
         /// </summary>
         /// <value>The widgets.</value>
         [ObservableProperty]
-        private ObservableCollection<WidgetHostViewModel> _widgets;
+        private ObservableCollection<WidgetViewModelBase> _widgets;
 
         public DashboardModel()
         {
-            Widgets = new ObservableCollection<WidgetHostViewModel>();
+            Widgets = new ObservableCollection<WidgetViewModelBase>();
         }
 
         #endregion Public Properties
@@ -136,7 +136,7 @@ namespace DDT.Core.WidgetSystems.WPF.Components
     {
         #region Private Fields
 
-        private readonly Func<WidgetHostViewModel> _createWidget;
+        private readonly Func<WidgetViewModelBase> _createWidget;
 
         #endregion Private Fields
 
@@ -164,7 +164,7 @@ namespace DDT.Core.WidgetSystems.WPF.Components
         /// <param name="name">The name.</param>
         /// <param name="description">The description.</param>
         /// <param name="createWidget">The create widget.</param>
-        public Widget(string name, string description, Func<WidgetHostViewModel> createWidget)
+        public Widget(string name, string description, Func<WidgetViewModelBase> createWidget)
         {
             Name = name;
             Description = description;
@@ -179,7 +179,7 @@ namespace DDT.Core.WidgetSystems.WPF.Components
         /// Creates the widget.
         /// </summary>
         /// <returns>WidgetBase.</returns>
-        public WidgetHostViewModel CreateWidget()
+        public WidgetViewModelBase CreateWidget()
         {
             return _createWidget.Invoke();
         }
@@ -275,7 +275,7 @@ namespace DDT.Core.WidgetSystems.WPF.Components
         /// Gets the command remove widget.
         /// </summary>
         /// <value>The command remove widget.</value>
-        public ICommand CommandRemoveWidget => new RelayCommand<WidgetHostViewModel>(o => SelectedDashboard.Widgets.Remove((WidgetHostViewModel)o));
+        public ICommand CommandRemoveWidget => new RelayCommand<WidgetViewModelBase>(o => SelectedDashboard.Widgets.Remove((WidgetViewModelBase)o));
 
         ///// <summary>
         ///// Gets or sets the configuring dashboard.
