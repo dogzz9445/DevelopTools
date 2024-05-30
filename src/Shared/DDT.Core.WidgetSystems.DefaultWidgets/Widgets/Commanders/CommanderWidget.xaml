@@ -4,7 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Commanders"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <TextBlock HorizontalAlignment="Center"

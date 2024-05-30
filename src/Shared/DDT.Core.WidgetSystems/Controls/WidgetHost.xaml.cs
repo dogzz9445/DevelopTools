@@ -42,6 +42,7 @@ namespace DDT.Core.WidgetSystems.Controls
         #region Private Fields
 
         private Point? _mouseDownPoint;
+        private bool? _isInOutlineArea;
 
         #endregion Private Fields
 
@@ -50,7 +51,12 @@ namespace DDT.Core.WidgetSystems.Controls
         /// <summary>
         /// Occurs when [drag started].
         /// </summary>
-        public event DragEventHandler DragStarted;
+        public event DragEventHandler DragMoveStarted;
+
+        /// <summary>
+        /// Occurs when [drag started].
+        /// </summary>
+        public event DragEventHandler DragResizeStarted;
 
         /// <summary>
         /// 
@@ -96,6 +102,27 @@ namespace DDT.Core.WidgetSystems.Controls
         private void Host_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _mouseDownPoint = e.GetPosition(this);
+
+            // MyBorder의 위치와 크기를 가져옵니다.
+            Rect borderRect = new Rect(new Point(0, 0), this.RenderSize);
+
+            // 외곽선 영역을 정의합니다.
+            double borderThickness = 5; // 좌우 두께가 동일하다고 가정
+
+            Rect outerRect = new Rect(borderRect.X, borderRect.Y,
+                                      borderRect.Width, borderRect.Height);
+
+            Rect innerRect = new Rect(borderRect.X + 4, borderRect.Y + 4,
+                                      borderRect.Width - 8, borderRect.Height - 8);
+
+            // 클릭한 위치가 외곽선 영역에 있는지 확인합니다.
+            _isInOutlineArea = outerRect.Contains(
+                _mouseDownPoint.Value.X,
+                _mouseDownPoint.Value.Y)
+                && !innerRect.Contains(_mouseDownPoint.Value.X, _mouseDownPoint.Value.Y);
+            
+            if (_isInOutlineArea == true)
+                DragResizeStarted?.Invoke(this);
         }
 
         /// <summary>
@@ -104,7 +131,7 @@ namespace DDT.Core.WidgetSystems.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void Host_MouseMove(object sender, MouseEventArgs e)
+        private void Host_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             var mouseMovePoint = e.GetPosition(this);
 
@@ -115,7 +142,8 @@ namespace DDT.Core.WidgetSystems.Controls
                 Point.Subtract(_mouseDownPoint.Value, mouseMovePoint).Length < SystemParameters.MinimumVerticalDragDistance)
                 return;
 
-            DragStarted?.Invoke(this);
+            if (_isInOutlineArea == false)
+                DragMoveStarted?.Invoke(this);
         }
 
         /// <summary>
@@ -128,7 +156,13 @@ namespace DDT.Core.WidgetSystems.Controls
             Loaded -= WidgetHost_Loaded;
 
             PreviewMouseLeftButtonDown += Host_MouseLeftButtonDown;
-            PreviewMouseMove += Host_MouseMove;
+            PreviewMouseMove += Host_PreviewMouseMove;
+            MouseLeave += WidgetHost_MouseLeave;
+        }
+
+        private void WidgetHost_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Console.WriteLine("");
         }
 
         /// <summary>
@@ -141,7 +175,8 @@ namespace DDT.Core.WidgetSystems.Controls
             Unloaded -= WidgetHost_Unloaded;
 
             PreviewMouseLeftButtonDown -= Host_MouseLeftButtonDown;
-            PreviewMouseMove -= Host_MouseMove;
+            PreviewMouseMove -= Host_PreviewMouseMove;
+            MouseLeave -= WidgetHost_MouseLeave;
         }
 
         #endregion Private Methods

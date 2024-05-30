@@ -14,6 +14,8 @@ using System.IO;
 using System.Windows.Media.Media3D;
 using Rectangle = System.Windows.Shapes.Rectangle;
 using Pen = System.Windows.Media.Pen;
+using System.Drawing;
+using System.Windows.Controls.Primitives;
 
 namespace DDT.Core.WidgetSystems.Controls
 {
@@ -73,6 +75,8 @@ namespace DDT.Core.WidgetSystems.Controls
         /// <value>The visual children count.</value>
         protected override int VisualChildrenCount => 1;
 
+        public Point StartPoint { get => _startPoint; set => _startPoint = value; }
+
         #endregion Protected Properties
 
         #region Public Constructors
@@ -87,7 +91,7 @@ namespace DDT.Core.WidgetSystems.Controls
         {
             var content = adornedElement as FrameworkElement;
 
-            _startPoint = startPoint;
+            StartPoint = startPoint;
             _child = new Rectangle
             {
                 Width = (int)content.RenderSize.Width,
@@ -108,7 +112,7 @@ namespace DDT.Core.WidgetSystems.Controls
         public override GeneralTransform GetDesiredTransform(GeneralTransform transform)
         {
             var result = new GeneralTransformGroup();
-            result.Children.Add(new TranslateTransform(LeftOffset - _startPoint.X, TopOffset - _startPoint.Y));
+            result.Children.Add(new TranslateTransform(LeftOffset - StartPoint.X, TopOffset - StartPoint.Y));
             return result;
         }
 
@@ -170,6 +174,141 @@ namespace DDT.Core.WidgetSystems.Controls
             bitMap.Render(visual);
             return bitMap;
         }
+
+        //private void MakeThicknessThumbs(FrameworkElement adornedElement)
+        //{
+        //    // For each edge, make a thumb if the edge is not zero.
+        //    if (_thickness.Left != 0.0)
+        //    {
+        //        _left = new Thumb
+        //        {
+        //            Width = Math.Abs(_thickness.Left),
+        //            Height = Double.NaN,
+        //            Background = _brush,
+        //            Opacity = _opacity,
+        //            BorderBrush = new SolidColorBrush(Colors.Black),
+        //            BorderThickness = new Thickness(1)
+        //        };
+        //        _left.DragDelta += new DragDeltaEventHandler(DragLeft);
+        //        _left.Cursor = Cursors.SizeWE;
+        //    }
+        //    if (_thickness.Top != 0.0)
+        //    {
+        //        _top = new Thumb
+        //        {
+        //            Width = Double.NaN,
+        //            Height = Math.Abs(_thickness.Top),
+        //            Background = _brush,
+        //            Opacity = _opacity,
+        //            BorderBrush = new SolidColorBrush(Colors.Black),
+        //            BorderThickness = new Thickness(1)
+        //        };
+        //        _top.DragDelta += new DragDeltaEventHandler(DragTop);
+        //        _top.Cursor = Cursors.SizeNS;
+        //    }
+        //    if (_thickness.Right != 0.0)
+        //    {
+        //        _right = new Thumb
+        //        {
+        //            Width = Math.Abs(_thickness.Right),
+        //            Height = Double.NaN,
+        //            Background = _brush,
+        //            Opacity = _opacity,
+        //            BorderBrush = new SolidColorBrush(Colors.Black),
+        //            BorderThickness = new Thickness(1)
+        //        };
+        //        _right.DragDelta += new DragDeltaEventHandler(DragRight);
+        //        _right.Cursor = Cursors.SizeWE;
+        //    }
+        //    if (_thickness.Bottom != 0.0)
+        //    {
+        //        _bottom = new Thumb
+        //        {
+        //            Width = Double.NaN,
+        //            Height = Math.Abs(_thickness.Bottom),
+        //            Background = _brush,
+        //            Opacity = _opacity,
+        //            BorderBrush = new SolidColorBrush(Colors.Black),
+        //            BorderThickness = new Thickness(1)
+        //        };
+        //        _bottom.DragDelta += new DragDeltaEventHandler(DragBottom);
+        //        _bottom.Cursor = Cursors.SizeNS;
+        //    }
+        //    // for each corner, make a corner thumb if both adjacent edges are non-zero.
+        //    if (_thickness.Left * _thickness.Top != 0.0)
+        //    {
+        //        _topLeft = new Thumb
+        //        {
+        //            Width = 2 * Math.Abs(_thickness.Left),
+        //            Height = 2 * Math.Abs(_thickness.Top),
+        //            Background = _brush,
+        //            Opacity = _opacity,
+        //            BorderBrush = new SolidColorBrush(Colors.Black),
+        //            BorderThickness = new Thickness(1)
+        //        };
+        //        _topLeft.DragDelta += new DragDeltaEventHandler(DragTopLeft);
+        //        _topLeft.Cursor = Cursors.SizeNWSE;
+        //    }
+        //    if (_thickness.Top * _thickness.Right != 0.0)
+        //    {
+        //        _topRight = new Thumb
+        //        {
+        //            Width = 2 * Math.Abs(_thickness.Right),
+        //            Height = 2 * Math.Abs(_thickness.Top),
+        //            Background = _brush,
+        //            Opacity = _opacity,
+        //            BorderBrush = new SolidColorBrush(Colors.Black),
+        //            BorderThickness = new Thickness(1)
+        //        };
+        //        _topRight.DragDelta += new DragDeltaEventHandler(DragTopRight);
+        //        _topRight.Cursor = Cursors.SizeNESW;
+        //    }
+        //    if (_thickness.Bottom * _thickness.Left != 0)
+        //    {
+        //        _bottomLeft = new Thumb
+        //        {
+        //            Width = 2 * Math.Abs(_thickness.Left),
+        //            Height = 2 * Math.Abs(_thickness.Bottom),
+        //            Background = _brush,
+        //            Opacity = _opacity,
+        //            BorderBrush = new SolidColorBrush(Colors.Black),
+        //            BorderThickness = new Thickness(1)
+        //        };
+        //        _bottomLeft.DragDelta += new DragDeltaEventHandler(DragBottomLeft);
+        //        _bottomLeft.Cursor = Cursors.SizeNESW;
+        //    }
+        //    if (_thickness.Bottom * _thickness.Right != 0)
+        //    {
+        //        _bottomRight = new Thumb
+        //        {
+        //            Width = 2 * Math.Abs(_thickness.Right),
+        //            Height = 2 * Math.Abs(_thickness.Bottom),
+        //            Background = _brush,
+        //            Opacity = _opacity,
+        //            BorderBrush = new SolidColorBrush(Colors.Black),
+        //            BorderThickness = new Thickness(1)
+        //        };
+        //        _bottomRight.DragDelta += new DragDeltaEventHandler(DragBottomRight);
+        //        _bottomRight.Cursor = Cursors.SizeNWSE;
+        //    }
+        //    if (_left != null)
+        //        _visualChildren.Add(_left);
+        //    if (_top != null)
+        //        _visualChildren.Add(_top);
+        //    if (_right != null)
+        //        _visualChildren.Add(_right);
+        //    if (_bottom != null)
+        //        _visualChildren.Add(_bottom);
+        //    if (_topLeft != null)
+        //        _visualChildren.Add(_topLeft);
+        //    if (_topRight != null)
+        //        _visualChildren.Add(_topRight);
+        //    if (_bottomRight != null)
+        //        _visualChildren.Add(_bottomRight);
+        //    if (_bottomLeft != null)
+        //        _visualChildren.Add(_bottomLeft);
+        //}
+
 
         /// <summary>
         /// Updates the position.

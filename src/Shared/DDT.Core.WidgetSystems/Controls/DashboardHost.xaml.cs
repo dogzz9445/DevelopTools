@@ -30,6 +30,10 @@ using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using System.Data.Common;
 using System.Windows.Media.Animation;
 using System.Numerics;
+using DataFormats = System.Windows.DataFormats;
+using System.Threading.Channels;
+using System.Windows.Controls.Primitives;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace DDT.Core.WidgetSystems.Controls
 {
@@ -93,6 +97,18 @@ namespace DDT.Core.WidgetSystems.Controls
         {
             get => (bool)GetValue(EditModeProperty);
             set => SetValue(EditModeProperty, value);
+        }
+
+        public static readonly DependencyProperty CanDropFileProperty = DependencyProperty.Register(
+            nameof(CanDropFile),
+            typeof(bool),
+            typeof(DashboardHost),
+            new PropertyMetadata(true));
+
+        public bool CanDropFile
+        {
+            get => (bool)GetValue(CanDropFileProperty);
+            set => SetValue(CanDropFileProperty, value);
         }
 
         #endregion Public Fields
@@ -171,6 +187,7 @@ namespace DDT.Core.WidgetSystems.Controls
         {
             InitializeComponent();
 
+            Drop += DashboardHost_Drop;
             ItemsPanel = new ItemsPanelTemplate(new FrameworkElementFactory(typeof(Canvas)));
             Loaded += DashboardHost_Loaded;
             Unloaded += DashboardHost_Unloaded;
@@ -195,8 +212,8 @@ namespace DDT.Core.WidgetSystems.Controls
             if (!(element is WidgetHost widgetHost))
                 return;
 
-            //widgetHost.MouseOver -= WidgetHost_MouseOver;
-            widgetHost.DragStarted -= WidgetHost_DragStarted;
+            widgetHost.DragResizeStarted -= WidgetHost_DragResizeStarted;
+            widgetHost.DragMoveStarted -= WidgetHost_DragMoveStarted;
             _widgetHosts.Remove(widgetHost);
             _widgetHostsData = _widgetHostsData.Where(widgetData => widgetData.HostIndex != widgetHost.HostIndex)
                 .ToList();
@@ -253,8 +270,8 @@ namespace DDT.Core.WidgetSystems.Controls
 
             // Subscribe to the widgets drag started and add the widget
             // to the _widgetHosts to keep tabs on it
-            //widgetHost.MouseOver += WidgetHost_MouseOver;
-            widgetHost.DragStarted += WidgetHost_DragStarted;
+            widgetHost.DragResizeStarted += WidgetHost_DragResizeStarted;
+            widgetHost.DragMoveStarted += WidgetHost_DragMoveStarted;
             _widgetHosts.Add(widgetHost);
             _widgetHostsData.Add(new WidgetHostData(widgetHost.HostIndex, widgetBase, widgetSpans));
 
@@ -262,7 +279,7 @@ namespace DDT.Core.WidgetSystems.Controls
             // If it isn't new then just set its location
             if (widgetBase.RowIndexColumnIndex != null)
             {
-                var widgetAlreadyThere = WidgetAtLocation(widgetSpans, widgetBase.RowIndexColumnIndex);
+                var widgetAlreadyThere = WidgetAtLocation(widgetSpans, widgetBase.RowIndexColumnIndex).Where(widgetHostData => widgetHostData.HostIndex != widgetHost.HostIndex);
 
                 if (widgetAlreadyThere == null || !widgetAlreadyThere.Any())
                 {
@@ -372,7 +389,25 @@ namespace DDT.Core.WidgetSystems.Controls
             PreviewDragOver += DashboardHost_PreviewDragOver;
             //DragLeave
         }
-
+        void DashboardHost_PreviewDragDelta(object sender, DragDeltaEventArgs e)
+        {
+            //Move the Thumb to the mouse position during the drag operation
+            //double yadjust = myCanvasStretch.Height + e.VerticalChange;
+            //double xadjust = myCanvasStretch.Width + e.HorizontalChange;
+            //if ((xadjust >= 0) && (yadjust >= 0))
+            //{
+            //    myCanvasStretch.Width = xadjust;
+            //    myCanvasStretch.Height = yadjust;
+            //    Canvas.SetLeft(myThumb, Canvas.GetLeft(myThumb) +
+            //                            e.HorizontalChange);
+            //    Canvas.SetTop(myThumb, Canvas.GetTop(myThumb) +
+            //                            e.VerticalChange);
+            //    changes.Text = "Size: " +
+            //                    myCanvasStretch.Width.ToString() +
+            //                     ", " +
+            //                    myCanvasStretch.Height.ToString();
+            //}
+        }
         /// <summary>
         /// Handles the PreviewDragOver event of the DashboardHost control.
         /// </summary>
@@ -1154,10 +1189,10 @@ namespace DDT.Core.WidgetSystems.Controls
             CanvasEditingBackground.Height = _widgetHostMinimumSize.Height;
             CanvasEditingBackground.Width = _widgetHostMinimumSize.Width;
 
-            var rectangle = CreateGrayRectangleBackground();
-            CanvasEditingBackground.Children.Add(rectangle);
-            Canvas.SetTop(rectangle, 0);
-            Canvas.SetLeft(rectangle, 0);
+            //var rectangle = CreateGrayRectangleBackground();
+            //CanvasEditingBackground.Children.Add(rectangle);
+            //Canvas.SetTop(rectangle, 0);
+            //Canvas.SetLeft(rectangle, 0);
         }
 
         private void AnimateWidget(WidgetHost widgetHost, double fromLeft, double toLeft, double fromTop, double toTop, int durationFromTo)
@@ -1292,7 +1327,7 @@ namespace DDT.Core.WidgetSystems.Controls
         /// Handles the DragStarted event of a WidgetHost.
         /// </summary>
         /// <param name="widgetHost">The widget host.</param>
-        private void WidgetHost_DragStarted(WidgetHost widgetHost)
+        private void WidgetHost_DragMoveStarted(WidgetHost widgetHost)
         {
             if (!EditMode)
                 return;
@@ -1346,50 +1381,196 @@ namespace DDT.Core.WidgetSystems.Controls
             }
         }
 
-        private void WidgetHost_MouseOver(WidgetHost widgetHost)
+        /// <summary>
+        /// Handles the DragStarted event of a WidgetHost.
+        /// </summary>
+        /// <param name="widgetHost">The widget host.</param>
+        private void WidgetHost_DragResizeStarted(WidgetHost widgetHost)
         {
             if (!EditMode)
                 return;
 
-            try
+            _draggingHost = widgetHost;
+            _draggingHostData = _widgetHostsData.FirstOrDefault(widgetData => widgetData.HostIndex == _draggingHost.HostIndex);
+
+            _widgetDestinationHighlight.Width =
+                _draggingHost.ActualWidth + _draggingHost.Margin.Left + _draggingHost.Margin.Right;
+            _widgetDestinationHighlight.Height =
+                _draggingHost.ActualHeight + _draggingHost.Margin.Top + _draggingHost.Margin.Bottom;
+            _widgetDestinationHighlight.Visibility = Visibility.Visible;
+
+            Debug.Assert(_draggingHostData.WidgetBase.RowIndexColumnIndex.Row != null, "_draggingHostData.WidgetBase.RowIndexColumnIndex.Row != null");
+            Debug.Assert(_draggingHostData.WidgetBase.RowIndexColumnIndex.Column != null, "_draggingHostData.WidgetBase.RowIndexColumnIndex.Column != null");
+            Canvas.SetTop(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Row * _widgetHostMinimumSize.Height);
+            Canvas.SetLeft(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Column * _widgetHostMinimumSize.Width);
+
+            // Need to create the adorner that will be used to drag a control around the DashboardHost
+            _draggingAdorner = new DragAdorner(_draggingHost, Mouse.GetPosition(_draggingHost));
+            _draggingHost.GiveFeedback += DraggingHost_GiveFeedback;
+            MouseMove += DraggingHost_MouseMove;
+            MouseLeftButtonUp += DraggingHost_MouseLeftButtonUp;
+            AdornerLayer.GetAdornerLayer(_draggingHost)?.Add(_draggingAdorner);
+
+            // Need to hide the _draggingHost to give off the illusion that we're moving it somewhere
+            _draggingHost.Visibility = Visibility.Hidden;
+            _widgetHostsData.ForEach(widgetHostData =>
             {
-                // We need to make the DashboardHost allowable to have items dropped on it
-                AllowDrop = true;
-
-                _draggingHost = widgetHost;
-                _draggingHostData =
-                    _widgetHostsData.FirstOrDefault(widgetData => widgetData.HostIndex == _draggingHost.HostIndex);
-
-                _widgetDestinationHighlight.Width =
-                    _draggingHost.ActualWidth + _draggingHost.Margin.Left + _draggingHost.Margin.Right;
-                _widgetDestinationHighlight.Height =
-                    _draggingHost.ActualHeight + _draggingHost.Margin.Top + _draggingHost.Margin.Bottom;
-                _widgetDestinationHighlight.Visibility = Visibility.Visible;
-
-                Debug.Assert(_draggingHostData.WidgetBase.RowIndexColumnIndex.Row != null, "_draggingHostData.WidgetBase.RowIndexColumnIndex.Row != null");
-                Debug.Assert(_draggingHostData.WidgetBase.RowIndexColumnIndex.Column != null, "_draggingHostData.WidgetBase.RowIndexColumnIndex.Column != null");
-
-                // Need to create the adorner that will be used to drag a control around the DashboardHost
-                var adorner = new ResizingAdorner(_draggingHost, _draggingHost.BorderThickness);
-                AdornerLayer.GetAdornerLayer(_draggingHost)?.Add(adorner);
-
-                // Need to hide the _draggingHost to give off the illusion that we're moving it somewhere
-                //_draggingHost.Visibility = Visibility.Hidden;
-
-                //DragDrop.DoDragDrop(_draggingHost, new DataObject(_draggingHost), DragDropEffects.Move);
-            }
-            finally
-            {
-                // Need to cleanup after the DoDragDrop ends by setting back everything to its default state
-                Mouse.SetCursor(Cursors.Arrow);
-                //AllowDrop = false;
-                //_draggingHost.Visibility = Visibility.Visible;
-                _draggingHostData = null;
-                _draggingHost = null;
-                //_widgetDestinationHighlight.Visibility = Visibility.Hidden;
-            }
+                widgetHostData.WidgetBase.PreviewRowIndexColumnIndex =
+                    new RowIndexColumnIndex(widgetHostData.WidgetBase.RowIndexColumnIndex.Row, widgetHostData.WidgetBase.RowIndexColumnIndex.Column);
+            });
         }
 
+        private void DraggingHost_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            // Need to cleanup after the DoDragDrop ends by setting back everything to its default state
+            MouseLeftButtonUp -= DraggingHost_MouseLeftButtonUp;
+            MouseMove -= DraggingHost_MouseMove;
+            //_draggingHost.GiveFeedback -= DraggingHost_GiveFeedback;
+            Mouse.SetCursor(Cursors.Arrow);
+            AdornerLayer.GetAdornerLayer(_draggingHost)?.Remove(_draggingAdorner);
+            _draggingHost.Visibility = Visibility.Visible;
+            _draggingHostData = null;
+            _draggingHost = null;
+            _widgetDestinationHighlight.Visibility = Visibility.Hidden;
+        }
+
+        private void DraggingHost_MouseMove(object sender, MouseEventArgs e)
+        {
+            // Only continue if the item being dragged over the DashboardHost is a WidgetHost and
+            // the widget host is within the _widgetHosts list
+            if (_draggingHost == null)
+                return;
+
+            // Move the adorner to the appropriate position
+            var mousePosition = e.GetPosition(_draggingHost);
+
+            // Adorner 크기 조정
+            _draggingAdorner.Width = Math.Abs(mousePosition.X - _draggingAdorner.StartPoint.X);
+            _draggingAdorner.Height = Math.Abs(mousePosition.Y - _draggingAdorner.StartPoint.Y);
+
+            // Adorner 위치 조정
+            //_draggingAdorner.LeftOffset = Math.Min(mousePosition.X, _draggingAdorner.StartPoint.X);
+            //_draggingAdorner.TopOffset = Math.Min(mousePosition.Y, _draggingAdorner.StartPoint.Y);
+
+            //var adornerPosition = _draggingAdorner.TransformToVisual(WidgetsCanvasHost).Transform(new Point(0, 0));
+
+            //// The adorner will typically start out at X == 0 and Y == 0 which causes an unwanted effect of re-positioning
+            //// items when it isn't necessary.
+            //if (adornerPosition.X == 0 && adornerPosition.Y == 0)
+            //    return;
+
+            //// When dragging and the adorner gets close to the sides of the scroll viewer then have the scroll viewer
+            //// automatically scroll in the direction of adorner's edges
+            //var adornerPositionRelativeToScrollViewer =
+            //    _draggingAdorner.TransformToVisual(DashboardScrollViewer).Transform(new Point(0, 0));
+
+            //if (adornerPositionRelativeToScrollViewer.Y + _draggingAdorner.ActualHeight + ScrollIncrement >= DashboardScrollViewer.ViewportHeight)
+            //    DashboardScrollViewer.ScrollToVerticalOffset(DashboardScrollViewer.VerticalOffset + ScrollIncrement);
+            //if (adornerPositionRelativeToScrollViewer.X + _draggingAdorner.ActualWidth + ScrollIncrement >= DashboardScrollViewer.ViewportWidth)
+            //    DashboardScrollViewer.ScrollToHorizontalOffset(DashboardScrollViewer.HorizontalOffset + ScrollIncrement);
+            //if (adornerPositionRelativeToScrollViewer.Y - ScrollIncrement <= 0 && DashboardScrollViewer.VerticalOffset >= ScrollIncrement)
+            //    DashboardScrollViewer.ScrollToVerticalOffset(DashboardScrollViewer.VerticalOffset - ScrollIncrement);
+            //if (adornerPositionRelativeToScrollViewer.X - ScrollIncrement <= 0 && DashboardScrollViewer.HorizontalOffset >= ScrollIncrement)
+            //    DashboardScrollViewer.ScrollToHorizontalOffset(DashboardScrollViewer.HorizontalOffset - ScrollIncrement);
+
+            //// We need to get the adorner imaginary position or position in which we'll use to determine what cell it is hovering over.
+            //// We do this by getting the width of the host and then divide this by the span + 1
+            //// In a 1x1 widget this would essentially give us the half way point to which would change the _closestRowColumn
+            //// In a larger widget (2x2) this would give us the point at 1/3 of the size ensuring the widget can get to its destination more seamlessly
+            //var addToPositionX = draggingWidgetHost.ActualWidth / (_draggingHostData.WidgetBase.RowSpanColumnSpan.ColumnSpan + 1);
+            //var addToPositionY = draggingWidgetHost.ActualHeight / (_draggingHostData.WidgetBase.RowSpanColumnSpan.RowSpan + 1);
+
+            //// Get the closest row/column to the adorner "imaginary" position
+            //var closestRowColumn =
+            //    GetClosestRowColumn(new Point(adornerPosition.X + addToPositionX, adornerPosition.Y + addToPositionY));
+
+            //// If there is no change to the stored closestRowColumn against the dragging RowIndex and ColumnIndex then there isn't
+            //// anything to set or arrange.
+            ////if (_draggingHostData.WidgetBase.RowIndexColumnIndex.Row == closestRowColumn.Row &&
+            ////    _draggingHostData.WidgetBase.RowIndexColumnIndex.Column == closestRowColumn.Column)
+            ////    return;
+
+            //// Use the canvas to draw a square around the closestRowColumn to indicate where the _draggingWidgetHost will be when mouse is released
+            //var top = closestRowColumn.Row < 0 ? 0 : closestRowColumn.Row * _widgetHostMinimumSize.Height;
+            //var left = closestRowColumn.Column < 0 ? 0 : closestRowColumn.Column * _widgetHostMinimumSize.Width;
+
+            //Canvas.SetTop(_widgetDestinationHighlight, top);
+            //Canvas.SetLeft(_widgetDestinationHighlight, left);
+
+            //// Set the _dragging host into its dragging position
+            //SetWidgetRowAndColumn(_draggingHost, closestRowColumn, _draggingHostData.WidgetBase.RowSpanColumnSpan);
+
+            //// Get all the widgets in the path of where the _dragging host will be set
+            //var movingWidgets = GetWidgetMoveList(_widgetHostsData.FirstOrDefault(widgetData => widgetData == _draggingHostData), closestRowColumn, null)
+            //    .OrderBy(widgetData => widgetData.WidgetBase?.RowIndexColumnIndex.Row)
+            //    .ToList();
+
+            //// Move the movingWidgets down in rows the same amount of the _dragging hosts row span
+            //// unless there is a widget already there in that case increment until there isn't. We
+            //// used the OrderBy on the movingWidgets to make this work against widgets that have
+            //// already moved
+            //var movedWidgets = new List<WidgetHostData>();
+            //foreach (var widgetData in movingWidgets.ToArray())
+            //{
+            //    // Use the initial amount the dragging widget row size is
+            //    var rowIncrease = 1;
+
+            //    // Find a row to move it
+            //    Debug.Assert(widgetData.WidgetBase.RowIndexColumnIndex.Row != null, "widgetData.WidgetBase.RowIndexColumnIndex.Row != null");
+            //    Debug.Assert(widgetData.WidgetBase.RowIndexColumnIndex.Column != null, "widgetData.WidgetBase.RowIndexColumnIndex.Column != null");
+
+            //    while (true)
+            //    {
+            //        var widgetAtLoc = WidgetAtLocation(widgetData.WidgetBase.RowSpanColumnSpan,
+            //            new RowIndexColumnIndex(widgetData.WidgetBase.RowIndexColumnIndex.Row + rowIncrease, widgetData.WidgetBase.RowIndexColumnIndex.Column))
+            //            .Where(widgetHostData => !movingWidgets.Contains(widgetHostData) || movedWidgets.Contains(widgetHostData));
+
+            //        if (!widgetAtLoc.Any())
+            //            break;
+
+            //        rowIncrease++;
+            //    }
+
+            //    var movingHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetData.HostIndex);
+
+            //    var proposedRow = widgetData.WidgetBase.RowIndexColumnIndex.Row + rowIncrease;
+            //    for (int row = widgetData.WidgetBase.PreviewRowIndexColumnIndex.Row; row <= proposedRow; row++)
+            //    {
+            //        var reArragnedIndex = new RowIndexColumnIndex(row, widgetData.WidgetBase.PreviewRowIndexColumnIndex.Column);
+
+            //        var widgetAlreadyThere = WidgetAtLocation(widgetData.WidgetBase.RowSpanColumnSpan, reArragnedIndex)
+            //            .Where(widgetHostDataThere => widgetData != widgetHostDataThere && !movingWidgets.Contains(widgetHostDataThere));
+
+            //        if (widgetAlreadyThere.Any())
+            //            continue;
+
+            //        var widgetHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetData.HostIndex);
+
+            //        SetWidgetRowAndColumn(widgetHost, reArragnedIndex, widgetData.WidgetBase.RowSpanColumnSpan);
+            //        movingWidgets.Remove(widgetData);
+            //        break;
+            //    }
+
+            //    movedWidgets.Add(widgetData);
+            //}
+
+            //ReArrangeToPreviewLocation();
+        }
+
+
         #endregion Private Methods
+
+        private void DashboardHost_Drop(object sender, DragEventArgs e)
+        {
+            if (CanDropFile && e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                // Note that you can have more than one file.
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                // Assuming you have one file that you care about, pass it off to whatever
+                // handling code you have defined.
+                //HandleFileOpen(files[0]);
+            }
+        }
     }
 }
