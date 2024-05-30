@@ -9,14 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\DDT.Core.WidgetSystems.DefaultWidgets\DDT.Core.WidgetSystems.DefaultWidgets.csproj" />
-    <ProjectReference Include="..\..\Shared\DDT.Core.WidgetSystems\DDT.Core.WidgetSystems.csproj" />
+    <ProjectReference Include="..\..\Shared\DDT.Core.WidgetSystems\DDT.Core.WidgetSystemscsproj" />
     <ProjectReference Include="..\..\Shared\DDT.Core.WPF\DDT.Core.WPF.csproj" />
     <ProjectReference Include="..\..\Shared\DDT.Core\DDT.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\" />
+    <Folder Include="UseCases\" />
   </ItemGroup>
 
 </Project>

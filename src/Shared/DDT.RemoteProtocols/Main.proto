@@ -22,65 +22,6 @@ message RemoteResponse
 	string responseMessage = 2;
 }
 
-message MenuItem
-{
-	enum MenuItemRole {
-		Undo = 0;
-		Redo = 1;
-		Cut = 2;
-		Copy = 3;
-		Paste = 4;
-		PasteAndMatchStyle = 5;
-		Delete = 6;
-		SelectAll = 7;
-		ToggleSpellChecker = 8;
-		ToggleFullScreen = 9;
-		Window = 10;
-		Minimize = 11;
-		Close = 12;
-		Help = 13;
-		About = 14;
-		Services = 15;
-		Hide = 16;
-		HideOthers = 17;
-		Unhide = 18;
-		Quit = 19;
-		StartSpeaking = 20;
-		StopSpeaking = 21;
-		AppMenu = 22;
-		FileMenu = 23;
-		EditMenu = 24;
-		ViewMenu = 25;
-		ShareMenu = 26;
-		RecentDocuments = 27;
-		ToggleTabBar = 28;
-		SelectNextTab = 29;
-		SelectPreviousTab = 30;
-		MergeAllWindows = 31;
-		ClearRecentDocuments = 32;
-		MoveTabToNewWindow = 33;
-		WindowMenu = 34;
-		Reload = 35;
-		ForceReload = 36;
-		ToggleDevTools = 37;
-	}
-	enum MenuItemType {
-		Normal = 0;
-		Separtor = 1;
-		Submenu = 2;
-		Checkbox = 3;
-		Radio = 4;
-	}
-	MenuItemRole role = 1;
-	MenuItemType type = 2;
-	string accelerator = 3;
-	string label = 4;
-	string icon = 5;
-	bool enabled = 6;
-	MenuItem submenu = 7;
-	int32 actionId = 8;
-}
-
 // App Data Storage
 message AppDataStorageGetTextArgs {
     string key = 1;

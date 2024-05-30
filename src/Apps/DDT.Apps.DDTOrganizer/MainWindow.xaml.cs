@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DDT.Core.WidgetSystems.WPF.Components;
+using DDT.Apps.DDTOrganizer.Views;
 using MahApps.Metro.Controls;
 
 namespace DDT.Apps.DDTOrganizer
