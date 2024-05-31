@@ -15,17 +15,26 @@ using System.Windows.Shapes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DDT.Core.WidgetSystems.Controls.Models;
 using DDT.Core.WidgetSystems.Controls;
+using DDT.Core.WidgetSystems.Bases;
 
 namespace DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Commanders
 {
+    [WidgetGenerator(
+        name: "Create Commander",
+        description: "Provides a one by one square widget.",
+        menuPath: "Default/Commander",
+        menuOrder: 0,
+        createWidget: () => new CommanderWidgetViewModel()
+        )]
     public partial class CommanderWidgetViewModel : WidgetViewModelBase
     {
+        public static int WidgetNumber = 1;
         /// <summary>
         /// Initializes a new instance of the <see cref="OneByOneViewModel"/> class.
         /// </summary>
-        public CommanderWidgetViewModel(int widgetNumber) : base()
+        public CommanderWidgetViewModel() : base()
         {
-            WidgetTitle = $"Commander{widgetNumber}";
+            WidgetTitle = $"Commander{WidgetNumber++}";
             RowSpanColumnSpan = new RowSpanColumnSpan(2, 2);
         }
     }

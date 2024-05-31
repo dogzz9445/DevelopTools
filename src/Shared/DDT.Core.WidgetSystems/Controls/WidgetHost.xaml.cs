@@ -107,13 +107,11 @@ namespace DDT.Core.WidgetSystems.Controls
             Rect borderRect = new Rect(new Point(0, 0), this.RenderSize);
 
             // 외곽선 영역을 정의합니다.
-            double borderThickness = 5; // 좌우 두께가 동일하다고 가정
-
             Rect outerRect = new Rect(borderRect.X, borderRect.Y,
                                       borderRect.Width, borderRect.Height);
 
-            Rect innerRect = new Rect(borderRect.X + 4, borderRect.Y + 4,
-                                      borderRect.Width - 8, borderRect.Height - 8);
+            Rect innerRect = new Rect(borderRect.X + 10, borderRect.Y + 10,
+                                      borderRect.Width - 20, borderRect.Height - 20);
 
             // 클릭한 위치가 외곽선 영역에 있는지 확인합니다.
             _isInOutlineArea = outerRect.Contains(

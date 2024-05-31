@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -338,13 +339,31 @@ namespace DDT.Apps.DDTOrganizer.Views
             // --------------------------------------------------------------------------
             // Available Widgets
             // --------------------------------------------------------------------------
+
+            // TODO:
+            // TODO:
+            // TODO:
+            // TODO:
+            // TODO:
+            //Assembly a = Assembly.LoadFrom(PathToDLL);
+            //var types = a.GetTypes().Where(t => typeof(WidgetViewModelBase).IsAssignableFrom(t)); ;
+            //foreach (var type in types)
+            //{
+            //    System.Reflection.MemberInfo info = type;
+            //    var attributes = info.GetCustomAttributes(true);
+            //    if (attributes[0] is WidgetGeneratorAttribute)
+            //    {
+            //        var value = ((WidgetGeneratorAttribute)attributes[0]).WidgetGenerator;
+            //    }
+            //}
+
             widgetService.RegisterWidgets([
-                new WidgetGenerator(
-                    name: "Create Commander",
-                    description: "Provides a one by one square widget.",
-                    menuPath: "Default/Commander",
-                    menuOrder: 0,
-                    createWidget: () => new CommanderWidgetViewModel(_widgetNumber++)),
+                //new WidgetGenerator(
+                //    name: "Create Commander",
+                //    description: "Provides a one by one square widget.",
+                //    menuPath: "Default/Commander",
+                //    menuOrder: 0,
+                //    createWidget: () => new CommanderWidgetViewModel(_widgetNumber++)),
                 new WidgetGenerator(
                     name: "Create File Opener",
                     description: "Provides a one by one square widget.",

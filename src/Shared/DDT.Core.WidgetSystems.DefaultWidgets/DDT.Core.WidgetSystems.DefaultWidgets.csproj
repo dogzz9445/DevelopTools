@@ -12,4 +12,10 @@
     <ProjectReference Include="..\DDT.Core.WidgetSystems\DDT.Core.WidgetSystems.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="LogicNodes\" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
 </Project>

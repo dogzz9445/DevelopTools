@@ -34,6 +34,8 @@ public partial class App : Application
 
         // Set the theme
         var theme = System.Configuration.ConfigurationManager.AppSettings["Theme"];
+        ThemeHelper.Register("Light", @"pack://application:,,,/DDT.Core.WidgetSystems;component/Themes/Light.xaml");
+        ThemeHelper.Register("Dark", @"pack://application:,,,/DDT.Core.WidgetSystems;component/Themes/Dark.xaml");
         ThemeHelper.ChangeTheme(Resources, "Dark");
 
         Application.Current.DispatcherUnhandledException += (sender, args) =>

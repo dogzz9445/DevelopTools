@@ -580,6 +580,7 @@ namespace DDT.Core.WidgetSystems.Controls
         {
             // Show or hide the CanvasEditingBackground depending on the EditMode
             CanvasEditingBackground.Visibility = EditMode ? Visibility.Visible : Visibility.Collapsed;
+            AllowDrop = EditMode;
 
             if (EditMode)
                 return;
@@ -1446,7 +1447,6 @@ namespace DDT.Core.WidgetSystems.Controls
                 // Need to cleanup after the DoDragDrop ends by setting back everything to its default state
                 MouseLeftButtonUp -= DraggingHost_MouseLeftButtonUp;
                 MouseMove -= DraggingHost_MouseMove;
-                //_draggingHost.GiveFeedback -= DraggingHost_GiveFeedback;
                 Mouse.SetCursor(Cursors.Arrow);
                 Cursor = Cursors.Arrow;
                 _draggingHostData = null;
@@ -1691,10 +1691,10 @@ namespace DDT.Core.WidgetSystems.Controls
         // Return a HitType value to indicate what is at the point.
         private HitType SetHitType(WidgetHost rect, Point point)
         {
-            double left = Canvas.GetLeft(rect);
-            double top = Canvas.GetTop(rect);
-            double right = left + rect.Width;
-            double bottom = top + rect.Height;
+            double left = 0;
+            double top = 0;
+            double right = left + rect.ActualWidth;
+            double bottom = top + rect.ActualHeight;
             if (point.X < left) return HitType.None;
             if (point.X > right) return HitType.None;
             if (point.Y < top) return HitType.None;

@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace DDT.Core.WidgetSystems.Bases;
 
-public delegate TWidgetBase CreateWidgetViewModelBase<TWidgetBase>();
 
 public class WidgetGenerator
 {
     #region Private Fields
 
-    private readonly CreateWidgetViewModelBase<WidgetViewModelBase> _createWidget;
+    private readonly Func<WidgetViewModelBase> _createWidget;
 
     #endregion Private Fields
 
@@ -53,7 +52,7 @@ public class WidgetGenerator
         string description,
         string menuPath,
         int menuOrder,
-        CreateWidgetViewModelBase<WidgetViewModelBase> createWidget)
+        Func<WidgetViewModelBase> createWidget)
     {
         Name = name;
         MenuPath = menuPath;

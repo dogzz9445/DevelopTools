@@ -25,21 +25,21 @@
     </ContentControl.Effect>
     <ContentControl.Template>
         <ControlTemplate TargetType="{x:Type ContentControl}">
-            <Border Background="#FF000000"
-                    HorizontalAlignment="Stretch"
+            <Border HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     BorderBrush="#00000000"
+                    IsHitTestVisible="True"
                     Margin="1"
-                    BorderThickness="3"
+                    BorderThickness="4"
                     MouseDown="Host_MouseLeftButtonDown"
                     Cursor="">
-                <Border Background="White"
+                <Border Background="{DynamicResource PrimaryHueLightBrush}"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         BorderBrush="LightGray"
                         BorderThickness="1"
                         Cursor="">
-                    <!--<Border.Style>
+                    <Border.Style>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="Cursor"
                                 Value="Arrow" />
@@ -57,11 +57,21 @@
                                                Value="True" />
                                 </MultiDataTrigger.Conditions>
                                 <Setter Property="BorderBrush"
-                                        Value="Black" />
-                            </MultiDataTrigger>
-                        </Style.Triggers>
+                                            Value="{DynamicResource PrimaryHueLightForegroundBrush}" />
+                                </MultiDataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding DataContext.EditMode, RelativeSource={RelativeSource AncestorType={x:Type local:DashboardHost}, Mode=FindAncestor}}"
+                                                   Value="True" />
+                                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type local:WidgetHost}, Mode=FindAncestor}}"
+                                                   Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="BorderBrush"
+                                            Value="LightGray" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
                     </Style>
-                </Border.Style>-->
+                </Border.Style>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -74,7 +84,7 @@
                             <TextBlock Margin="10,10,0,0"
                                        HorizontalAlignment="Left"
                                        VerticalAlignment="Top"
-                                       Foreground="Black"
+                                       Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
                                        Text="{Binding WidgetTitle}"
                                        TextTrimming="CharacterEllipsis" />
                         </Border>
