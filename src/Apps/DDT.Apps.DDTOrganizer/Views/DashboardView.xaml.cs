@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DDT.Apps.DDTOrganizer.Models;
+using DDT.Apps.DDTOrganizer.ViewModels;
 using DDT.Core.WidgetSystems.Controls;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Commanders;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.FileOpeners;
@@ -155,6 +156,9 @@ namespace DDT.Apps.DDTOrganizer.Views
         /// <value>The available widgets.</value>
         [ObservableProperty]
         private List<WidgetGenerator> _availableWidgets = new List<WidgetGenerator>();
+
+        [ObservableProperty]
+        private ObservableCollection<MenuItemViewModel> _addWidgetMenuItemViewModels;
 
         /// <summary>
         /// Gets the command add widget.
@@ -323,22 +327,80 @@ namespace DDT.Apps.DDTOrganizer.Views
         /// <returns>Task.</returns>
         public Task Start()
         {
+            // --------------------------------------------------------------------------
+            // Load Component Data
+            // --------------------------------------------------------------------------
             Dashboards = new ObservableCollection<DashboardModel>();
+            AddWidgetMenuItemViewModels = new ObservableCollection<MenuItemViewModel>();
             Dashboards.Add(new DashboardModel { Title = "My Dashboard" });
             SelectedDashboard = Dashboards[0];
 
+            // --------------------------------------------------------------------------
+            // Available Widgets
+            // --------------------------------------------------------------------------
             AvailableWidgets = new List<WidgetGenerator> {
                 new WidgetGenerator(
                     name: "Create Commander",
                     description: "Provides a one by one square widget.",
                     menuPath: "Default/Commander",
+                    menuOrder: 0,
                     createWidget: () => new CommanderWidgetViewModel(_widgetNumber++)),
                 new WidgetGenerator(
                     name: "Create File Opener",
                     description: "Provides a one by one square widget.",
-                    menuPath: "Default/Commander",
+                    menuPath: "Default/File Opener",
+                    menuOrder: 0,
                     createWidget: () => new FileOpenerWidgetViewModel(_widgetNumber++)),
             };
+
+            // --------------------------------------------------------------------------
+            // Add Widget Menu
+            // --------------------------------------------------------------------------
+            AddWidgetMenuItemViewModels.Add(new MenuItemViewModel()
+            {
+                Header = "Add Widget",
+                MenuItems = new ObservableCollection<MenuItemViewModel>(),
+            });
+
+            foreach (var widget in AvailableWidgets)
+            {
+                var fullMenuHeader = widget.MenuPath;
+                if (string.IsNullOrEmpty(fullMenuHeader))
+                    continue;
+
+                var splitedMenuHeaders = fullMenuHeader.Split('/');
+                if (splitedMenuHeaders.Length <= 0)
+                    continue;
+
+                var parentMenuCollection = AddWidgetMenuItemViewModels.First().MenuItems;
+
+                for (int i = 0; i < splitedMenuHeaders.Length; i++)
+                {
+                    if (i == splitedMenuHeaders.Length - 1)
+                    {
+                        parentMenuCollection.Add(new MenuItemViewModel()
+                        {
+                            Header = splitedMenuHeaders[i],
+                            Command = new RelayCommand(() =>
+                            {
+                                SelectedDashboard.Widgets.Add(widget.CreateWidget());
+                            }, () => true),
+                        });
+                    }
+                    else
+                    {
+                        var parentMenu = parentMenuCollection.FirstOrDefault(item => item.Header == splitedMenuHeaders[i]);
+                        if (parentMenu == null)
+                        {
+                            parentMenu = new MenuItemViewModel() { Header = splitedMenuHeaders[i] };
+                            parentMenu.MenuItems = new ObservableCollection<MenuItemViewModel>();
+                            parentMenuCollection.Add(parentMenu);
+                        };
+                        parentMenuCollection = parentMenu.MenuItems;
+                    }
+                }
+
+            }
 
             return Task.CompletedTask;
         }

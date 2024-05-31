@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:DDT.Apps.DDTOrganizer.Views"
+             xmlns:viewmodels="clr-namespace:DDT.Apps.DDTOrganizer.ViewModels"
              xmlns:converters="clr-namespace:DDT.Core.WidgetSystems.Converters;assembly=DDT.Core.WidgetSystems"
              xmlns:dashboardControl="clr-namespace:DDT.Core.WidgetSystems.Controls;assembly=DDT.Core.WidgetSystems"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -181,10 +183,10 @@
                         Height="1"
                         Background="LightGray" />
 
-                <!--  Menu Items (Not Editing)  -->
-                <Grid Grid.Row="1"
-                      Visibility="{Binding EditMode, Converter={StaticResource InvertBoolToVis}}">
+                <!--  Menu Items  -->
+                <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
@@ -253,16 +255,33 @@
                                   Focusable="False"
                                   Style="{StaticResource DashboardSelectorToggle}" />
 
+                    <!--  Configure Dashboard Button  -->
+                    <Button Grid.Column="1"
+                            Margin="0,0,10,0"
+                            HorizontalAlignment="Right"
+                            Visibility="{Binding EditMode, Converter={StaticResource InvertBoolToVis}}"
+                            Command="{Binding CommandManageDashboard}"
+                            Style="{StaticResource MouseInteractionButton}"
+                            ToolTip="Manage dashboard">
+                        <Path Width="15"
+                              Height="15"
+                              Margin="5"
+                              Data="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z"
+                              Stretch="Uniform"
+                              Style="{StaticResource MenuButtonPath}" />
+                    </Button>
+                    
                     <!--  Separator  -->
-                    <Border Grid.Column="1"
+                    <Border Grid.Column="2"
                             Width="1"
                             Height="20"
                             Margin="10,0,0,0"
                             Background="DarkGray" />
 
-                    <!--  Edit Button  -->
-                    <Button Grid.Column="2"
+                    <!--  Edit Button (Not Editing)  -->
+                    <Button Grid.Column="3"
                             Margin="10,0,0,0"
+                            Visibility="{Binding EditMode, Converter={StaticResource InvertBoolToVis}}"
                             Command="{Binding CommandEditDashboard}"
                             CommandParameter="True"
                             Style="{StaticResource MouseInteractionButton}"
@@ -280,65 +299,155 @@
                         </StackPanel>
                     </Button>
 
-                    <!--  Configure Dashboard Button  -->
-                    <Button Grid.Column="4"
-                            Margin="0,0,10,0"
-                            HorizontalAlignment="Right"
-                            Command="{Binding CommandManageDashboard}"
-                            Style="{StaticResource MouseInteractionButton}"
-                            ToolTip="Manage dashboard">
-                        <Path Width="15"
-                              Height="15"
-                              Margin="5"
-                              Data="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z"
-                              Stretch="Uniform"
-                              Style="{StaticResource MenuButtonPath}" />
+                    <!--  Edit Button (Editing)  -->
+                    <Button Grid.Column="3"
+                            Margin="10,0,0,0"
+                            Visibility="{Binding EditMode, Converter={StaticResource BoolToVis}}"
+                            Command="{Binding CommandEditDashboard}"
+                            CommandParameter="False">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource ButtonNoStyle}"
+                                   TargetType="{x:Type Button}">
+                                <Setter Property="Background"
+                                        Value="DodgerBlue" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled"
+                                             Value="False">
+                                        <Setter Property="Background"
+                                                Value="Gray" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="Blue" />
+                                    </Trigger>
+                                    <Trigger Property="IsPressed"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="LightSkyBlue" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <TextBlock Margin="15,7,15,7"
+                                   VerticalAlignment="Center"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   Text="Done Editing"
+                                   TextAlignment="Center" />
                     </Button>
-                </Grid>
 
-                <!--  Menu Items (Editing)  -->
-                <Grid Grid.Row="1"
-                      HorizontalAlignment="Center"
-                      Visibility="{Binding EditMode, Converter={StaticResource BoolToVis}}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock VerticalAlignment="Center"
-                                   Text="Add, edit, or move your widgets" />
-                        <Button MinHeight="0"
-                                Margin="8,0,0,0"
-                                Command="{Binding CommandEditDashboard}"
-                                CommandParameter="False">
-                            <Button.Style>
-                                <Style BasedOn="{StaticResource ButtonNoStyle}"
-                                       TargetType="{x:Type Button}">
-                                    <Setter Property="Background"
-                                            Value="DodgerBlue" />
-                                    <Style.Triggers>
-                                        <Trigger Property="IsEnabled"
-                                                 Value="False">
-                                            <Setter Property="Background"
-                                                    Value="Gray" />
-                                        </Trigger>
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="Blue" />
-                                        </Trigger>
-                                        <Trigger Property="IsPressed"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="LightSkyBlue" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <TextBlock Margin="15,7,15,7"
-                                       VerticalAlignment="Center"
-                                       FontWeight="Bold"
-                                       Foreground="White"
-                                       Text="Done Editing"
-                                       TextAlignment="Center" />
-                        </Button>
-                    </StackPanel>
+                    <ToolBarTray Grid.Column="4"
+                                 Margin="10,0,0,0"
+                                 Visibility="{Binding EditMode, Converter={StaticResource BoolToVis}}">
+                        <ToolBar ClipToBounds="False"
+                                 Style="{StaticResource MaterialDesignToolBar}">
+                            <Menu ItemsSource="{Binding AddWidgetMenuItemViewModels}">
+                                <Menu.ItemContainerStyle>
+                                    <Style TargetType="{x:Type MenuItem}">
+                                        <Setter Property="Command"
+                                                Value="{Binding Command}" />
+                                    </Style>
+                                </Menu.ItemContainerStyle>
+                                <Menu.ItemTemplate>
+                                    <HierarchicalDataTemplate DataType="{x:Type viewmodels:MenuItemViewModel}"
+                                                              ItemsSource="{Binding Path=MenuItems}">
+                                        <TextBlock Text="{Binding Header}" />
+                                    </HierarchicalDataTemplate>
+                                </Menu.ItemTemplate>
+                            </Menu>
+                            
+                            <Button Content="{materialDesign:PackIcon Kind=Twitter}"
+                                    ToolTip="Follow me on Twitter" />
+                            <Button Content="{materialDesign:PackIcon Kind=ContentSave}"
+                                    ToolTip="Save" />
+                            <Separator />
+                            <Button Command="Cut"
+                                    Content="{materialDesign:PackIcon Kind=ContentCut}"
+                                    ToolBar.OverflowMode="AsNeeded"
+                                    ToolTip="Cut" />
+                            <Button Command="Copy"
+                                    Content="{materialDesign:PackIcon Kind=ContentCopy}"
+                                    ToolBar.OverflowMode="AsNeeded"
+                                    ToolTip="Copy that stuff" />
+                            <Separator />
+                            <Button Command="Paste"
+                                    Content="{materialDesign:PackIcon Kind=ContentPaste}"
+                                    ToolBar.OverflowMode="AsNeeded"
+                                    ToolTip="Paste some stuff" />
+                            <!--
+          when badging in a toolbar, make sure the parent ToolBar.ClipToBounds="False", and
+          manually apply the button style
+        -->
+                            <materialDesign:Badged Badge="{materialDesign:PackIcon Alert}"
+                                                   CornerRadius="5"
+                                                   ToolBar.OverflowMode="AsNeeded">
+                                <Button Content="{materialDesign:PackIcon Kind=AirplaneTakeoff}"
+                                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                        ToolTip="Badge it up!" />
+                            </materialDesign:Badged>
+                            <Separator />
+                            <ListBox>
+                                <ListBoxItem ToolTip="This is a lonley toggle with TextBlock instead of icon">
+                                    <TextBlock Text="W" />
+                                </ListBoxItem>
+                            </ListBox>
+                            <Separator />
+                            <ListBox SelectedIndex="0">
+                                <ListBox.ToolTip>
+                                    <StackPanel>
+                                        <TextBlock Text="MaterialDesignToolToggleFlatListBox" />
+                                        <TextBlock Text="Exclusive selection" />
+                                        <TextBlock Text="ListBoxAssist.IsToggle allows more natural toggle behaviour" />
+                                    </StackPanel>
+                                </ListBox.ToolTip>
+                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignLeft}" />
+                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignCenter}" />
+                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignRight}" />
+                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignJustify}" />
+                            </ListBox>
+                            <Separator />
+                            <ListBox SelectionMode="Extended">
+                                <ListBox.ToolTip>
+                                    <StackPanel>
+                                        <TextBlock Text="MaterialDesignToolToggleListBox" />
+                                        <TextBlock Text="Multiple selection" />
+                                        <TextBlock Text="ListBoxAssist.IsToggle allows more natural toggle behaviour" />
+                                    </StackPanel>
+                                </ListBox.ToolTip>
+                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatBold}" />
+                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatItalic}" />
+                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatUnderline}" />
+                            </ListBox>
+                            <Separator />
+                            <Label VerticalAlignment="Center"
+                                   Content="Font size:" />
+                            <ComboBox>
+                                <ComboBoxItem Content="10" />
+                                <ComboBoxItem Content="12"
+                                              IsSelected="True" />
+                                <ComboBoxItem Content="14" />
+                                <ComboBoxItem Content="16" />
+                            </ComboBox>
+                            <CheckBox Content="Check" />
+                            <Button Content="{materialDesign:PackIcon Kind=Hotel}"
+                                    ToolBar.OverflowMode="Always"
+                                    ToolTip="Take a nap" />
+                            <RadioButton Content="Radio"
+                                         GroupName="XXX" />
+                            <RadioButton Content="Ga Ga"
+                                         GroupName="XXX" />
+                            <Separator />
+                            <RadioButton Content="{materialDesign:PackIcon Kind=Radio}"
+                                         GroupName="YYY"
+                                         Style="{StaticResource MaterialDesignToolRadioButton}" />
+                            <RadioButton Content="{materialDesign:PackIcon Kind=EmoticonPoop}"
+                                         GroupName="YYY"
+                                         Style="{StaticResource MaterialDesignToolRadioButton}" />
+                            <Separator />
+                            <ToggleButton />
+                        </ToolBar>
+                    </ToolBarTray>
                 </Grid>
 
                 <!--  Separator  -->

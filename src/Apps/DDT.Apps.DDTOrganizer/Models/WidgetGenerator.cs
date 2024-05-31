@@ -34,6 +34,8 @@ namespace DDT.Apps.DDTOrganizer.Models
         /// </summary>
         public string MenuPath { get; }
 
+        public int MenuOrder { get; }
+
         #endregion Public Properties
 
         #region Public Constructors
@@ -44,11 +46,12 @@ namespace DDT.Apps.DDTOrganizer.Models
         /// <param name="name">The name.</param>
         /// <param name="description">The description.</param>
         /// <param name="createWidget">The create widget.</param>
-        public WidgetGenerator(string name, string description, string menuPath, Func<WidgetViewModelBase> createWidget)
+        public WidgetGenerator(string name, string description, string menuPath, int menuOrder, Func<WidgetViewModelBase> createWidget)
         {
             Name = name;
             MenuPath = menuPath;
             Description = description;
+            MenuOrder = menuOrder;
             _createWidget = createWidget;
         }
 
