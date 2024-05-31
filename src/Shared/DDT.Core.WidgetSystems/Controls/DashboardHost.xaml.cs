@@ -34,6 +34,7 @@ using DataFormats = System.Windows.DataFormats;
 using System.Threading.Channels;
 using System.Windows.Controls.Primitives;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using Cursor = System.Windows.Input.Cursor;
 
 namespace DDT.Core.WidgetSystems.Controls
 {
@@ -114,6 +115,11 @@ namespace DDT.Core.WidgetSystems.Controls
         #endregion Public Fields
 
         #region Private Fields
+        private enum HitType
+        {
+            None, Body, UL, UR, LR, LL, L, R, B, T
+        };
+
         private const int ScrollIncrement = 15;
         private readonly PropertyChangeNotifier _itemsSourceChangeNotifier;
         private readonly List<WidgetHost> _widgetHosts = new List<WidgetHost>();
@@ -125,6 +131,13 @@ namespace DDT.Core.WidgetSystems.Controls
         private WidgetHostData _draggingHostData;
         private int _hostIndex;
         private Border _widgetDestinationHighlight;
+
+        // For Resize
+        // The part of the rectangle under the mouse.
+        private HitType MouseHitType = HitType.None;
+        // True if a drag is in progress.
+        private bool DragInProgress = false;
+        private Point LastPoint;
 
         // To change the overall size of the widgets change the value here. This size is considered a block.
         private Size _widgetHostMinimumSize = new Size(64, 64);
@@ -1405,48 +1418,132 @@ namespace DDT.Core.WidgetSystems.Controls
             Canvas.SetLeft(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Column * _widgetHostMinimumSize.Width);
 
             // Need to create the adorner that will be used to drag a control around the DashboardHost
-            _draggingAdorner = new DragAdorner(_draggingHost, Mouse.GetPosition(_draggingHost));
-            _draggingHost.GiveFeedback += DraggingHost_GiveFeedback;
             MouseMove += DraggingHost_MouseMove;
             MouseLeftButtonUp += DraggingHost_MouseLeftButtonUp;
-            AdornerLayer.GetAdornerLayer(_draggingHost)?.Add(_draggingAdorner);
+
+            MouseHitType = SetHitType(widgetHost, Mouse.GetPosition(_draggingHost));
+            SetMouseCursor();
+
+            LastPoint = Mouse.GetPosition(_draggingHost);
+            DragInProgress = true;
 
             // Need to hide the _draggingHost to give off the illusion that we're moving it somewhere
-            _draggingHost.Visibility = Visibility.Hidden;
+            //_draggingHost.Visibility = Visibility.Hidden;
             _widgetHostsData.ForEach(widgetHostData =>
             {
                 widgetHostData.WidgetBase.PreviewRowIndexColumnIndex =
                     new RowIndexColumnIndex(widgetHostData.WidgetBase.RowIndexColumnIndex.Row, widgetHostData.WidgetBase.RowIndexColumnIndex.Column);
             });
+
+
         }
 
         private void DraggingHost_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            // Need to cleanup after the DoDragDrop ends by setting back everything to its default state
-            MouseLeftButtonUp -= DraggingHost_MouseLeftButtonUp;
-            MouseMove -= DraggingHost_MouseMove;
-            //_draggingHost.GiveFeedback -= DraggingHost_GiveFeedback;
-            Mouse.SetCursor(Cursors.Arrow);
-            AdornerLayer.GetAdornerLayer(_draggingHost)?.Remove(_draggingAdorner);
-            _draggingHost.Visibility = Visibility.Visible;
-            _draggingHostData = null;
-            _draggingHost = null;
-            _widgetDestinationHighlight.Visibility = Visibility.Hidden;
+            if (DragInProgress)
+            {
+                DragInProgress = false;
+                // Need to cleanup after the DoDragDrop ends by setting back everything to its default state
+                MouseLeftButtonUp -= DraggingHost_MouseLeftButtonUp;
+                MouseMove -= DraggingHost_MouseMove;
+                //_draggingHost.GiveFeedback -= DraggingHost_GiveFeedback;
+                Mouse.SetCursor(Cursors.Arrow);
+                Cursor = Cursors.Arrow;
+                _draggingHostData = null;
+                _draggingHost = null;
+                _widgetDestinationHighlight.Visibility = Visibility.Hidden;
+            }
         }
 
         private void DraggingHost_MouseMove(object sender, MouseEventArgs e)
         {
+            if (DragInProgress)
+            {
+                if (_draggingHost == null)
+                    return;
+
+                var point = e.GetPosition(_draggingHost);
+                // See how much the mouse has moved.
+                double offset_x = point.X - LastPoint.X;
+                double offset_y = point.Y - LastPoint.Y;
+
+                // Get the rectangle's current position.
+                double new_x = Canvas.GetLeft(_draggingHost);
+                double new_y = Canvas.GetTop(_draggingHost);
+                double new_width = _draggingHost.ActualWidth;
+                double new_height = _draggingHost.ActualHeight;
+
+                // Update the rectangle.
+                switch (MouseHitType)
+                {
+                    case HitType.Body:
+                        new_x += offset_x;
+                        new_y += offset_y;
+                        break;
+                    case HitType.UL:
+                        new_x += offset_x;
+                        new_y += offset_y;
+                        new_width -= offset_x;
+                        new_height -= offset_y;
+                        break;
+                    case HitType.UR:
+                        new_y += offset_y;
+                        new_width += offset_x;
+                        new_height -= offset_y;
+                        break;
+                    case HitType.LR:
+                        new_width += offset_x;
+                        new_height += offset_y;
+                        break;
+                    case HitType.LL:
+                        new_x += offset_x;
+                        new_width -= offset_x;
+                        new_height += offset_y;
+                        break;
+                    case HitType.L:
+                        new_x += offset_x;
+                        new_width -= offset_x;
+                        break;
+                    case HitType.R:
+                        new_width += offset_x;
+                        break;
+                    case HitType.B:
+                        new_height += offset_y;
+                        break;
+                    case HitType.T:
+                        new_y += offset_y;
+                        new_height -= offset_y;
+                        break;
+                }
+
+                // Don't use negative width or height.
+                if ((new_width > 0) && (new_height > 0))
+                {
+                    // Update the rectangle.
+                    Canvas.SetLeft(_draggingHost, new_x);
+                    Canvas.SetTop(_draggingHost, new_y);
+                    _draggingHost.MaxHeight = new_height;
+                    _draggingHost.MinHeight = new_height;
+                    _draggingHost.MaxWidth = new_width;
+                    _draggingHost.MinWidth = new_width;
+
+                    // Save the mouse's new location.
+                    LastPoint = point;
+                }
+            }
+            //else
+            //{
+            //    MouseHitType = SetHitType(_draggingHost,);
+            //    SetMouseCursor();
+            //}
             // Only continue if the item being dragged over the DashboardHost is a WidgetHost and
             // the widget host is within the _widgetHosts list
-            if (_draggingHost == null)
-                return;
 
             // Move the adorner to the appropriate position
-            var mousePosition = e.GetPosition(_draggingHost);
 
             // Adorner 크기 조정
-            _draggingAdorner.Width = Math.Abs(mousePosition.X - _draggingAdorner.StartPoint.X);
-            _draggingAdorner.Height = Math.Abs(mousePosition.Y - _draggingAdorner.StartPoint.Y);
+            //_draggingAdorner.Width = Math.Abs(mousePosition.X - _draggingAdorner.StartPoint.X);
+            //_draggingAdorner.Height = Math.Abs(mousePosition.Y - _draggingAdorner.StartPoint.Y);
 
             // Adorner 위치 조정
             //_draggingAdorner.LeftOffset = Math.Min(mousePosition.X, _draggingAdorner.StartPoint.X);
@@ -1556,7 +1653,72 @@ namespace DDT.Core.WidgetSystems.Controls
 
             //ReArrangeToPreviewLocation();
         }
+        // Set a mouse cursor appropriate for the current hit type.
+        private void SetMouseCursor()
+        {
+            // See what cursor we should display.
+            Cursor desired_cursor = Cursors.Arrow;
+            switch (MouseHitType)
+            {
+                case HitType.None:
+                    desired_cursor = Cursors.Arrow;
+                    break;
+                case HitType.Body:
+                    desired_cursor = Cursors.ScrollAll;
+                    break;
+                case HitType.UL:
+                case HitType.LR:
+                    desired_cursor = Cursors.SizeNWSE;
+                    break;
+                case HitType.LL:
+                case HitType.UR:
+                    desired_cursor = Cursors.SizeNESW;
+                    break;
+                case HitType.T:
+                case HitType.B:
+                    desired_cursor = Cursors.SizeNS;
+                    break;
+                case HitType.L:
+                case HitType.R:
+                    desired_cursor = Cursors.SizeWE;
+                    break;
+            }
 
+            // Display the desired cursor.
+            if (Cursor != desired_cursor) Cursor = desired_cursor;
+        }
+
+        // Return a HitType value to indicate what is at the point.
+        private HitType SetHitType(WidgetHost rect, Point point)
+        {
+            double left = Canvas.GetLeft(rect);
+            double top = Canvas.GetTop(rect);
+            double right = left + rect.Width;
+            double bottom = top + rect.Height;
+            if (point.X < left) return HitType.None;
+            if (point.X > right) return HitType.None;
+            if (point.Y < top) return HitType.None;
+            if (point.Y > bottom) return HitType.None;
+
+            const double GAP = 10;
+            if (point.X - left < GAP)
+            {
+                // Left edge.
+                if (point.Y - top < GAP) return HitType.UL;
+                if (bottom - point.Y < GAP) return HitType.LL;
+                return HitType.L;
+            }
+            else if (right - point.X < GAP)
+            {
+                // Right edge.
+                if (point.Y - top < GAP) return HitType.UR;
+                if (bottom - point.Y < GAP) return HitType.LR;
+                return HitType.R;
+            }
+            if (point.Y - top < GAP) return HitType.T;
+            if (bottom - point.Y < GAP) return HitType.B;
+            return HitType.Body;
+        }
 
         #endregion Private Methods
 

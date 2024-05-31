@@ -11,10 +11,12 @@ namespace DDT.Apps.DDTOrganizer.ViewModels;
 
 public partial class MenuItemViewModel : ObservableObject
 {
-    public string Header { get; set; }
-
-    public ObservableCollection<MenuItemViewModel> MenuItems { get; set; }
+    [ObservableProperty]
+    private string _header;
 
     [ObservableProperty]
     private ICommand _command;
+
+    [ObservableProperty]
+    private ObservableCollection<MenuItemViewModel> _menuItems;
 }

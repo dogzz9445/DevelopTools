@@ -11,8 +11,6 @@ public interface IWidgetTypeComponent
     // Define the members of WidgetTypeComponent as per your requirements
 }
 
-public delegate TSettings CreateSettingsState<TSettings>();
-
 public interface IWidgetType<TSettings> : IEntity
 {
     string Name { get; }
@@ -22,7 +20,7 @@ public interface IWidgetType<TSettings> : IEntity
     bool? Maximizable { get; }
     IWidgetTypeComponent WidgetComp { get; }
     IWidgetTypeComponent SettingsEditorComp { get; }
-    CreateSettingsState<TSettings> CreateSettingsState { get; }
+    Func<TSettings> CreateSettingsState { get; }
     IEnumerable<string> RequiresApi { get; }
     IEnumerable<string> RequiresState { get; }
 }

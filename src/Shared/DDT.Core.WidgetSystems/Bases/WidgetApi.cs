@@ -8,14 +8,10 @@ using static DDT.Core.WidgetSystems.Bases.IWidgetApiModules;
 
 namespace DDT.Core.WidgetSystems.Bases;
 
-
-public delegate void UpdateActionBarDelegate(List<IActionBarItem> actionBarItems);
-public delegate void SetContextMenuFactoryDelegate(WidgetContextMenuFactory factory);
-
 public interface IWidgetApiCommon
 {
-    UpdateActionBarDelegate UpdateActionBar { get; }
-    SetContextMenuFactoryDelegate SetContextMenuFactory { get; }
+    Action<List<IActionBarItem>> UpdateActionBar { get; }
+    Action<WidgetContextMenuFactory> SetContextMenuFactory { get; }
 }
 
 public interface IClipboard
@@ -72,8 +68,8 @@ public enum WidgetApiModuleName
 
 public class WidgetApi : IWidgetApiCommon, IWidgetApiModules
 {
-    public UpdateActionBarDelegate UpdateActionBar { get; }
-    public SetContextMenuFactoryDelegate SetContextMenuFactory { get; }
+    public Action<List<IActionBarItem>> UpdateActionBar { get; }
+    public Action<WidgetContextMenuFactory> SetContextMenuFactory { get; }
 
     public IClipboard Clipboard { get; }
     public IDataStorage DataStorage { get; }
@@ -82,8 +78,8 @@ public class WidgetApi : IWidgetApiCommon, IWidgetApiModules
     public ITerminal Terminal { get; }
 
     public WidgetApi(
-        UpdateActionBarDelegate updateActionBar,
-        SetContextMenuFactoryDelegate setContextMenuFactory,
+        Action<List<IActionBarItem>> updateActionBar,
+        Action<WidgetContextMenuFactory> setContextMenuFactory,
         IClipboard clipboard,
         IDataStorage dataStorage,
         IProcess process,
@@ -99,49 +95,3 @@ public class WidgetApi : IWidgetApiCommon, IWidgetApiModules
         Terminal = terminal ?? throw new ArgumentNullException(nameof(terminal));
     }
 }
-
-//public delegate IWidgetApiCommon WidgetApiCommonFactory(Guid widgetId, UpdateActionBarDelegate updateActionBarHandler, SetContextMenuFactoryDelegate setContextMenuFactoryHandler);
-//public delegate IWidgetApiModules.IWidgetApiModule WidgetApiModuleFactory(Guid widgetId);
-//public interface IWidgetApiModuleFactories
-//{
-//    Dictionary<WidgetApiModuleName, WidgetApiModuleFactory> ModuleFactories { get; }
-//}
-
-//public delegate WidgetApi WidgetApiFactory(Guid widgetId, UpdateActionBarDelegate updateActionBarHandler, SetContextMenuFactoryDelegate setContextMenuFactoryHandler, IEnumerable<WidgetApiModuleName> availableModules);
-
-//public class WidgetApiFactory
-//{
-//    private readonly WidgetApiCommonFactory _commonFactory;
-//    private readonly IWidgetApiModuleFactories _moduleFactories;
-
-//    public WidgetApiFactory(WidgetApiCommonFactory commonFactory, IWidgetApiModuleFactories moduleFactories)
-//    {
-//        _commonFactory = commonFactory ?? throw new ArgumentNullException(nameof(commonFactory));
-//        _moduleFactories = moduleFactories ?? throw new ArgumentNullException(nameof(moduleFactories));
-//    }
-
-//    public WidgetApi CreateWidgetApi(Guid widgetId, UpdateActionBarDelegate updateActionBarHandler, SetContextMenuFactoryDelegate setContextMenuFactoryHandler, IEnumerable<WidgetApiModuleName> availableModules)
-//    {
-//        var common = _commonFactory(widgetId, updateActionBarHandler, setContextMenuFactoryHandler);
-//        var modules = new Dictionary<WidgetApiModuleName, WidgetApiModules.WidgetApiModule>();
-//        foreach (var featName in availableModules)
-//        {
-//            modules[featName] = _moduleFactories.ModuleFactories[featName](widgetId);
-//        }
-//        return new WidgetApi(updateActionBarHandler, setContextMenuFactoryHandler, modules.IClipboard, modules.DataStorage, modules.Process, modules.Shell, modules.Terminal);
-//    }
-//}
-
-//public interface WidgetSettingsApi<TSettings>
-//{
-//    void UpdateSettings(TSettings newSettings);
-
-//    public interface Dialog
-//    {
-//        void ShowAppManager();
-//        Task<OpenDialogResult> ShowOpenFileDialog(OpenFileDialogConfig cfg);
-//        Task<OpenDialogResult> ShowOpenDirDialog(OpenDirDialogConfig cfg);
-//    }
-
-//    Dialog Dialogs { get; }
-//}

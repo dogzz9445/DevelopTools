@@ -57,11 +57,9 @@ public interface IMenuItemIpc : IMenuItemCommon<IMenuItemIpc>
     int? ActionId { get; }
 }
 
-public delegate Task MenuAction();
-
 public interface IMenuItem : IMenuItemCommon<IMenuItem>
 {
-    MenuAction DoAction { get; }
+    Task DoAction { get; }
 }
 
 public class MenuItemIpc : IMenuItemIpc
@@ -85,5 +83,5 @@ public class MenuItem : IMenuItem
     public string Icon { get; set; }
     public bool? Enabled { get; set; }
     public IReadOnlyList<IMenuItem> Submenu { get; set; }
-    public MenuAction DoAction { get; set; }
+    public Task DoAction { get; set; }
 }

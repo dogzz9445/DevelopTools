@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace DDT.Core.WidgetSystems.Bases;
+
 public interface IWidgetCoreSettings
 {
     string Name { get; }
@@ -67,86 +68,6 @@ public class WidgetOption<TSettings> : IWidgetOption<TSettings>
     public string Type { get; set; }
     public IWidgetCoreSettings CoreSettings { get; set; }
     public TSettings Settings { get; set; }
-
-    public static IWidgetOption<TSettings> CreateWidget<TSettings>(IWidgetType<TSettings> type, Guid id, string name)
-    {
-        return new WidgetOption<TSettings>
-        {
-            Id = id,
-            Type = type.Id.ToString(),
-            CoreSettings = new WidgetCoreSettings { Name = name },
-            Settings = type.CreateSettingsState()
-        };
-    }
-
-    public static string GenerateWidgetName(string widgetTypeName, IEnumerable<string> usedNames)
-    {
-        // Implement the GenerateUniqueName method according to your requirements
-        return GenerateUniqueName(widgetTypeName, usedNames);
-    }
-
-    public static IWidgetOption<TSettings> UpdateWidgetSettings<TSettings>(IWidgetOption<TSettings> widget, TSettings settings)
-    {
-        return new WidgetOption<TSettings>
-        {
-            Id = widget.Id,
-            Type = widget.Type,
-            CoreSettings = widget.CoreSettings,
-            Settings = settings
-        };
-    }
-
-    public static WidgetOption<TSettings> UpdateWidgetCoreSettings<TSettings>(IWidgetOption<TSettings> widget, IWidgetCoreSettings coreSettings)
-    {
-        return new WidgetOption<TSettings>
-        {
-            Id = widget.Id,
-            Type = widget.Type,
-            CoreSettings = coreSettings,
-            Settings = widget.Settings
-        };
-    }
-
-    public static IWidgetEnvAreaShelf CreateWidgetEnv(IWidgetEnvAreaShelf envData)
-    {
-        var widgetEnv = new WidgetEnvAreaShelf
-        {
-            Area = envData.Area,
-            IsPreview = envData.IsPreview
-        };
-        return widgetEnv;
-    }
-
-    public static IWidgetEnvAreaWorkflow CreateWidgetEnv(IWidgetEnvAreaWorkflow envData)
-    {
-        var widgetEnv = new WidgetEnvAreaWorkflow
-        {
-            Area = envData.Area,
-            IsPreview = envData.IsPreview,
-            ProjectId = envData.ProjectId,
-            WorkflowId = envData.WorkflowId
-        };
-        return widgetEnv;
-    }
-
-    public static string GetWidgetDisplayName<TSettings>(IWidgetOption<TSettings> widget = null, IWidgetType<TSettings> type = null)
-    {
-        if (widget != null && !string.IsNullOrEmpty(widget.CoreSettings.Name))
-        {
-            return widget.CoreSettings.Name;
-        }
-        if (type != null && !string.IsNullOrEmpty(type.Name))
-        {
-            return type.Name;
-        }
-        return string.Empty;
-    }
-
-    private static string GenerateUniqueName(string baseName, IEnumerable<string> usedNames)
-    {
-        // Implement the unique name generation logic
-        return baseName; // Placeholder
-    }
 }
 
 public class WidgetCoreSettings : IWidgetCoreSettings

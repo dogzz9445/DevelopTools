@@ -1,10 +1,18 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DDT.Apps.DDTOrganizer.Models;
 using DDT.Apps.DDTOrganizer.ViewModels;
+using DDT.Core.WidgetSystems.Bases;
 using DDT.Core.WidgetSystems.Controls;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Commanders;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.FileOpeners;
+using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.LinkOpeners;
+using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Notes;
+using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Timers;
+using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.ToDoLists;
+using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.WebPages;
+using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.WebQueries;
+using DDT.Core.WidgetSystems.Services;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -149,13 +157,6 @@ namespace DDT.Apps.DDTOrganizer.Views
         #endregion Private Fields
 
         #region Public Properties
-
-        /// <summary>
-        /// Gets or sets the available widgets.
-        /// </summary>
-        /// <value>The available widgets.</value>
-        [ObservableProperty]
-        private List<WidgetGenerator> _availableWidgets = new List<WidgetGenerator>();
 
         [ObservableProperty]
         private ObservableCollection<MenuItemViewModel> _addWidgetMenuItemViewModels;
@@ -325,20 +326,19 @@ namespace DDT.Apps.DDTOrganizer.Views
         /// Starts this instance.
         /// </summary>
         /// <returns>Task.</returns>
-        public Task Start()
+        public Task Start(IWidgetService widgetService)
         {
             // --------------------------------------------------------------------------
             // Load Component Data
             // --------------------------------------------------------------------------
-            Dashboards = new ObservableCollection<DashboardModel>();
-            AddWidgetMenuItemViewModels = new ObservableCollection<MenuItemViewModel>();
-            Dashboards.Add(new DashboardModel { Title = "My Dashboard" });
+            Dashboards = [new DashboardModel { Title = "My Dashboard" }];
             SelectedDashboard = Dashboards[0];
+            AddWidgetMenuItemViewModels = new ObservableCollection<MenuItemViewModel>();
 
             // --------------------------------------------------------------------------
             // Available Widgets
             // --------------------------------------------------------------------------
-            AvailableWidgets = new List<WidgetGenerator> {
+            widgetService.RegisterWidgets([
                 new WidgetGenerator(
                     name: "Create Commander",
                     description: "Provides a one by one square widget.",
@@ -351,7 +351,43 @@ namespace DDT.Apps.DDTOrganizer.Views
                     menuPath: "Default/File Opener",
                     menuOrder: 0,
                     createWidget: () => new FileOpenerWidgetViewModel(_widgetNumber++)),
-            };
+                new WidgetGenerator(
+                    name: "Create Linke Opener",
+                    description: "Provides a one by one square widget.",
+                    menuPath: "Default/Link Opener",
+                    menuOrder: 0,
+                    createWidget: () => new LinkeOpenerWidgetViewModel(_widgetNumber++)),
+                new WidgetGenerator(
+                    name: "Create Note",
+                    description: "Provides a one by one square widget.",
+                    menuPath: "Default/Note",
+                    menuOrder: 0,
+                    createWidget: () => new NoteWidgetViewModel(_widgetNumber++)),
+                new WidgetGenerator(
+                    name: "Create Timer",
+                    description: "Provides a one by one square widget.",
+                    menuPath: "Default/Timer",
+                    menuOrder: 0,
+                    createWidget: () => new TimerWidgetViewModel(_widgetNumber++)),
+                new WidgetGenerator(
+                    name: "Create To Do List",
+                    description: "Provides a one by one square widget.",
+                    menuPath: "Default/To Do List",
+                    menuOrder: 0,
+                    createWidget: () => new ToDoListViewModel(_widgetNumber++)),
+                new WidgetGenerator(
+                    name: "Create Web Page",
+                    description: "Provides a one by one square widget.",
+                    menuPath: "Default/Web Page",
+                    menuOrder: 0,
+                    createWidget: () => new WebPageViewModel(_widgetNumber++)),
+                new WidgetGenerator(
+                    name: "Create Web Query",
+                    description: "Provides a one by one square widget.",
+                    menuPath: "Default/Web Query",
+                    menuOrder: 0,
+                    createWidget: () => new WebQueryViewModel(_widgetNumber++)),
+            ]);
 
             // --------------------------------------------------------------------------
             // Add Widget Menu
@@ -362,7 +398,7 @@ namespace DDT.Apps.DDTOrganizer.Views
                 MenuItems = new ObservableCollection<MenuItemViewModel>(),
             });
 
-            foreach (var widget in AvailableWidgets)
+            foreach (var widget in widgetService.GetAvailableWidgets())
             {
                 var fullMenuHeader = widget.MenuPath;
                 if (string.IsNullOrEmpty(fullMenuHeader))
@@ -423,8 +459,9 @@ namespace DDT.Apps.DDTOrganizer.Views
 
             Loaded += (s, e) =>
             {
+                var widgetService = App.Current.Services.GetService<IWidgetService>();
                 ViewModel.EditMode = false;
-                ViewModel.Start();
+                ViewModel.Start(widgetService);
             };
         }
     }

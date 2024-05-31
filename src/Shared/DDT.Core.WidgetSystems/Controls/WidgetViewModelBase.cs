@@ -8,7 +8,7 @@ using DDT.Core.WidgetSystems.Controls.Models;
 
 namespace DDT.Core.WidgetSystems.Controls;
 
-public partial class WidgetViewModelBase : ObservableObject
+public partial class WidgetViewModelBase : ObservableRecipient
 {
     [ObservableProperty]
     private RowIndexColumnIndex? _rowIndexColumnIndex;
@@ -24,6 +24,9 @@ public partial class WidgetViewModelBase : ObservableObject
 
     [ObservableProperty]
     private string _widgetTitle;
+
+    [ObservableProperty]
+    private bool? _visibleTitle;
 
     [ObservableProperty]
     private string _type;

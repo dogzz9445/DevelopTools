@@ -337,6 +337,7 @@
                                    TextAlignment="Center" />
                     </Button>
 
+                    <!-- Tool bar (Editing) -->
                     <ToolBarTray Grid.Column="4"
                                  Margin="10,0,0,0"
                                  Visibility="{Binding EditMode, Converter={StaticResource BoolToVis}}">
@@ -344,7 +345,8 @@
                                  Style="{StaticResource MaterialDesignToolBar}">
                             <Menu ItemsSource="{Binding AddWidgetMenuItemViewModels}">
                                 <Menu.ItemContainerStyle>
-                                    <Style TargetType="{x:Type MenuItem}">
+                                    <Style TargetType="{x:Type MenuItem}"
+                                           BasedOn="{StaticResource MaterialDesignMenuItem}">
                                         <Setter Property="Command"
                                                 Value="{Binding Command}" />
                                     </Style>
@@ -357,6 +359,8 @@
                                 </Menu.ItemTemplate>
                             </Menu>
                             
+                            <Separator />
+
                             <Button Content="{materialDesign:PackIcon Kind=Twitter}"
                                     ToolTip="Follow me on Twitter" />
                             <Button Content="{materialDesign:PackIcon Kind=ContentSave}"
@@ -487,14 +491,14 @@
                 </Grid>
 
                 <!--  Add/Configure Widget Side Menu  -->
-                <Border Grid.Column="1"
+                <!--<Border Grid.Column="1"
                         MinWidth="375"
                         MaxWidth="375"
                         BorderBrush="Gray"
                         BorderThickness="1,0,0,0"
                         Visibility="{Binding EditMode, Converter={StaticResource BoolToVis}}">
                     <Grid>
-                        <!--  Add Widget Menu  -->
+                        --><!--  Add Widget Menu  --><!--
                         <Grid Visibility="{Binding ConfiguringWidget, Converter={StaticResource InvertNullToVisibilityConverter}}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -583,7 +587,7 @@
                             </ListBox>
                         </Grid>
 
-                        <!--  Configure Widget  -->
+                        --><!--  Configure Widget  --><!--
                         <Grid Visibility="{Binding ConfiguringWidget, Converter={StaticResource NullToVisibilityConverter}}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -669,7 +673,7 @@
                             </StackPanel>
                         </Grid>
                     </Grid>
-                </Border>
+                </Border>-->
             </Grid>
         </Grid>
 

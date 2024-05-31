@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DDT.Core.WidgetSystems.Bases;
+namespace DDT.Core.WidgetSystems.Utils;
 
 public static class NameGenerationHelper
 {

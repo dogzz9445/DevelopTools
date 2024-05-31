@@ -11,7 +11,7 @@ namespace DDT.Core.WPF.Utilities;
 /// <summary>
 /// This class handles communication between two instances form the already running instance
 /// </summary>
-internal sealed class SecondInstanceService : IDisposable
+public sealed class SecondInstanceService : IDisposable
 {
     private CancellationTokenSource m_cancellationToken;
     private Task m_secondInstanceTask;

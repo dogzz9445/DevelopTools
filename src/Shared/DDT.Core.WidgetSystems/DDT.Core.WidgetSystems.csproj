@@ -13,11 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Bases\Interfaces\" />
+    <ProjectReference Include="..\DDT.Core.WPF\DDT.Core.WPF.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DDT.Core.WPF\DDT.Core.WPF.csproj" />
+    <Folder Include="Bases\Interfaces\" />
   </ItemGroup>
 
 </Project>

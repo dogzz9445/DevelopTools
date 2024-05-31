@@ -25,12 +25,12 @@
     </ContentControl.Effect>
     <ContentControl.Template>
         <ControlTemplate TargetType="{x:Type ContentControl}">
-            <Border Background="#00000000"
+            <Border Background="#FF000000"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     BorderBrush="#00000000"
-                    Margin="3"
-                    BorderThickness="1"
+                    Margin="1"
+                    BorderThickness="3"
                     MouseDown="Host_MouseLeftButtonDown"
                     Cursor="">
                 <Border Background="White"
@@ -69,6 +69,7 @@
                         </Grid.RowDefinitions>
 
                         <Border Grid.Row="0"
+                                Visibility="{Binding VisibleTitle}"
                                 Height="27">
                             <TextBlock Margin="10,10,0,0"
                                        HorizontalAlignment="Left"
