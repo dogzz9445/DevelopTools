@@ -474,12 +474,11 @@ namespace DDT.Apps.DDTOrganizer.Views
         {
             InitializeComponent();
 
-            DataContext = ViewModel = new DashboardsViewModel();
+            DataContext = ViewModel = new DashboardsViewModel() { EditMode = false };
 
             Loaded += (s, e) =>
             {
                 var widgetService = App.Current.Services.GetService<IWidgetService>();
-                ViewModel.EditMode = false;
                 ViewModel.Start(widgetService);
             };
         }

@@ -42,6 +42,7 @@ namespace DDT.Core.WidgetSystems.Controls
         #region Private Fields
 
         private Point? _mouseDownPoint;
+        public Point? MouseDownPoint { get => _mouseDownPoint; }
         private bool? _isInOutlineArea;
 
         #endregion Private Fields
