@@ -34,6 +34,11 @@ namespace DDT.Core.WidgetSystems.Controls
     /// <param name="widgetHost">The widget host.</param>
     public delegate void MouseEnterEventHandler(WidgetHost widgetHost);
 
+    public enum HitType
+    {
+        None, Body, UL, UR, LR, LL, L, R, B, T
+    };
+
     /// <summary>
     /// WidgetHost.xaml에 대한 상호 작용 논리
     /// </summary>
@@ -41,9 +46,13 @@ namespace DDT.Core.WidgetSystems.Controls
     {
         #region Private Fields
 
+        // For Resize
+        // The part of the rectangle under the mouse.
+        public HitType MouseHitType = HitType.None;
         private Point? _mouseDownPoint;
         public Point? MouseDownPoint { get => _mouseDownPoint; }
         private bool? _isInOutlineArea;
+        private double _outlineGap = 20;
 
         #endregion Private Fields
 
@@ -112,8 +121,9 @@ namespace DDT.Core.WidgetSystems.Controls
                                       borderRect.Width, borderRect.Height);
 
             Rect innerRect = new Rect(borderRect.X + 10, borderRect.Y + 10,
-                                      borderRect.Width - 20, borderRect.Height - 20);
+                                      borderRect.Width - _outlineGap, borderRect.Height - _outlineGap);
 
+            MouseHitType = SetHitType(outerRect, Mouse.GetPosition(this));
             // 클릭한 위치가 외곽선 영역에 있는지 확인합니다.
             _isInOutlineArea = outerRect.Contains(
                 _mouseDownPoint.Value.X,
@@ -122,6 +132,37 @@ namespace DDT.Core.WidgetSystems.Controls
             
             if (_isInOutlineArea == true)
                 DragResizeStarted?.Invoke(this);
+        }
+
+        // Return a HitType value to indicate what is at the point.
+        private HitType SetHitType(Rect rect, Point point)
+        {
+            double left = 0;
+            double top = 0;
+            double right = rect.Right;
+            double bottom = rect.Bottom;
+            if (point.X < left) return HitType.None;
+            if (point.X > right) return HitType.None;
+            if (point.Y < top) return HitType.None;
+            if (point.Y > bottom) return HitType.None;
+
+            if (point.X - left < _outlineGap)
+            {
+                // Left edge.
+                if (point.Y - top < _outlineGap) return HitType.UL;
+                if (bottom - point.Y < _outlineGap) return HitType.LL;
+                return HitType.L;
+            }
+            else if (right - point.X < _outlineGap)
+            {
+                // Right edge.
+                if (point.Y - top < _outlineGap) return HitType.UR;
+                if (bottom - point.Y < _outlineGap) return HitType.LR;
+                return HitType.R;
+            }
+            if (point.Y - top < _outlineGap) return HitType.T;
+            if (bottom - point.Y < _outlineGap) return HitType.B;
+            return HitType.Body;
         }
 
         /// <summary>

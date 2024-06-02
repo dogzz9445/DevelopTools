@@ -3,6 +3,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using DDT.Apps.DDTOrganizer.Controls;
 using DDT.Apps.DDTOrganizer.Views;
 using DDT.Core.WidgetSystems.Services;
 using DDT.Core.WPF.Extensions;
@@ -63,11 +64,6 @@ public partial class App : Application
 
         // Create a new MainWindow and set its DataContext to a new MainWindowViewModel which binds the view to the viewmodel
         new MainWindow().Show();
-        //var logWindow = new MetroWindow();
-        //logWindow.Width = 600;
-        //logWindow.Content = new LogView();
-        //logWindow.Show();
-        //logWindow.MaximizeToSecondMonitor();
     }
 
     private static IConfigurationRoot BuildConfiguration(string[] args)

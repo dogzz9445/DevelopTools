@@ -1,0 +1,95 @@
+﻿<Page x:Class="DDT.Apps.DDTOrganizer.Views.WidgetConfigurationView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DDT.Apps.DDTOrganizer.Views"
+      xmlns:converters="clr-namespace:DDT.Core.WidgetSystems.Converters;assembly=DDT.Core.WidgetSystems"
+      mc:Ignorable="d" 
+      d:DesignHeight="800" d:DesignWidth="800"
+      Title="WidgetConfigurationView">
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/DDT.Core.WidgetSystems;component/Themes/Generic.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/DDT.Core.WidgetSystems.DefaultWidgets;component/Widgets/DataTemplates.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis" />
+            <converters:InvertBoolToVisibilityConverter x:Key="InvertBoolToVis" />
+            <converters:DashboardSelectorIsCheckedConverter x:Key="DashboardSelectorIsCheckedConverter" />
+            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+            <converters:InvertNullToVisibilityConverter x:Key="InvertNullToVisibilityConverter" />
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" >
+            <Border Background="{DynamicResource PrimaryHueMidBrush}"
+                    Opacity="0.3" />
+            <UserControl HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Content="{Binding WidgetPreview}">
+                <UserControl.Effect>
+                    <DropShadowEffect BlurRadius="20"
+                                      Opacity="0.9"
+                                      ShadowDepth="10"
+                                      Color="Black" />
+                </UserControl.Effect>
+                <UserControl.Resources>
+                    <Style TargetType="UserControl">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="UserControl">
+                                    <Grid>
+                                        <Border BorderBrush="{DynamicResource PrimaryHueLightBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="1">
+                                            <ContentPresenter />
+                                        </Border>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </UserControl.Resources>
+                
+            </UserControl>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Border Background="{DynamicResource PrimaryHueMidBrush}"
+                    Opacity="0.3" />
+            <UserControl HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Content="{Binding WidgetSettings}">
+                <UserControl.Effect>
+                    <DropShadowEffect BlurRadius="20"
+                                      Opacity="0.9"
+                                      ShadowDepth="10"
+                                      Color="Black" />
+                </UserControl.Effect>
+                <UserControl.Resources>
+                    <Style TargetType="UserControl">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="UserControl">
+                                    <Grid>
+                                        <Border BorderBrush="{DynamicResource PrimaryHueLightBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="1">
+                                            <ContentPresenter />
+                                        </Border>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </UserControl.Resources>
+
+            </UserControl>
+        </Grid>
+    </Grid>
+</Page>

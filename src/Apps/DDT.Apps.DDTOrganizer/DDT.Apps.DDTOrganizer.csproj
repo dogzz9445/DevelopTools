@@ -25,4 +25,9 @@
     <ProjectReference Include="..\..\Shared\DDT.Core\DDT.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Converters\" />
+    <Folder Include="Themes\" />
+  </ItemGroup>
+
 </Project>

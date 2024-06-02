@@ -132,6 +132,7 @@ namespace DDT.Core.WidgetSystems.DefaultWidgets.Widgets.FileOpeners
         public FileOpenerWidgetViewModel(int widgetNumber) : base()
         {
             WidgetTitle = $"FileOpener{widgetNumber}";
+            VisibleTitle = false;
             RowSpanColumnSpan = new RowSpanColumnSpan(1, 1);
         }
     }

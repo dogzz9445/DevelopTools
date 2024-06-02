@@ -452,6 +452,7 @@
                             <ToggleButton />
                         </ToolBar>
                     </ToolBarTray>
+                    
                 </Grid>
 
                 <!--  Separator  -->
@@ -474,21 +475,6 @@
                                                 ItemsSource="{Binding SelectedDashboard.Widgets}" />
 
                 <!--  Configuring Widget Overlay  -->
-                <Grid Grid.Column="0"
-                      Visibility="{Binding ConfiguringWidget, Converter={StaticResource NullToVisibilityConverter}}">
-                    <Border Background="Black"
-                            Opacity="0.3" />
-                    <UserControl HorizontalAlignment="Center"
-                                 VerticalAlignment="Center"
-                                 Content="{Binding ConfiguringWidget}">
-                        <UserControl.Effect>
-                            <DropShadowEffect BlurRadius="20"
-                                              Opacity="0.9"
-                                              ShadowDepth="10"
-                                              Color="Black" />
-                        </UserControl.Effect>
-                    </UserControl>
-                </Grid>
 
                 <!--  Add/Configure Widget Side Menu  -->
                 <!--<Border Grid.Column="1"

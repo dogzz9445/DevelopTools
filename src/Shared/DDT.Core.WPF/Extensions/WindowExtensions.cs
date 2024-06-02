@@ -104,4 +104,16 @@ public static class WindowExtensions
     {
         window.WindowState = WindowState.Minimized;
     }
+
+    public static void CenterWindowToParent(this Window window)
+    {
+        if (window.Owner == null)
+            return;
+
+        if (!window.IsLoaded)
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+        if (window.IsLoaded)
+            window.WindowState = WindowState.Normal;
+    }
 }
