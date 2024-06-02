@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DDT.Apps.DDTOrganizer.Controls;
 using DDT.Apps.DDTOrganizer.ViewModels;
 using DDT.Core.WidgetSystems.Bases;
 using DDT.Core.WidgetSystems.Controls;
@@ -12,6 +13,7 @@ using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.ToDoLists;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.WebPages;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.WebQueries;
 using DDT.Core.WidgetSystems.Services;
+using DDT.Core.WPF.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -26,9 +28,11 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace DDT.Apps.DDTOrganizer.Views
 {
@@ -178,31 +182,38 @@ namespace DDT.Apps.DDTOrganizer.Views
         /// Gets the command configure widget.
         /// </summary>
         /// <value>The command configure widget.</value>
-        public ICommand CommandConfigureWidget => new RelayCommand<WidgetHost>(o =>
+        public ICommand CommandConfigureWidget => new RelayCommand<WidgetHost>(async o =>
         {
             var widgetHost = (WidgetHost)o;
-            ConfiguringWidget = new TempWidgetHost
+            var parentWindow = Window.GetWindow(widgetHost);
+            var window = new BaseWindow();
+            if (parentWindow != null)
             {
-                DataContext = widgetHost.DataContext,
-                Content = widgetHost.DataContext,
-                MaxWidth = widgetHost.MaxWidth,
-                MaxHeight = widgetHost.MaxHeight,
-                Width = widgetHost.ActualWidth,
-                Height = widgetHost.ActualHeight
-            };
+                window.Owner = parentWindow;
+                parentWindow.Effect = new BlurEffect();
+                window.CenterWindowToParent();
+            }
+            var view = new WidgetConfigurationView(widgetHost);
+            window.Content = view;
+            window.ShowDialog();
+            if (parentWindow != null)
+            {
+                parentWindow.Effect = null;
+            }
         });
 
         /// <summary>
         /// Gets the command done configuring widget.
         /// </summary>
         /// <value>The command done configuring widget.</value>
-        public ICommand CommandDoneConfiguringWidget => new RelayCommand(() => ConfiguringWidget = null);
+        //public ICommand CommandDoneConfiguringWidget => new RelayCommand(() => ConfiguringWidget = null);
 
         /// <summary>
         /// Gets the command edit dashboard.
         /// </summary>
         /// <value>The command edit dashboard.</value>
-        public ICommand CommandEditDashboard => new RelayCommand<string>(o => EditMode = o.ToString() == "True", o => ConfiguringWidget == null);
+        //public ICommand CommandEditDashboard => new RelayCommand<string>(o => EditMode = o.ToString() == "True", o => ConfiguringWidget == null);
+        public ICommand CommandEditDashboard => new RelayCommand<string>(o => EditMode = o.ToString() == "True", o => true);
 
         ///// <summary>
         ///// Gets the command manage dashboard.
@@ -235,13 +246,6 @@ namespace DDT.Apps.DDTOrganizer.Views
         //    get => _configuringDashboard;
         //    set => RaiseAndSetIfChanged(ref _configuringDashboard, value);
         //}
-
-        /// <summary>
-        /// Gets or sets the configuring widget.
-        /// </summary>
-        /// <value>The configuring widget.</value>
-        [ObservableProperty]
-        private TempWidgetHost? _configuringWidget;
 
         /// <summary>
         /// Gets or sets the dashboards.
@@ -474,12 +478,11 @@ namespace DDT.Apps.DDTOrganizer.Views
         {
             InitializeComponent();
 
-            DataContext = ViewModel = new DashboardsViewModel();
+            DataContext = ViewModel = new DashboardsViewModel() { EditMode = false };
 
             Loaded += (s, e) =>
             {
                 var widgetService = App.Current.Services.GetService<IWidgetService>();
-                ViewModel.EditMode = false;
                 ViewModel.Start(widgetService);
             };
         }

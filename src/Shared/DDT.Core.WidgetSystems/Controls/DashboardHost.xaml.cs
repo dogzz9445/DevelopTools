@@ -115,10 +115,6 @@ namespace DDT.Core.WidgetSystems.Controls
         #endregion Public Fields
 
         #region Private Fields
-        private enum HitType
-        {
-            None, Body, UL, UR, LR, LL, L, R, B, T
-        };
 
         private const int ScrollIncrement = 15;
         private readonly PropertyChangeNotifier _itemsSourceChangeNotifier;
@@ -132,15 +128,12 @@ namespace DDT.Core.WidgetSystems.Controls
         private int _hostIndex;
         private Border _widgetDestinationHighlight;
 
-        // For Resize
-        // The part of the rectangle under the mouse.
-        private HitType MouseHitType = HitType.None;
         // True if a drag is in progress.
         private bool DragInProgress = false;
         private Point LastPoint;
 
         // To change the overall size of the widgets change the value here. This size is considered a block.
-        private Size _widgetHostMinimumSize = new Size(64, 64);
+        private Size _widgetHostSize = new Size(64, 64);
 
         private List<WidgetHostData> _widgetHostsData = new List<WidgetHostData>();
         private Canvas _widgetsCanvasHost;
@@ -273,8 +266,8 @@ namespace DDT.Core.WidgetSystems.Controls
             var widgetSpans = widgetBase.RowSpanColumnSpan;
 
             // Set min/max dimensions of host so it isn't allowed to grow any larger or smaller
-            var hostHeight = _widgetHostMinimumSize.Height * widgetSpans.RowSpan - widgetHost.Margin.Top - widgetHost.Margin.Bottom;
-            var hostWidth = _widgetHostMinimumSize.Width * widgetSpans.ColumnSpan - widgetHost.Margin.Left - widgetHost.Margin.Right;
+            var hostHeight = _widgetHostSize.Height * widgetSpans.RowSpan - widgetHost.Margin.Top - widgetHost.Margin.Bottom;
+            var hostWidth = _widgetHostSize.Width * widgetSpans.ColumnSpan - widgetHost.Margin.Left - widgetHost.Margin.Right;
 
             widgetHost.MinHeight = hostHeight;
             widgetHost.MaxHeight = hostHeight;
@@ -308,8 +301,8 @@ namespace DDT.Core.WidgetSystems.Controls
             SetWidgetRowAndColumn(widgetHost, nextAvailable, widgetSpans, false);
 
             // Scroll to the new item if it is off screen
-            var widgetsHeight = widgetSpans.RowSpan * _widgetHostMinimumSize.Height;
-            var widgetEndVerticalLocation = nextAvailable.Row * _widgetHostMinimumSize.Height + widgetsHeight; 
+            var widgetsHeight = widgetSpans.RowSpan * _widgetHostSize.Height;
+            var widgetEndVerticalLocation = nextAvailable.Row * _widgetHostSize.Height + widgetsHeight; 
 
             var scrollViewerVerticalScrollPosition =
                 DashboardScrollViewer.ViewportHeight + DashboardScrollViewer.VerticalOffset;
@@ -343,7 +336,7 @@ namespace DDT.Core.WidgetSystems.Controls
         /// </summary>
         private void AddCanvasEditingBackgroundColumn(int rowCount, int columnCount)
         {
-            CanvasEditingBackground.Width += _widgetHostMinimumSize.Width;
+            CanvasEditingBackground.Width += _widgetHostSize.Width;
 
             //for (var i = 0; i < rowCount; i++)
             //{
@@ -359,7 +352,7 @@ namespace DDT.Core.WidgetSystems.Controls
         /// </summary>
         private void AddCanvasEditingBackgroundRow(int rowCount, int columnCount)
         {
-            CanvasEditingBackground.Height += _widgetHostMinimumSize.Height;
+            CanvasEditingBackground.Height += _widgetHostSize.Height;
 
             //for (var i = 0; i < columnCount; i++)
             //{
@@ -378,8 +371,8 @@ namespace DDT.Core.WidgetSystems.Controls
         {
             return new Rectangle
             {
-                Height = Math.Floor(_widgetHostMinimumSize.Height * 90 / 100),
-                Width = Math.Floor(_widgetHostMinimumSize.Width * 90 / 100),
+                Height = Math.Floor(_widgetHostSize.Height * 90 / 100),
+                Width = Math.Floor(_widgetHostSize.Width * 90 / 100),
                 Fill = Brushes.LightGray
             };
         }
@@ -434,6 +427,9 @@ namespace DDT.Core.WidgetSystems.Controls
                 _widgetHostsData.FirstOrDefault(widgetData => widgetData.HostIndex == draggingWidgetHost.HostIndex) == null)
                 return;
 
+            if (_draggingHostData == null)
+                return;
+
             // Move the adorner to the appropriate position
             _draggingAdorner.LeftOffset = e.GetPosition(WidgetsCanvasHost).X;
             _draggingAdorner.TopOffset = e.GetPosition(WidgetsCanvasHost).Y;
@@ -477,8 +473,8 @@ namespace DDT.Core.WidgetSystems.Controls
             //    return;
 
             // Use the canvas to draw a square around the closestRowColumn to indicate where the _draggingWidgetHost will be when mouse is released
-            var top = closestRowColumn.Row < 0 ? 0 : closestRowColumn.Row * _widgetHostMinimumSize.Height;
-            var left = closestRowColumn.Column < 0 ? 0 : closestRowColumn.Column * _widgetHostMinimumSize.Width;
+            var top = closestRowColumn.Row < 0 ? 0 : closestRowColumn.Row * _widgetHostSize.Height;
+            var left = closestRowColumn.Column < 0 ? 0 : closestRowColumn.Column * _widgetHostSize.Width;
 
             Canvas.SetTop(_widgetDestinationHighlight, top);
             Canvas.SetLeft(_widgetDestinationHighlight, left);
@@ -639,7 +635,7 @@ namespace DDT.Core.WidgetSystems.Controls
         /// <returns>System.Int32.</returns>
         private int GetCanvasEditingBackgroundColumnCount()
         {
-            return (int)Math.Floor(CanvasEditingBackground.Width / _widgetHostMinimumSize.Width);
+            return (int)Math.Floor(CanvasEditingBackground.Width / _widgetHostSize.Width);
         }
 
         /// <summary>
@@ -648,7 +644,7 @@ namespace DDT.Core.WidgetSystems.Controls
         /// <returns>System.Int32.</returns>
         private int GetCanvasEditingBackgroundRowCount()
         {
-            return (int)Math.Floor(CanvasEditingBackground.Height / _widgetHostMinimumSize.Height);
+            return (int)Math.Floor(CanvasEditingBackground.Height / _widgetHostSize.Height);
         }
 
         /// <summary>
@@ -661,8 +657,8 @@ namespace DDT.Core.WidgetSystems.Controls
             // First lets get the "real" closest row and column to the adorner Position
             // This is exact location to the square to which the adornerPosition point provided
             // is within
-            var realClosestRow = (int)Math.Floor(adornerPosition.Y / _widgetHostMinimumSize.Height);
-            var realClosestColumn = (int)Math.Floor(adornerPosition.X / _widgetHostMinimumSize.Width);
+            var realClosestRow = (int)Math.Floor(adornerPosition.Y / _widgetHostSize.Height);
+            var realClosestColumn = (int)Math.Floor(adornerPosition.X / _widgetHostSize.Width);
 
             // If the closest row and column are negatives that means the position is off screen
             // at this point we can return 0's and prevent extra calculations by ending this one here
@@ -674,13 +670,13 @@ namespace DDT.Core.WidgetSystems.Controls
             realClosestColumn = realClosestColumn < 0 ? 0 : realClosestColumn;
             if (EnableColumnLimit)
             {
-                realClosestColumn = realClosestColumn + _draggingHostData.WidgetBase.RowSpanColumnSpan.ColumnSpan > MaxNumColumns ? MaxNumColumns - _draggingHostData.WidgetBase.RowSpanColumnSpan.ColumnSpan : realClosestColumn;
+                realClosestColumn = (realClosestColumn + _draggingHostData.WidgetBase.RowSpanColumnSpan.ColumnSpan) > MaxNumColumns ? (MaxNumColumns - _draggingHostData.WidgetBase.RowSpanColumnSpan.ColumnSpan) : realClosestColumn;
             }
 
             var realClosestRowAndColumn = new RowIndexColumnIndex(realClosestRow, realClosestColumn);
 
-            if (_draggingHostData.WidgetBase.RowIndexColumnIndex.Row == realClosestRow && _draggingHostData.WidgetBase.RowIndexColumnIndex.Column == realClosestColumn)
-                return realClosestRowAndColumn;
+            //if (_draggingHostData.WidgetBase.RowIndexColumnIndex.Row == realClosestRow && _draggingHostData.WidgetBase.RowIndexColumnIndex.Column == realClosestColumn)
+            //    return realClosestRowAndColumn;
             return realClosestRowAndColumn;
             // We need to find all the widgets that land within the column that the adorner is currently
             // placed and if that dragging widget has a span we need to calculate that into this.
@@ -812,7 +808,7 @@ namespace DDT.Core.WidgetSystems.Controls
         private int GetFullyVisibleColumn()
         {
             return Convert.ToInt32(Math.Floor(
-                (ActualWidth + DashboardScrollViewer.HorizontalOffset) / _widgetHostMinimumSize.Width));
+                (ActualWidth + DashboardScrollViewer.HorizontalOffset) / _widgetHostSize.Width));
         }
 
         /// <summary>
@@ -823,7 +819,7 @@ namespace DDT.Core.WidgetSystems.Controls
         private int GetFullyVisibleRow()
         {
             return Convert.ToInt32(Math.Floor(
-                (ActualHeight + DashboardScrollViewer.VerticalOffset) / _widgetHostMinimumSize.Height));
+                (ActualHeight + DashboardScrollViewer.VerticalOffset) / _widgetHostSize.Height));
         }
 
         /// <summary>
@@ -1156,8 +1152,8 @@ namespace DDT.Core.WidgetSystems.Controls
                 var removeRectangles = CanvasEditingBackground.Children.OfType<Rectangle>()
                     .Where(child =>
                     {
-                        var canvasRow = Canvas.GetTop(child) / _widgetHostMinimumSize.Height;
-                        var canvasColumn = Canvas.GetLeft(child) / _widgetHostMinimumSize.Width;
+                        var canvasRow = Canvas.GetTop(child) / _widgetHostSize.Height;
+                        var canvasColumn = Canvas.GetLeft(child) / _widgetHostSize.Width;
 
                         return canvasRow >= rowAndColumnMax.Row || canvasColumn >= rowAndColumnMax.Column;
                     })
@@ -1166,14 +1162,14 @@ namespace DDT.Core.WidgetSystems.Controls
                 for (var i = removeRectangles.Length - 1; i >= 0; i--)
                     CanvasEditingBackground.Children.Remove(removeRectangles[i]);
 
-                canvas.Width = rowAndColumnMax.Column * _widgetHostMinimumSize.Width;
-                canvas.Height = rowAndColumnMax.Row * _widgetHostMinimumSize.Height;
+                canvas.Width = rowAndColumnMax.Column * _widgetHostSize.Width;
+                canvas.Height = rowAndColumnMax.Row * _widgetHostSize.Height;
                 return;
             }
 
             var canvasHasChildren = canvas.Children.Count > 0;
-            canvas.Width = (canvasHasChildren ? rowAndColumnMax.Column : 0) * _widgetHostMinimumSize.Width;
-            canvas.Height = (canvasHasChildren ? rowAndColumnMax.Row : 0) * _widgetHostMinimumSize.Height;
+            canvas.Width = (canvasHasChildren ? rowAndColumnMax.Column : 0) * _widgetHostSize.Width;
+            canvas.Height = (canvasHasChildren ? rowAndColumnMax.Row : 0) * _widgetHostSize.Height;
         }
 
         /// <summary>
@@ -1200,8 +1196,8 @@ namespace DDT.Core.WidgetSystems.Controls
             WidgetsCanvasHost.Width = 0;
 
             // Add first rectangle for CanvasEditingBackground
-            CanvasEditingBackground.Height = _widgetHostMinimumSize.Height;
-            CanvasEditingBackground.Width = _widgetHostMinimumSize.Width;
+            CanvasEditingBackground.Height = _widgetHostSize.Height;
+            CanvasEditingBackground.Width = _widgetHostSize.Width;
 
             //var rectangle = CreateGrayRectangleBackground();
             //CanvasEditingBackground.Children.Add(rectangle);
@@ -1244,22 +1240,22 @@ namespace DDT.Core.WidgetSystems.Controls
             int distanceFromTo = Math.Abs(rowNumber - originalRowNumber) + Math.Abs(columnNumber - originalColumnNumber);
 
             var maxRowsAndColumns = GetMaxRowsAndColumns();
-            WidgetsCanvasHost.Height = maxRowsAndColumns.Row * _widgetHostMinimumSize.Height;
-            WidgetsCanvasHost.Width = maxRowsAndColumns.Column * _widgetHostMinimumSize.Width;
+            WidgetsCanvasHost.Height = maxRowsAndColumns.Row * _widgetHostSize.Height;
+            WidgetsCanvasHost.Width = maxRowsAndColumns.Column * _widgetHostSize.Width;
 
             if (withAnimate)
             {
                 AnimateWidget(widgetHost,
-                    originalColumnNumber * _widgetHostMinimumSize.Width,
-                    columnNumber * _widgetHostMinimumSize.Width,
-                    originalRowNumber * _widgetHostMinimumSize.Height,
-                    rowNumber * _widgetHostMinimumSize.Height,
+                    (double)widgetHost.GetValue(Canvas.LeftProperty), // originalColumnNumber * _widgetHostSize.Width,
+                    columnNumber * _widgetHostSize.Width,
+                    (double)widgetHost.GetValue(Canvas.TopProperty), // originalRowNumber * _widgetHostSize.Height,
+                    rowNumber * _widgetHostSize.Height,
                     distanceFromTo);
             }
             else
             {
-                Canvas.SetTop(widgetHost, rowNumber * _widgetHostMinimumSize.Height);
-                Canvas.SetLeft(widgetHost, columnNumber * _widgetHostMinimumSize.Width);
+                Canvas.SetTop(widgetHost, rowNumber * _widgetHostSize.Height);
+                Canvas.SetLeft(widgetHost, columnNumber * _widgetHostSize.Width);
             }
 
             var columnCount = GetCanvasEditingBackgroundColumnCount();
@@ -1346,6 +1342,9 @@ namespace DDT.Core.WidgetSystems.Controls
             if (!EditMode)
                 return;
 
+            if (DragInProgress)
+                return;
+
             try
             {
                 // We need to make the DashboardHost allowable to have items dropped on it
@@ -1363,8 +1362,8 @@ namespace DDT.Core.WidgetSystems.Controls
 
                 Debug.Assert(_draggingHostData.WidgetBase.RowIndexColumnIndex.Row != null, "_draggingHostData.WidgetBase.RowIndexColumnIndex.Row != null");
                 Debug.Assert(_draggingHostData.WidgetBase.RowIndexColumnIndex.Column != null, "_draggingHostData.WidgetBase.RowIndexColumnIndex.Column != null");
-                Canvas.SetTop(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Row * _widgetHostMinimumSize.Height);
-                Canvas.SetLeft(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Column * _widgetHostMinimumSize.Width);
+                Canvas.SetTop(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Row * _widgetHostSize.Height);
+                Canvas.SetLeft(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Column * _widgetHostSize.Width);
 
                 // Need to create the adorner that will be used to drag a control around the DashboardHost
                 _draggingAdorner = new DragAdorner(_draggingHost, Mouse.GetPosition(_draggingHost));
@@ -1377,6 +1376,8 @@ namespace DDT.Core.WidgetSystems.Controls
                 {
                     widgetHostData.WidgetBase.PreviewRowIndexColumnIndex =
                         new RowIndexColumnIndex(widgetHostData.WidgetBase.RowIndexColumnIndex.Row, widgetHostData.WidgetBase.RowIndexColumnIndex.Column);
+                    widgetHostData.WidgetBase.PreviewRowSpanColumnSpan =
+                        new RowSpanColumnSpan(widgetHostData.WidgetBase.RowSpanColumnSpan.RowSpan, widgetHostData.WidgetBase.RowSpanColumnSpan.ColumnSpan);
                 });
 
                 DragDrop.DoDragDrop(_draggingHost, new DataObject(_draggingHost), DragDropEffects.Move);
@@ -1415,17 +1416,15 @@ namespace DDT.Core.WidgetSystems.Controls
 
             Debug.Assert(_draggingHostData.WidgetBase.RowIndexColumnIndex.Row != null, "_draggingHostData.WidgetBase.RowIndexColumnIndex.Row != null");
             Debug.Assert(_draggingHostData.WidgetBase.RowIndexColumnIndex.Column != null, "_draggingHostData.WidgetBase.RowIndexColumnIndex.Column != null");
-            Canvas.SetTop(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Row * _widgetHostMinimumSize.Height);
-            Canvas.SetLeft(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Column * _widgetHostMinimumSize.Width);
+            Canvas.SetTop(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Row * _widgetHostSize.Height);
+            Canvas.SetLeft(_widgetDestinationHighlight, (int)_draggingHostData.WidgetBase.RowIndexColumnIndex.Column * _widgetHostSize.Width);
 
             // Need to create the adorner that will be used to drag a control around the DashboardHost
-            MouseMove += DraggingHost_MouseMove;
-            MouseLeftButtonUp += DraggingHost_MouseLeftButtonUp;
+            MouseMove += Dashboard_MouseMove;
+            MouseLeftButtonUp += Dashboard_MouseLeftButtonUp;
+            MouseLeave += Dashboard_MouseLeave;
 
-            MouseHitType = SetHitType(widgetHost, Mouse.GetPosition(_draggingHost));
-            SetMouseCursor();
-
-            LastPoint = Mouse.GetPosition(_draggingHost);
+            SetMouseCursor(_draggingHost);
             DragInProgress = true;
 
             // Need to hide the _draggingHost to give off the illusion that we're moving it somewhere
@@ -1434,102 +1433,211 @@ namespace DDT.Core.WidgetSystems.Controls
             {
                 widgetHostData.WidgetBase.PreviewRowIndexColumnIndex =
                     new RowIndexColumnIndex(widgetHostData.WidgetBase.RowIndexColumnIndex.Row, widgetHostData.WidgetBase.RowIndexColumnIndex.Column);
+                widgetHostData.WidgetBase.PreviewRowSpanColumnSpan =
+                    new RowSpanColumnSpan(widgetHostData.WidgetBase.RowSpanColumnSpan.RowSpan, widgetHostData.WidgetBase.RowSpanColumnSpan.ColumnSpan);
             });
-
-
         }
 
-        private void DraggingHost_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void ResizingEnded()
         {
-            if (DragInProgress)
+            if (!EditMode)
+                return;
+
+            if (!DragInProgress)
+                return;
+
+            DragInProgress = false;
+            // Need to cleanup after the DoDragDrop ends by setting back everything to its default state
+            MouseLeave -= Dashboard_MouseLeave;
+            MouseLeftButtonUp -= Dashboard_MouseLeftButtonUp;
+            MouseMove -= Dashboard_MouseMove;
+            Mouse.SetCursor(Cursors.Arrow);
+            Cursor = Cursors.Arrow;
+            if (_draggingHost != null)
             {
-                DragInProgress = false;
-                // Need to cleanup after the DoDragDrop ends by setting back everything to its default state
-                MouseLeftButtonUp -= DraggingHost_MouseLeftButtonUp;
-                MouseMove -= DraggingHost_MouseMove;
-                Mouse.SetCursor(Cursors.Arrow);
-                Cursor = Cursors.Arrow;
-                _draggingHostData = null;
-                _draggingHost = null;
-                _widgetDestinationHighlight.Visibility = Visibility.Hidden;
+                _draggingHost.MaxHeight = _widgetDestinationHighlight.Height;
+                _draggingHost.MinHeight = _widgetDestinationHighlight.Height;
+                _draggingHost.Height = _widgetDestinationHighlight.Height;
+                _draggingHost.Width = _widgetDestinationHighlight.Width;
+                _draggingHost.MaxWidth = _widgetDestinationHighlight.Width;
+                _draggingHost.MinWidth = _widgetDestinationHighlight.Width;
             }
+            _draggingHostData = null;
+            _draggingHost = null;
+            _widgetDestinationHighlight.Visibility = Visibility.Hidden;
         }
 
-        private void DraggingHost_MouseMove(object sender, MouseEventArgs e)
+        private void Dashboard_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (DragInProgress)
+            ResizingEnded();
+        }
+
+        private void Dashboard_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ResizingEnded();
+        }
+
+        private void Dashboard_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!DragInProgress)
+                return;
+
+            if (_draggingHost == null)
+                return;
+
+            if (_draggingHostData == null)
+                return;
+
+            double originalWidth = _draggingHostData.WidgetBase.PreviewRowSpanColumnSpan.ColumnSpan * _widgetHostSize.Width;
+            double originalHeight = _draggingHostData.WidgetBase.PreviewRowSpanColumnSpan.RowSpan * _widgetHostSize.Height;
+            double originalLeft = _draggingHostData.WidgetBase.RowIndexColumnIndex.Column * _widgetHostSize.Width;
+            double originalTop = _draggingHostData.WidgetBase.RowIndexColumnIndex.Row * _widgetHostSize.Height;
+
+            Point startPoint = _draggingHost.MouseDownPoint ?? default;
+            var point = e.GetPosition(_draggingHost);
+            // See how much the mouse has moved.
+            double offset_x = point.X - startPoint.X;
+            double offset_y = point.Y - startPoint.Y;
+
+            // Get the rectangle's current position.
+            double new_x = originalLeft;
+            double new_y = originalTop;
+            double new_width = originalWidth;
+            double new_height = originalHeight;
+
+            new_width = originalWidth + offset_x;
+            new_height = originalHeight + offset_y;
+
+            // Update the rectangle.
+            switch (_draggingHost.MouseHitType)
             {
-                if (_draggingHost == null)
-                    return;
+                case HitType.Body:
+                    break;
+                case HitType.LR:
+                    break;
+                case HitType.B:
+                    break;
+                case HitType.R:
+                    break;
+                case HitType.UL:
+                    new_x = originalLeft - offset_x;
+                    new_y = originalTop - offset_y;
+                    break;
+                case HitType.UR:
+                    new_y = originalTop - offset_y;
+                    break;
+                case HitType.LL:
+                    new_x = originalLeft - offset_x;
+                    break;
+                case HitType.L:
+                    new_x = originalLeft - offset_x;
+                    break;
+                case HitType.T:
+                    new_y = originalLeft - offset_y;
+                    break;
+            }
+            var maxRowsAndColumns = GetMaxRowsAndColumns();
+            new_width = new_width < _widgetHostSize.Width ? _widgetHostSize.Width : new_width;
+            new_width = Math.Min(new_width, ((maxRowsAndColumns.Column - _draggingHostData.WidgetBase.RowIndexColumnIndex.Column) * _widgetHostSize.Width));
+            new_height = new_height < _widgetHostSize.Height ? _widgetHostSize.Height : new_height;
 
-                var point = e.GetPosition(_draggingHost);
-                // See how much the mouse has moved.
-                double offset_x = point.X - LastPoint.X;
-                double offset_y = point.Y - LastPoint.Y;
-
-                // Get the rectangle's current position.
-                double new_x = Canvas.GetLeft(_draggingHost);
-                double new_y = Canvas.GetTop(_draggingHost);
-                double new_width = _draggingHost.ActualWidth;
-                double new_height = _draggingHost.ActualHeight;
-
+            // Don't use negative width or height.
+            if ((new_width > 0) && (new_height > 0))
+            {
                 // Update the rectangle.
-                switch (MouseHitType)
+                Canvas.SetLeft(_draggingHost, new_x);
+                Canvas.SetTop(_draggingHost, new_y);
+                _draggingHost.MaxHeight = new_height;
+                _draggingHost.MinHeight = new_height;
+                _draggingHost.Width = new_width;
+                _draggingHost.Height = new_height;
+                _draggingHost.MaxWidth = new_width;
+                _draggingHost.MinWidth = new_width;
+
+                int rowIndex = (int)Math.Round(new_y / _widgetHostSize.Height);
+                int columnIndex = (int)Math.Round(new_x / _widgetHostSize.Width);
+                int rowSpan = (int)Math.Round(new_height / _widgetHostSize.Height);
+                int columnSpan = (int)Math.Round(new_width / _widgetHostSize.Width);
+                rowIndex = rowIndex < 0 ? 0 : rowIndex;
+                columnIndex = columnIndex < 0 ? 0 : columnIndex;
+                rowSpan = rowSpan < 1 ? 1 : rowSpan;
+                columnSpan = columnSpan < 1 ? 1 : columnSpan;
+                var newRowIndexColumnIndex = new RowIndexColumnIndex(rowIndex, columnIndex);
+                var newRowSpanColumnSpan = new RowSpanColumnSpan(rowSpan, columnSpan);
+
+                // Get the closest row/column to the adorner "imaginary" position
+                //var closestRowColumn = GetClosestRowColumn(new Point(columnIndex * _widgetHostSize.Width, rowIndex * _widgetHostSize.Height));
+
+                // Use the canvas to draw a square around the closestRowColumn to indicate where the _draggingWidgetHost will be when mouse is released
+                var top = rowIndex < 0 ? 0 : rowIndex * _widgetHostSize.Height;
+                var left = columnIndex < 0 ? 0 : columnIndex * _widgetHostSize.Width;
+
+                Canvas.SetTop(_widgetDestinationHighlight, top);
+                Canvas.SetLeft(_widgetDestinationHighlight, left);
+                _widgetDestinationHighlight.Width = columnSpan * _widgetHostSize.Height;
+                _widgetDestinationHighlight.Height = rowSpan * _widgetHostSize.Width;
+
+                _draggingHostData.WidgetBase.RowIndexColumnIndex = new RowIndexColumnIndex(rowIndex, columnIndex);
+                _draggingHostData.WidgetBase.RowSpanColumnSpan = new RowSpanColumnSpan(rowSpan, columnSpan);
+                // Set the _dragging host into its dragging position
+                SetWidgetRowAndColumn(_draggingHost, newRowIndexColumnIndex, new RowSpanColumnSpan(rowSpan, columnSpan));
+
+                // Get all the widgets in the path of where the _dragging host will be set
+                var movingWidgets = GetWidgetMoveList(_widgetHostsData.FirstOrDefault(widgetData => widgetData == _draggingHostData), newRowIndexColumnIndex, null)
+                    .OrderBy(widgetData => widgetData.WidgetBase?.RowIndexColumnIndex.Row)
+                    .ToList();
+
+                // Move the movingWidgets down in rows the same amount of the _dragging hosts row span
+                // unless there is a widget already there in that case increment until there isn't. We
+                // used the OrderBy on the movingWidgets to make this work against widgets that have
+                // already moved
+                var movedWidgets = new List<WidgetHostData>();
+                foreach (var widgetData in movingWidgets.ToArray())
                 {
-                    case HitType.Body:
-                        new_x += offset_x;
-                        new_y += offset_y;
+                    // Use the initial amount the dragging widget row size is
+                    var rowIncrease = 1;
+
+                    // Find a row to move it
+                    Debug.Assert(widgetData.WidgetBase.RowIndexColumnIndex.Row != null, "widgetData.WidgetBase.RowIndexColumnIndex.Row != null");
+                    Debug.Assert(widgetData.WidgetBase.RowIndexColumnIndex.Column != null, "widgetData.WidgetBase.RowIndexColumnIndex.Column != null");
+
+                    while (true)
+                    {
+                        var widgetAtLoc = WidgetAtLocation(widgetData.WidgetBase.RowSpanColumnSpan,
+                            new RowIndexColumnIndex(widgetData.WidgetBase.RowIndexColumnIndex.Row + rowIncrease, widgetData.WidgetBase.RowIndexColumnIndex.Column))
+                            .Where(widgetHostData => !movingWidgets.Contains(widgetHostData) || movedWidgets.Contains(widgetHostData));
+
+                        if (!widgetAtLoc.Any())
+                            break;
+
+                        rowIncrease++;
+                    }
+
+                    var movingHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetData.HostIndex);
+
+                    var proposedRow = widgetData.WidgetBase.RowIndexColumnIndex.Row + rowIncrease;
+                    for (int row = widgetData.WidgetBase.PreviewRowIndexColumnIndex.Row; row <= proposedRow; row++)
+                    {
+                        var reArragnedIndex = new RowIndexColumnIndex(row, widgetData.WidgetBase.PreviewRowIndexColumnIndex.Column);
+
+                        var widgetAlreadyThere = WidgetAtLocation(widgetData.WidgetBase.RowSpanColumnSpan, reArragnedIndex)
+                            .Where(widgetHostDataThere => widgetData != widgetHostDataThere && !movingWidgets.Contains(widgetHostDataThere));
+
+                        if (widgetAlreadyThere.Any())
+                            continue;
+
+                        var widgetHost = _widgetHosts.FirstOrDefault(widgetHost => widgetHost.HostIndex == widgetData.HostIndex);
+
+                        SetWidgetRowAndColumn(widgetHost, reArragnedIndex, widgetData.WidgetBase.RowSpanColumnSpan);
+                        movingWidgets.Remove(widgetData);
                         break;
-                    case HitType.UL:
-                        new_x += offset_x;
-                        new_y += offset_y;
-                        new_width -= offset_x;
-                        new_height -= offset_y;
-                        break;
-                    case HitType.UR:
-                        new_y += offset_y;
-                        new_width += offset_x;
-                        new_height -= offset_y;
-                        break;
-                    case HitType.LR:
-                        new_width += offset_x;
-                        new_height += offset_y;
-                        break;
-                    case HitType.LL:
-                        new_x += offset_x;
-                        new_width -= offset_x;
-                        new_height += offset_y;
-                        break;
-                    case HitType.L:
-                        new_x += offset_x;
-                        new_width -= offset_x;
-                        break;
-                    case HitType.R:
-                        new_width += offset_x;
-                        break;
-                    case HitType.B:
-                        new_height += offset_y;
-                        break;
-                    case HitType.T:
-                        new_y += offset_y;
-                        new_height -= offset_y;
-                        break;
+                    }
+
+                    movedWidgets.Add(widgetData);
                 }
 
-                // Don't use negative width or height.
-                if ((new_width > 0) && (new_height > 0))
-                {
-                    // Update the rectangle.
-                    Canvas.SetLeft(_draggingHost, new_x);
-                    Canvas.SetTop(_draggingHost, new_y);
-                    _draggingHost.MaxHeight = new_height;
-                    _draggingHost.MinHeight = new_height;
-                    _draggingHost.MaxWidth = new_width;
-                    _draggingHost.MinWidth = new_width;
+                ReArrangeToPreviewLocation();
 
-                    // Save the mouse's new location.
-                    LastPoint = point;
-                }
             }
             //else
             //{
@@ -1654,11 +1762,14 @@ namespace DDT.Core.WidgetSystems.Controls
             //ReArrangeToPreviewLocation();
         }
         // Set a mouse cursor appropriate for the current hit type.
-        private void SetMouseCursor()
+        private void SetMouseCursor(WidgetHost widgetHost)
         {
+            if (widgetHost == null)
+                return;
+
             // See what cursor we should display.
             Cursor desired_cursor = Cursors.Arrow;
-            switch (MouseHitType)
+            switch (widgetHost.MouseHitType)
             {
                 case HitType.None:
                     desired_cursor = Cursors.Arrow;
@@ -1686,38 +1797,6 @@ namespace DDT.Core.WidgetSystems.Controls
 
             // Display the desired cursor.
             if (Cursor != desired_cursor) Cursor = desired_cursor;
-        }
-
-        // Return a HitType value to indicate what is at the point.
-        private HitType SetHitType(WidgetHost rect, Point point)
-        {
-            double left = 0;
-            double top = 0;
-            double right = left + rect.ActualWidth;
-            double bottom = top + rect.ActualHeight;
-            if (point.X < left) return HitType.None;
-            if (point.X > right) return HitType.None;
-            if (point.Y < top) return HitType.None;
-            if (point.Y > bottom) return HitType.None;
-
-            const double GAP = 10;
-            if (point.X - left < GAP)
-            {
-                // Left edge.
-                if (point.Y - top < GAP) return HitType.UL;
-                if (bottom - point.Y < GAP) return HitType.LL;
-                return HitType.L;
-            }
-            else if (right - point.X < GAP)
-            {
-                // Right edge.
-                if (point.Y - top < GAP) return HitType.UR;
-                if (bottom - point.Y < GAP) return HitType.LR;
-                return HitType.R;
-            }
-            if (point.Y - top < GAP) return HitType.T;
-            if (bottom - point.Y < GAP) return HitType.B;
-            return HitType.Body;
         }
 
         #endregion Private Methods

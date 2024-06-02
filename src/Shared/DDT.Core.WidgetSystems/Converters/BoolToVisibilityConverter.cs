@@ -9,9 +9,9 @@ namespace DDT.Core.WidgetSystems.Converters;
 /// <summary>
 /// Converter for if bool value provided is true then set Visibility.Collapsed else Visibility.Visible
 /// </summary>
-/// <seealso cref="System.Windows.Data.IValueConverter" />
+/// <seealso cref="T:System.Windows.Data.IValueConverter" />
 [ValueConversion(typeof(bool), typeof(Visibility))]
-public class InvertBoolToVisibilityConverter : IValueConverter
+public class BoolToVisibilityConverter : IValueConverter
 {
     #region Public Methods
 
@@ -34,9 +34,9 @@ public class InvertBoolToVisibilityConverter : IValueConverter
 
         if (!(value is bool boolValue))
             return null;
-            //throw new Exception($"{value} {nameof(InvertBoolToVisibilityConverter)} expects a boolean to passed in through its value parameter");
+        //throw new Exception($"{value} {nameof(InvertBoolToVisibilityConverter)} expects a boolean to passed in through its value parameter");
 
-        return boolValue ? Visibility.Collapsed : Visibility.Visible;
+        return boolValue ? Visibility.Visible : Visibility.Collapsed;
     }
 
     /// <summary>

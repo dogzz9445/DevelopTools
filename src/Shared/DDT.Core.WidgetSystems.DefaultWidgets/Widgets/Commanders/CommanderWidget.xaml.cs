@@ -24,7 +24,7 @@ namespace DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Commanders
         description: "Provides a one by one square widget.",
         menuPath: "Default/Commander",
         menuOrder: 0,
-        createWidget: () => new CommanderWidgetViewModel()
+        targetType: typeof(CommanderWidgetViewModel)
         )]
     public partial class CommanderWidgetViewModel : WidgetViewModelBase
     {

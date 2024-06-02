@@ -11,7 +11,7 @@
     <!-- 6. Secondary Brushes (Default: Dark)                             -->
     <!-- ================================================================ -->
 
-    <!-- 1. Light Theme Primary Colors                                    -->
+    <!-- 1. Light Theme Primary Colors -->
     <Color x:Key="LightTheme_PrimaryHueLightBrush">#484848</Color>
     <Color x:Key="LightTheme_PrimaryHueLightForegroundBrush">#000000</Color>
     <Color x:Key="LightTheme_PrimaryHueMidBrush">#212121</Color>
@@ -19,7 +19,7 @@
     <Color x:Key="LightTheme_PrimaryHueDarkBrush">#000000</Color>
     <Color x:Key="LightTheme_PrimaryHueDarkForegroundBrush">#000000</Color>
 
-    <!-- 2. Light Theme Secondary Colors                                  -->
+    <!-- 2. Light Theme Secondary Colors -->
     <Color x:Key="LightTheme_SecondaryHueLightBrush">#666ad1</Color>
     <Color x:Key="LightTheme_SecondaryHueLightForegroundBrush">#000000</Color>
     <Color x:Key="LightTheme_SecondaryHueMidBrush">#303f9f</Color>
@@ -27,7 +27,7 @@
     <Color x:Key="LightTheme_SecondaryHueDarkBrush">#001970</Color>
     <Color x:Key="LightTheme_SecondaryHueDarkForegroundBrush">#000000</Color>
 
-    <!-- 3. Dark Theme Primary Colors                                     -->
+    <!-- 3. Dark Theme Primary Colors -->
     <Color x:Key="DarkTheme_PrimaryHueLightBrush">#484848</Color>
     <Color x:Key="DarkTheme_PrimaryHueLightForegroundBrush">#FFFFFF</Color>
     <Color x:Key="DarkTheme_PrimaryHueMidBrush">#212121</Color>

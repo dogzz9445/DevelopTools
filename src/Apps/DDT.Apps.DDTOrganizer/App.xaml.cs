@@ -3,8 +3,12 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using DDT.Apps.DDTOrganizer.Controls;
+using DDT.Apps.DDTOrganizer.Views;
 using DDT.Core.WidgetSystems.Services;
+using DDT.Core.WPF.Extensions;
 using DDT.Core.WPF.Utilities;
+using MahApps.Metro.Controls;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Windows.UI.ViewManagement.Core;
@@ -59,7 +63,7 @@ public partial class App : Application
         Services = ConfigureServices(e.Args);
 
         // Create a new MainWindow and set its DataContext to a new MainWindowViewModel which binds the view to the viewmodel
-        new MainWindow { DataContext = new MainWindowViewModel() }.Show();
+        new MainWindow().Show();
     }
 
     private static IConfigurationRoot BuildConfiguration(string[] args)

@@ -65,5 +65,7 @@ public partial class WidgetViewModelBase : ObservableRecipient
         IsDragging = false;
         IsResizing = false;
         IsEditing = false;
+        VisibleTitle = true;
+        WidgetTitle = "Widget";
     }
 }

@@ -4,15 +4,24 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.FileOpeners"
+             xmlns:materialDesignMahApps="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center"
-             d:DesignHeight="450"
-             d:DesignWidth="800">
-    <Grid>
-        <TextBlock HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Text="One By One"
-                   TextAlignment="Center" />
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/DDT.Core.WidgetSystems;component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch">
+        <materialDesignMahApps:PackIcon Kind="File"
+                                        Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        VerticalContentAlignment="Stretch"/>
     </Grid>
 </UserControl>

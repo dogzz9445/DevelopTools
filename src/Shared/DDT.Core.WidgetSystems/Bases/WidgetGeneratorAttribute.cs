@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DDT.Core.WidgetSystems.Bases;
 
+[AttributeUsage(AttributeTargets.Class)]
 public class WidgetGeneratorAttribute : Attribute
 {
     public WidgetGenerator WidgetGenerator { get; private set; }
@@ -15,14 +16,14 @@ public class WidgetGeneratorAttribute : Attribute
         string description,
         string menuPath,
         int menuOrder,
-        CreateWidgetViewModelBase<WidgetViewModelBase> createWidget)
+        Type targetType)
     {
         WidgetGenerator = new WidgetGenerator(
             name: name,
             description: description,
             menuPath: menuPath,
             menuOrder: menuOrder,
-            createWidget: createWidget
+            createWidget: () => (WidgetViewModelBase)Activator.CreateInstance(targetType)
         );
     }
 }
