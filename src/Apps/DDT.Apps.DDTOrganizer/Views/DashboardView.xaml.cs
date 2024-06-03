@@ -3,10 +3,12 @@ using CommunityToolkit.Mvvm.Input;
 using DDT.Apps.DDTOrganizer.Controls;
 using DDT.Apps.DDTOrganizer.ViewModels;
 using DDT.Core.WidgetSystems.Bases;
+using DDT.Core.WidgetSystems.Contracts.Services;
 using DDT.Core.WidgetSystems.Controls;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Commanders;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.FileOpeners;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.LinkOpeners;
+using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Monacos;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Notes;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Timers;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.ToDoLists;
@@ -346,6 +348,7 @@ namespace DDT.Apps.DDTOrganizer.Views
             }    
 
             IWidgetService widgetService = services.GetService<IWidgetService>();
+            widgetService.LoadWidgetsFromDLL("DDT.Core.WidgetSystems.DefaultWidgets.dll");
             // --------------------------------------------------------------------------
             // Load Component Data
             // --------------------------------------------------------------------------
@@ -374,57 +377,62 @@ namespace DDT.Apps.DDTOrganizer.Views
             //        var value = ((WidgetGeneratorAttribute)attributes[0]).WidgetGenerator;
             //    }
             //}
-
-            widgetService.RegisterWidgets([
-                //new WidgetGenerator(
-                //    name: "Create Commander",
-                //    description: "Provides a one by one square widget.",
-                //    menuPath: "Default/Commander",
-                //    menuOrder: 0,
-                //    createWidget: () => new CommanderWidgetViewModel(_widgetNumber++)),
-                new WidgetGenerator(
-                    name: "Create File Opener",
-                    description: "Provides a one by one square widget.",
-                    menuPath: "Default/File Opener",
-                    menuOrder: 0,
-                    createWidget: () => new FileOpenerWidgetViewModel(_widgetNumber++)),
-                new WidgetGenerator(
-                    name: "Create Linke Opener",
-                    description: "Provides a one by one square widget.",
-                    menuPath: "Default/Link Opener",
-                    menuOrder: 0,
-                    createWidget: () => new LinkeOpenerWidgetViewModel(_widgetNumber++)),
-                new WidgetGenerator(
-                    name: "Create Note",
-                    description: "Provides a one by one square widget.",
-                    menuPath: "Default/Note",
-                    menuOrder: 0,
-                    createWidget: () => new NoteWidgetViewModel(_widgetNumber++)),
-                new WidgetGenerator(
-                    name: "Create Timer",
-                    description: "Provides a one by one square widget.",
-                    menuPath: "Default/Timer",
-                    menuOrder: 0,
-                    createWidget: () => new TimerWidgetViewModel(_widgetNumber++)),
-                new WidgetGenerator(
-                    name: "Create To Do List",
-                    description: "Provides a one by one square widget.",
-                    menuPath: "Default/To Do List",
-                    menuOrder: 0,
-                    createWidget: () => new ToDoListViewModel(_widgetNumber++)),
-                new WidgetGenerator(
-                    name: "Create Web Page",
-                    description: "Provides a one by one square widget.",
-                    menuPath: "Default/Web Page",
-                    menuOrder: 0,
-                    createWidget: () => new WebPageViewModel(_widgetNumber++)),
-                new WidgetGenerator(
-                    name: "Create Web Query",
-                    description: "Provides a one by one square widget.",
-                    menuPath: "Default/Web Query",
-                    menuOrder: 0,
-                    createWidget: () => new WebQueryViewModel(_widgetNumber++)),
-            ]);
+            //widgetService.RegisterWidgets([
+            //    new WidgetGenerator(
+            //        name: "Create Commander",
+            //        description: "Provides a one by one square widget.",
+            //        menuPath: "Default/Commander",
+            //        menuOrder: 0,
+            //        createWidget: () => new CommanderWidgetViewModel()),
+            //    new WidgetGenerator(
+            //        name: "Create File Opener",
+            //        description: "Provides a one by one square widget.",
+            //        menuPath: "Default/File Opener",
+            //        menuOrder: 0,
+            //        createWidget: () => new FileOpenerWidgetViewModel(_widgetNumber++)),
+            //    new WidgetGenerator(
+            //        name: "Create Linke Opener",
+            //        description: "Provides a one by one square widget.",
+            //        menuPath: "Default/Link Opener",
+            //        menuOrder: 0,
+            //        createWidget: () => new LinkOpenerWidgetViewModel(_widgetNumber++)),
+            //    new WidgetGenerator(
+            //        name: "Create Note",
+            //        description: "Provides a one by one square widget.",
+            //        menuPath: "Default/Note",
+            //        menuOrder: 0,
+            //        createWidget: () => new NoteWidgetViewModel(_widgetNumber++)),
+            //    new WidgetGenerator(
+            //        name: "Create Timer",
+            //        description: "Provides a one by one square widget.",
+            //        menuPath: "Default/Timer",
+            //        menuOrder: 0,
+            //        createWidget: () => new TimerWidgetViewModel(_widgetNumber++)),
+            //    new WidgetGenerator(
+            //        name: "Create To Do List",
+            //        description: "Provides a one by one square widget.",
+            //        menuPath: "Default/To Do List",
+            //        menuOrder: 0,
+            //        createWidget: () => new ToDoListViewModel(_widgetNumber++)),
+            //    new WidgetGenerator(
+            //        name: "Create Web Page",
+            //        description: "Provides a one by one square widget.",
+            //        menuPath: "Default/Web Page",
+            //        menuOrder: 0,
+            //        createWidget: () => new WebPageViewModel(_widgetNumber++)),
+            //    new WidgetGenerator(
+            //        name: "Create Web Query",
+            //        description: "Provides a one by one square widget.",
+            //        menuPath: "Default/Web Query",
+            //        menuOrder: 0,
+            //        createWidget: () => new WebQueryViewModel(_widgetNumber++)),
+            //    new WidgetGenerator(
+            //        name: "Create Monaco",
+            //        description: "Provides a one by one square widget.",
+            //        menuPath: "Default/Monaco",
+            //        menuOrder: 0,
+            //        createWidget: () => new MonacoWidgetViewModel(services)),
+            //]);
 
             // --------------------------------------------------------------------------
             // Add Widget Menu

@@ -14,6 +14,7 @@ public interface IWidgetService
 {
     void RegisterWidgets(List<WidgetGenerator> widgets);
     List<WidgetGenerator> GetAvailableWidgets();
+    void LoadWidgetsFromDLL(string pathDLL);
 }
 
 public class WidgetService : IWidgetService
@@ -23,6 +24,13 @@ public class WidgetService : IWidgetService
     /// </summary>
     /// <value>The available widgets.</value>
     private readonly List<WidgetGenerator> _availableWidgets = new List<WidgetGenerator>();
+    private readonly IServiceProvider _services;
+
+    public WidgetService(IServiceProvider services)
+    {
+        _services = services;
+    }
+   
 
     public void RegisterWidgets(List<WidgetGenerator> widgets)
     {
@@ -43,8 +51,11 @@ public class WidgetService : IWidgetService
         {
             System.Reflection.MemberInfo info = type;
             var attributes = info.GetCustomAttributes(true);
-            if (attributes[0] is WidgetGeneratorAttribute)
+            
+            if (attributes.Length > 0 && attributes[0] is WidgetGeneratorAttribute)
             {
+                var attribute = ((WidgetGeneratorAttribute)attributes[0]);
+                attribute.Services = _services;
                 var value = ((WidgetGeneratorAttribute)attributes[0]).WidgetGenerator;
                 widgets.Add(value);
             }

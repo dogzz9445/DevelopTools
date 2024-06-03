@@ -32,7 +32,7 @@ namespace DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Commanders
         /// <summary>
         /// Initializes a new instance of the <see cref="OneByOneViewModel"/> class.
         /// </summary>
-        public CommanderWidgetViewModel() : base()
+        public CommanderWidgetViewModel(IServiceProvider services) : base(services)
         {
             WidgetTitle = $"Commander{WidgetNumber++}";
             RowSpanColumnSpan = new RowSpanColumnSpan(2, 2);

@@ -1,7 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:fileopener="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.FileOpeners"
-                    xmlns:commanders="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Commanders">
+                    xmlns:commanders="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Commanders"
+                    xmlns:linkers="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.LinkOpeners"
+                    xmlns:monacos="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Monacos"
+                    xmlns:notes="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Notes"
+                    xmlns:timers="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Timers"
+                    xmlns:todolists="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.ToDoLists"
+                    xmlns:webpages="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.WebPages"
+                    xmlns:webqueries="clr-namespace:DDT.Core.WidgetSystems.DefaultWidgets.Widgets.WebQueries">
     
     <DataTemplate DataType="{x:Type fileopener:FileOpenerWidgetViewModel}">
         <fileopener:FileOpenerWidget />
@@ -9,6 +16,34 @@
     
     <DataTemplate DataType="{x:Type commanders:CommanderWidgetViewModel}">
         <commanders:CommanderWidget />
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type linkers:LinkOpenerWidgetViewModel}">
+        <linkers:LinkOpenerWidget />
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type monacos:MonacoWidgetViewModel}">
+        <monacos:MonacoWidget />
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type notes:NoteWidgetViewModel}">
+        <notes:NoteWidget />
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type timers:TimerWidgetViewModel}">
+        <timers:TimerWidget />
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type todolists:ToDoListViewModel}">
+        <todolists:ToDoListWidget />
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type webpages:WebPageViewModel}">
+        <webpages:WebPageWidget/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type webqueries:WebQueryViewModel}">
+        <webqueries:WebQueryWidget />
     </DataTemplate>
     
 </ResourceDictionary>

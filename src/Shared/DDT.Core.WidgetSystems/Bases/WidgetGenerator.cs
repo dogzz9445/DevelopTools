@@ -12,7 +12,7 @@ public class WidgetGenerator
 {
     #region Private Fields
 
-    private readonly Func<WidgetViewModelBase> _createWidget;
+    public Func<WidgetViewModelBase> CreateWidgetInternal;
 
     #endregion Private Fields
 
@@ -37,6 +37,8 @@ public class WidgetGenerator
 
     public int MenuOrder { get; }
 
+    public Type TargetType { get; }
+
     #endregion Public Properties
 
     #region Public Constructors
@@ -52,13 +54,15 @@ public class WidgetGenerator
         string description,
         string menuPath,
         int menuOrder,
+        Type targetType,
         Func<WidgetViewModelBase> createWidget)
     {
         Name = name;
         MenuPath = menuPath;
         Description = description;
         MenuOrder = menuOrder;
-        _createWidget = createWidget;
+        TargetType = targetType;
+        CreateWidgetInternal = createWidget;
     }
 
     #endregion Public Constructors
@@ -71,7 +75,7 @@ public class WidgetGenerator
     /// <returns>WidgetBase.</returns>
     public WidgetViewModelBase CreateWidget()
     {
-        return _createWidget.Invoke();
+        return CreateWidgetInternal.Invoke();
     }
 
     #endregion Public Methods

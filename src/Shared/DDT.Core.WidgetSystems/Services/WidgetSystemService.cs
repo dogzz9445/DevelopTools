@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DDT.Core.WidgetSystems.Bases;
 using DDT.Core.WidgetSystems.Configurations;
+using DDT.Core.WidgetSystems.Contracts.Services;
 using Microsoft.Extensions.Configuration;
 
 namespace DDT.Core.WidgetSystems.Services;
@@ -18,6 +19,7 @@ public interface IWidgetSystemService
 public class WidgetSystemOption
 {
     public const string Section = "WidgetSystem";
+    public const string WidgetSystemFilename = "widgets.json";
 
     public ProjectOption currentProject { get; set; }
     public WorkflowOption currentWorkflow { get; set; }

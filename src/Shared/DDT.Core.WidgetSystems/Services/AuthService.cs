@@ -1,4 +1,5 @@
 ﻿using DDT.Core.WidgetSystems.Configurations;
+using DDT.Core.WidgetSystems.Contracts.Services;
 using DDT.Core.WidgetSystems.Utils;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -12,44 +13,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DDT.Core.WidgetSystems.Services;
-
-public enum AuthorizationLevel
-{
-    Guest,
-    Modifier,
-    Administrator,
-}
-
-public enum AuthenticationCode
-{
-    Error,
-    NoUser,
-    InsufficientPrivileges,
-    Success,
-}
-
-public class AuthenticationInfo
-{
-    public string username;
-    public string password;
-}
-
-public class AuthenticationResponse
-{
-    public AuthenticationCode Code = AuthenticationCode.Error;
-}
-
-public class AuthorizationInfo
-{
-    public AuthorizationLevel AuthrizationLevel { get; set; }
-}
-
-public interface IAuthService
-{
-    public string SecretKey { get; set; }
-    public bool UseAuthService { get; set; }
-    public bool IsAuthorized { get; set; }
-}
 
 public class AuthContext(EntityConfigurationOption? options = null) : DbContext
 {

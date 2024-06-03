@@ -1,6 +1,4 @@
-﻿using DDT.Core.WidgetSystems.Controls.Models;
-using DDT.Core.WidgetSystems.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,15 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DDT.Core.WidgetSystems.Controls.Models;
+using DDT.Core.WidgetSystems.Controls;
 
 namespace DDT.Core.WidgetSystems.DefaultWidgets.Widgets.LinkOpeners;
 
-public partial class LinkeOpenerWidgetViewModel : WidgetViewModelBase
+public partial class LinkOpenerWidgetViewModel : WidgetViewModelBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="OneByOneViewModel"/> class.
     /// </summary>
-    public LinkeOpenerWidgetViewModel(int widgetNumber) : base()
+    public LinkOpenerWidgetViewModel(int widgetNumber) : base()
     {
         WidgetTitle = $"Commander{widgetNumber}";
         RowSpanColumnSpan = new RowSpanColumnSpan(2, 2);

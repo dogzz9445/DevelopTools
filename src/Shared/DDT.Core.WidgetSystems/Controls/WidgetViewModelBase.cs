@@ -50,8 +50,11 @@ public partial class WidgetViewModelBase : ObservableRecipient
     [ObservableProperty]
     private bool? _isEditing;
 
-    public WidgetViewModelBase()
+    private readonly IServiceProvider _services;
+
+    public WidgetViewModelBase(IServiceProvider services = null)
     {
+        _services = services;
         RowIndexColumnIndex = new RowIndexColumnIndex(0, 0);
         PreviewRowIndexColumnIndex = new RowIndexColumnIndex(0, 0);
         RowSpanColumnSpan = new RowSpanColumnSpan(1, 1);

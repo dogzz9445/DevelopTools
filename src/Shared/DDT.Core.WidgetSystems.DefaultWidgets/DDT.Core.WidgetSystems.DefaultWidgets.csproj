@@ -17,6 +17,21 @@
     <Folder Include="LogicNodes\" />
   </ItemGroup>
 
+	<ItemGroup>
+		<Content Include="Assets\Monaco\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2535.41" />
+  </ItemGroup>
+
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
+	<ItemGroup>
+		<Folder Include="Assets\Monaco\" />
+	</ItemGroup>
 
 </Project>

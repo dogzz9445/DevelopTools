@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using DDT.Apps.DDTOrganizer.Controls;
+using DDT.Apps.DDTOrganizer.Services;
 using DDT.Apps.DDTOrganizer.Views;
+using DDT.Core.WidgetSystems.Contracts.Services;
 using DDT.Core.WidgetSystems.Services;
 using DDT.Core.WPF.Extensions;
 using DDT.Core.WPF.Utilities;
@@ -88,6 +90,7 @@ public partial class App : Application
         serviceCollection.AddSingleton<IConfiguration>(configuration);
 
         // Register services
+        serviceCollection.AddSingleton<IApplicationService, ApplicationService>();
         serviceCollection.AddSingleton<ISecretService, ModelVersionSecretService>();
         serviceCollection.AddSingleton<IAuthService, AuthService>();
         serviceCollection.AddSingleton<IWidgetService, WidgetService>();
