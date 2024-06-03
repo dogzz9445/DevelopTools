@@ -28,13 +28,14 @@ namespace DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Commanders
         )]
     public partial class CommanderWidgetViewModel : WidgetViewModelBase
     {
-        public static int WidgetNumber = 1;
+        private string? _filePath;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="OneByOneViewModel"/> class.
         /// </summary>
-        public CommanderWidgetViewModel(IServiceProvider services) : base(services)
+        public CommanderWidgetViewModel(IServiceProvider serivces) : base(serivces)
         {
-            WidgetTitle = $"Commander{WidgetNumber++}";
+            WidgetTitle = $"Commander";
             RowSpanColumnSpan = new RowSpanColumnSpan(2, 2);
         }
     }

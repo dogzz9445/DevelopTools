@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DDT.Core.WidgetSystems.Bases;
 using DDT.Core.WidgetSystems.Configurations;
@@ -14,6 +15,7 @@ namespace DDT.Core.WidgetSystems.Services;
 
 public interface IWidgetSystemService
 {
+    bool TryGetWidgetOption<T>(Guid guid, out T option);
 }
 
 public class WidgetSystemOption
@@ -103,10 +105,21 @@ public class WidgetSystemOption
 
 public class WidgetSystemService : IWidgetSystemService
 {
+    public Dictionary<Guid, string> GuidToEntityJson = new();
+
     public WidgetSystemService(IConfiguration configuration)
     {
         var option = new WidgetSystemOption();
         configuration.GetSection(WidgetSystemOption.Section).Bind(option);
+    }
+
+    public bool TryGetWidgetOption<T>(Guid guid, out T option)
+    {
+        option = default;
+        if (!GuidToEntityJson.TryGetValue(guid, out var json))
+            return false;
+        option = JsonSerializer.Deserialize<T>(json);
+        return true;
     }
 
     private async Task InitializeAsync(string path, Task<AuthenticationInfo?> requestAuthentication)

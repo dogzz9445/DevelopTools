@@ -14,17 +14,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DDT.Core.WidgetSystems.Bases;
+using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Monacos;
 
 namespace DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Notes;
 
+[WidgetGenerator(
+    name: "Create Note",
+    description: "Provides a one by one square widget.",
+    menuPath: "Default/Note",
+    menuOrder: 0,
+    targetType: typeof(NoteWidgetViewModel)
+    )]
 public partial class NoteWidgetViewModel : WidgetViewModelBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="OneByOneViewModel"/> class.
     /// </summary>
-    public NoteWidgetViewModel(int widgetNumber) : base()
+    public NoteWidgetViewModel(IServiceProvider services) : base(services)
     {
-        WidgetTitle = $"Commander{widgetNumber}";
+        WidgetTitle = $"Commander";
         RowSpanColumnSpan = new RowSpanColumnSpan(2, 2);
     }
 }

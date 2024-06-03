@@ -14,17 +14,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DDT.Core.WidgetSystems.Bases;
+using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Timers;
 
 namespace DDT.Core.WidgetSystems.DefaultWidgets.Widgets.ToDoLists;
 
+[WidgetGenerator(
+    name: "Create To Do List",
+    description: "Provides a one by one square widget.",
+    menuPath: "Default/To Do List",
+    menuOrder: 0,
+    targetType: typeof(ToDoListViewModel)
+    )]
 public partial class ToDoListViewModel : WidgetViewModelBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="OneByOneViewModel"/> class.
     /// </summary>
-    public ToDoListViewModel(int widgetNumber) : base()
+    public ToDoListViewModel(IServiceProvider services) : base(services)
     {
-        WidgetTitle = $"ToDoList{widgetNumber}";
+        WidgetTitle = $"ToDoList";
         RowSpanColumnSpan = new RowSpanColumnSpan(2, 2);
     }
 }

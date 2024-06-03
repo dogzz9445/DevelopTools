@@ -174,7 +174,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto"
-                                   MinHeight="35" />
+                                   MinHeight="56" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
@@ -349,6 +349,8 @@
                                            BasedOn="{StaticResource MaterialDesignMenuItem}">
                                         <Setter Property="Command"
                                                 Value="{Binding Command}" />
+                                        <Setter Property="Margin"
+                                                Value="0 4 0 0" />
                                     </Style>
                                 </Menu.ItemContainerStyle>
                                 <Menu.ItemTemplate>
@@ -358,82 +360,27 @@
                                     </HierarchicalDataTemplate>
                                 </Menu.ItemTemplate>
                             </Menu>
-                            
+
+                            <Menu >
+                                <Menu.ItemContainerStyle>
+                                    <Style TargetType="{x:Type MenuItem}"
+                                           BasedOn="{StaticResource MaterialDesignMenuItem}">
+                                        <Setter Property="Command"
+                                                Value="{Binding Command}" />
+                                        <Setter Property="Margin"
+                                                Value="0 4 0 0" />
+                                    </Style>
+                                </Menu.ItemContainerStyle>
+                                <MenuItem Header="Paste Widget" />
+                            </Menu>
+
+
                             <Separator />
 
-                            <Button Content="{materialDesign:PackIcon Kind=Twitter}"
-                                    ToolTip="Follow me on Twitter" />
-                            <Button Content="{materialDesign:PackIcon Kind=ContentSave}"
-                                    ToolTip="Save" />
-                            <Separator />
-                            <Button Command="Cut"
-                                    Content="{materialDesign:PackIcon Kind=ContentCut}"
-                                    ToolBar.OverflowMode="AsNeeded"
-                                    ToolTip="Cut" />
-                            <Button Command="Copy"
-                                    Content="{materialDesign:PackIcon Kind=ContentCopy}"
-                                    ToolBar.OverflowMode="AsNeeded"
-                                    ToolTip="Copy that stuff" />
-                            <Separator />
-                            <Button Command="Paste"
-                                    Content="{materialDesign:PackIcon Kind=ContentPaste}"
-                                    ToolBar.OverflowMode="AsNeeded"
-                                    ToolTip="Paste some stuff" />
                             <!--
-          when badging in a toolbar, make sure the parent ToolBar.ClipToBounds="False", and
-          manually apply the button style
-        -->
-                            <materialDesign:Badged Badge="{materialDesign:PackIcon Alert}"
-                                                   CornerRadius="5"
-                                                   ToolBar.OverflowMode="AsNeeded">
-                                <Button Content="{materialDesign:PackIcon Kind=AirplaneTakeoff}"
-                                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                                        ToolTip="Badge it up!" />
-                            </materialDesign:Badged>
-                            <Separator />
-                            <ListBox>
-                                <ListBoxItem ToolTip="This is a lonley toggle with TextBlock instead of icon">
-                                    <TextBlock Text="W" />
-                                </ListBoxItem>
-                            </ListBox>
-                            <Separator />
-                            <ListBox SelectedIndex="0">
-                                <ListBox.ToolTip>
-                                    <StackPanel>
-                                        <TextBlock Text="MaterialDesignToolToggleFlatListBox" />
-                                        <TextBlock Text="Exclusive selection" />
-                                        <TextBlock Text="ListBoxAssist.IsToggle allows more natural toggle behaviour" />
-                                    </StackPanel>
-                                </ListBox.ToolTip>
-                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignLeft}" />
-                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignCenter}" />
-                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignRight}" />
-                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignJustify}" />
-                            </ListBox>
-                            <Separator />
-                            <ListBox SelectionMode="Extended">
-                                <ListBox.ToolTip>
-                                    <StackPanel>
-                                        <TextBlock Text="MaterialDesignToolToggleListBox" />
-                                        <TextBlock Text="Multiple selection" />
-                                        <TextBlock Text="ListBoxAssist.IsToggle allows more natural toggle behaviour" />
-                                    </StackPanel>
-                                </ListBox.ToolTip>
-                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatBold}" />
-                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatItalic}" />
-                                <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatUnderline}" />
-                            </ListBox>
-                            <Separator />
-                            <Label VerticalAlignment="Center"
-                                   Content="Font size:" />
-                            <ComboBox>
-                                <ComboBoxItem Content="10" />
-                                <ComboBoxItem Content="12"
-                                              IsSelected="True" />
-                                <ComboBoxItem Content="14" />
-                                <ComboBoxItem Content="16" />
-                            </ComboBox>
-                            <CheckBox Content="Check" />
+                              when badging in a toolbar, make sure the parent ToolBar.ClipToBounds="False", and
+                              manually apply the button style
+                            -->
                             <Button Content="{materialDesign:PackIcon Kind=Hotel}"
                                     ToolBar.OverflowMode="Always"
                                     ToolTip="Take a nap" />

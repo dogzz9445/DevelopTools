@@ -7,8 +7,18 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="LoginView">
+    <Page.Resources>
+        <local:UserConveter x:Key="UserConverter" />
+    </Page.Resources>
 
     <Grid>
-        
+        <StackPanel Margin="24">
+            <TextBlock Text="{Binding CurrentUser,
+                            UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource UserConverter}}"
+                       FontSize="20"
+                       Foreground="White" />
+            <Button Content="랜덤이름"
+                    Command="{Binding SetRandomUserNameCommand}" />
+        </StackPanel>
     </Grid>
 </Page>

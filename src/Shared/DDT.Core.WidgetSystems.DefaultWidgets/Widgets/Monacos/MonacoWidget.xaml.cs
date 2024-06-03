@@ -22,9 +22,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Web.WebView2.Wpf;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DDT.Core.WidgetSystems.Bases;
+using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.LinkOpeners;
 
 namespace DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Monacos;
 
+[WidgetGenerator(
+    name: "Create Monaco",
+    description: "Provides a one by one square widget.",
+    menuPath: "Default/Monaco",
+    menuOrder: 0,
+    targetType: typeof(MonacoWidgetViewModel)
+    )]
 public partial class MonacoWidgetViewModel : WidgetViewModelBase
 {
     private MonacoController? _monacoController;
@@ -34,7 +43,7 @@ public partial class MonacoWidgetViewModel : WidgetViewModelBase
     [ObservableProperty]
     private WebView2 _webView;
 
-    public MonacoWidgetViewModel(IServiceProvider services) : base()
+    public MonacoWidgetViewModel(IServiceProvider services) : base(services)
     {
         WidgetTitle = $"Monaco";
         VisibleTitle = false;

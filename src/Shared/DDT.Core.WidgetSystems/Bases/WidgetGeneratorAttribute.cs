@@ -27,13 +27,14 @@ public class WidgetGeneratorAttribute : Attribute
             menuPath: menuPath,
             menuOrder: menuOrder,
             targetType: targetType,
-            createWidget: () => (WidgetViewModelBase)Activator.CreateInstance(targetType, true, Services)
+            createWidget: () => (WidgetViewModelBase)Activator.CreateInstance(targetType, Services)
         );
     }
 
-    public void RegisterServices()
+    public void RegisterServices(IServiceProvider services)
     {
+        Services = services;
         WidgetGenerator.CreateWidgetInternal = () =>
-            (WidgetViewModelBase)Activator.CreateInstance(WidgetGenerator.TargetType, true, Services);
+            (WidgetViewModelBase)Activator.CreateInstance(WidgetGenerator.TargetType, Services);
     }
 }

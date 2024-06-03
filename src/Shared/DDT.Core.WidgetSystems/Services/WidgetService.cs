@@ -52,12 +52,14 @@ public class WidgetService : IWidgetService
             System.Reflection.MemberInfo info = type;
             var attributes = info.GetCustomAttributes(true);
             
-            if (attributes.Length > 0 && attributes[0] is WidgetGeneratorAttribute)
+            for (int i = 0; i < attributes.Length; i++)
             {
-                var attribute = ((WidgetGeneratorAttribute)attributes[0]);
-                attribute.Services = _services;
-                var value = ((WidgetGeneratorAttribute)attributes[0]).WidgetGenerator;
-                widgets.Add(value);
+                if (attributes[i] is WidgetGeneratorAttribute)
+                {
+                    var attribute = ((WidgetGeneratorAttribute)attributes[i]);
+                    attribute.RegisterServices(_services);
+                    widgets.Add(attribute.WidgetGenerator);
+                }
             }
         }
 

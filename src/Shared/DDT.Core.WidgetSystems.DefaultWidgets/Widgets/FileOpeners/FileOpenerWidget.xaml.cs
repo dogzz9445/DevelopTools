@@ -83,63 +83,13 @@ public partial class FileOpenerWidgetViewModel : WidgetViewModelBase
     [ObservableProperty]
     private string? _fileContentHashEncoding;
 
-    [ObservableProperty]
-    private string? _fileContentHashSalt;
-
-    [ObservableProperty]
-    private string? _fileContentHashPepper;
-
-    [ObservableProperty]
-    private string? _fileContentHashIterations;
-
-    [ObservableProperty]
-    private string? _fileContentHashKeySize;
-
-    [ObservableProperty]
-    private string? _fileContentHashBlockSize;
-
-    [ObservableProperty]
-    private string? _fileContentHashMode;
-
-    [ObservableProperty]
-    private string? _fileContentHashPadding;
-
-    [ObservableProperty]
-    private string? _fileContentHashFeedbackSize;
-
-    [ObservableProperty]
-    private string? _fileContentHashSaltLength;
-
-    [ObservableProperty]
-    private string? _fileContentHashPepperLength;
-
-    [ObservableProperty]
-    private string? _fileContentHashSaltEncoding;
-
-    [ObservableProperty]
-    private string? _fileContentHashPepperEncoding;
-
-    [ObservableProperty]
-    private string? _fileContentHashSaltHash;
-
-    [ObservableProperty]
-    private string? _fileContentHashPepperHash;
-
-    [ObservableProperty]
-    private string? _fileContentHashSaltHashAlgorithm;
-
-    [ObservableProperty]
-    private string? _fileContentHashPepperHashAlgorithm;
-
-    [ObservableProperty]
-    private string? _fileContentHashSaltHashLength;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OneByOneViewModel"/> class.
     /// </summary>
-    public FileOpenerWidgetViewModel(int widgetNumber) : base()
+    public FileOpenerWidgetViewModel(IServiceProvider services) : base(services)
     {
-        WidgetTitle = $"FileOpener{widgetNumber}";
+        WidgetTitle = $"FileOpener";
         VisibleTitle = false;
         RowSpanColumnSpan = new RowSpanColumnSpan(1, 1);
     }

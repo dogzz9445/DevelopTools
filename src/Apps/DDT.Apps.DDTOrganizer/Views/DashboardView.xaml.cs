@@ -340,99 +340,27 @@ namespace DDT.Apps.DDTOrganizer.Views
             if (authService != null && authService.UseAuthService)
             {
                 var loginWindow = new BaseWindow();
+                loginWindow.Content = new LoginView();
                 loginWindow.ShowDialog();
                 if (loginWindow.DialogResult == false)
                 {
                     // System.Shutdown
                 }
-            }    
+            }
+
+            // --------------------------------------------------------------------------
+            // Available Widgets
+            // --------------------------------------------------------------------------
 
             IWidgetService widgetService = services.GetService<IWidgetService>();
             widgetService.LoadWidgetsFromDLL("DDT.Core.WidgetSystems.DefaultWidgets.dll");
+
             // --------------------------------------------------------------------------
             // Load Component Data
             // --------------------------------------------------------------------------
             Dashboards = [new DashboardModel { Title = "My Dashboard" }];
             SelectedDashboard = Dashboards[0];
             AddWidgetMenuItemViewModels = new ObservableCollection<MenuItemViewModel>();
-
-
-            // --------------------------------------------------------------------------
-            // Available Widgets
-            // --------------------------------------------------------------------------
-
-            // TODO:
-            // TODO:
-            // TODO:
-            // TODO:
-            // TODO:
-            //Assembly a = Assembly.LoadFrom(PathToDLL);
-            //var types = a.GetTypes().Where(t => typeof(WidgetViewModelBase).IsAssignableFrom(t)); ;
-            //foreach (var type in types)
-            //{
-            //    System.Reflection.MemberInfo info = type;
-            //    var attributes = info.GetCustomAttributes(true);
-            //    if (attributes[0] is WidgetGeneratorAttribute)
-            //    {
-            //        var value = ((WidgetGeneratorAttribute)attributes[0]).WidgetGenerator;
-            //    }
-            //}
-            //widgetService.RegisterWidgets([
-            //    new WidgetGenerator(
-            //        name: "Create Commander",
-            //        description: "Provides a one by one square widget.",
-            //        menuPath: "Default/Commander",
-            //        menuOrder: 0,
-            //        createWidget: () => new CommanderWidgetViewModel()),
-            //    new WidgetGenerator(
-            //        name: "Create File Opener",
-            //        description: "Provides a one by one square widget.",
-            //        menuPath: "Default/File Opener",
-            //        menuOrder: 0,
-            //        createWidget: () => new FileOpenerWidgetViewModel(_widgetNumber++)),
-            //    new WidgetGenerator(
-            //        name: "Create Linke Opener",
-            //        description: "Provides a one by one square widget.",
-            //        menuPath: "Default/Link Opener",
-            //        menuOrder: 0,
-            //        createWidget: () => new LinkOpenerWidgetViewModel(_widgetNumber++)),
-            //    new WidgetGenerator(
-            //        name: "Create Note",
-            //        description: "Provides a one by one square widget.",
-            //        menuPath: "Default/Note",
-            //        menuOrder: 0,
-            //        createWidget: () => new NoteWidgetViewModel(_widgetNumber++)),
-            //    new WidgetGenerator(
-            //        name: "Create Timer",
-            //        description: "Provides a one by one square widget.",
-            //        menuPath: "Default/Timer",
-            //        menuOrder: 0,
-            //        createWidget: () => new TimerWidgetViewModel(_widgetNumber++)),
-            //    new WidgetGenerator(
-            //        name: "Create To Do List",
-            //        description: "Provides a one by one square widget.",
-            //        menuPath: "Default/To Do List",
-            //        menuOrder: 0,
-            //        createWidget: () => new ToDoListViewModel(_widgetNumber++)),
-            //    new WidgetGenerator(
-            //        name: "Create Web Page",
-            //        description: "Provides a one by one square widget.",
-            //        menuPath: "Default/Web Page",
-            //        menuOrder: 0,
-            //        createWidget: () => new WebPageViewModel(_widgetNumber++)),
-            //    new WidgetGenerator(
-            //        name: "Create Web Query",
-            //        description: "Provides a one by one square widget.",
-            //        menuPath: "Default/Web Query",
-            //        menuOrder: 0,
-            //        createWidget: () => new WebQueryViewModel(_widgetNumber++)),
-            //    new WidgetGenerator(
-            //        name: "Create Monaco",
-            //        description: "Provides a one by one square widget.",
-            //        menuPath: "Default/Monaco",
-            //        menuOrder: 0,
-            //        createWidget: () => new MonacoWidgetViewModel(services)),
-            //]);
 
             // --------------------------------------------------------------------------
             // Add Widget Menu

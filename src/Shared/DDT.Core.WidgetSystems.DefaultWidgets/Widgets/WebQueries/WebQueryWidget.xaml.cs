@@ -14,17 +14,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DDT.Core.WidgetSystems.Bases;
+using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.WebPages;
 
 namespace DDT.Core.WidgetSystems.DefaultWidgets.Widgets.WebQueries;
 
+[WidgetGenerator(
+    name: "Create Web Query",
+    description: "Provides a one by one square widget.",
+    menuPath: "Default/Web Query",
+    menuOrder: 0,
+    targetType: typeof(WebQueryViewModel)
+    )]
 public partial class WebQueryViewModel : WidgetViewModelBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="OneByOneViewModel"/> class.
     /// </summary>
-    public WebQueryViewModel(int widgetNumber) : base()
+    public WebQueryViewModel(IServiceProvider services) : base(services)
     {
-        WidgetTitle = $"ToDoList{widgetNumber}";
+        WidgetTitle = $"ToDoList";
         RowSpanColumnSpan = new RowSpanColumnSpan(2, 2);
     }
 }

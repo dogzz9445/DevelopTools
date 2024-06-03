@@ -10,6 +10,11 @@ namespace DDT.Core.WidgetSystems.Controls;
 
 public partial class WidgetViewModelBase : ObservableRecipient
 {
+    private readonly IServiceProvider _services;
+
+    [ObservableProperty]
+    private Guid _uid;
+
     [ObservableProperty]
     private RowIndexColumnIndex? _rowIndexColumnIndex;
 
@@ -50,11 +55,8 @@ public partial class WidgetViewModelBase : ObservableRecipient
     [ObservableProperty]
     private bool? _isEditing;
 
-    private readonly IServiceProvider _services;
-
-    public WidgetViewModelBase(IServiceProvider services = null)
+    public WidgetViewModelBase()
     {
-        _services = services;
         RowIndexColumnIndex = new RowIndexColumnIndex(0, 0);
         PreviewRowIndexColumnIndex = new RowIndexColumnIndex(0, 0);
         RowSpanColumnSpan = new RowSpanColumnSpan(1, 1);
@@ -70,5 +72,10 @@ public partial class WidgetViewModelBase : ObservableRecipient
         IsEditing = false;
         VisibleTitle = true;
         WidgetTitle = "Widget";
+    }
+
+    public WidgetViewModelBase(IServiceProvider services) : this()
+    {
+        _services = services;
     }
 }

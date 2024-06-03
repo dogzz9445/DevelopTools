@@ -1,19 +1,21 @@
-﻿using DDT.Core.Contracts.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Mime;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using DDT.Core.Contracts.Services;
 
 namespace DDT.Core.Services;
 
 public class JsonFileStorageService : IStorageService
 {
+    private static readonly JsonSerializerOptions OPTIONS = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Converters = { new JsonStringEnumConverter() }
+    };
+
     public void Delete(string filename)
     {
         if (string.IsNullOrEmpty(filename))
@@ -34,11 +36,7 @@ public class JsonFileStorageService : IStorageService
             return default;
 
         using var stream = File.OpenRead(filename);
-        var json = await JsonSerializer.DeserializeAsync<T>(stream,
-            new JsonSerializerOptions()
-            {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-            });
+        var json = await JsonSerializer.DeserializeAsync<T>(stream, OPTIONS);
         args.Data = () => json;
         return args;
     }
@@ -53,12 +51,7 @@ public class JsonFileStorageService : IStorageService
         StorageHandleArgs<T> args = new StorageHandleArgs<T>();
 
         using var stream = File.OpenWrite(filename);
-        await JsonSerializer.SerializeAsync<T>(stream, content,
-            new JsonSerializerOptions()
-            {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-                WriteIndented = true,
-            });
+        await JsonSerializer.SerializeAsync<T>(stream, content, OPTIONS);
         return args;
     }
 }
