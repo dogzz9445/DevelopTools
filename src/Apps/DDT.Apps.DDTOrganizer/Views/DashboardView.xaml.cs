@@ -14,6 +14,7 @@ using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.WebPages;
 using DDT.Core.WidgetSystems.DefaultWidgets.Widgets.WebQueries;
 using DDT.Core.WidgetSystems.Services;
 using DDT.Core.WPF.Extensions;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -331,14 +332,27 @@ namespace DDT.Apps.DDTOrganizer.Views
         /// Starts this instance.
         /// </summary>
         /// <returns>Task.</returns>
-        public Task Start(IWidgetService widgetService)
+        public Task Start(IServiceProvider services)
         {
+            IAuthService authService = services.GetService<IAuthService>();
+            if (authService != null && authService.UseAuthService)
+            {
+                var loginWindow = new BaseWindow();
+                loginWindow.ShowDialog();
+                if (loginWindow.DialogResult == false)
+                {
+                    // System.Shutdown
+                }
+            }    
+
+            IWidgetService widgetService = services.GetService<IWidgetService>();
             // --------------------------------------------------------------------------
             // Load Component Data
             // --------------------------------------------------------------------------
             Dashboards = [new DashboardModel { Title = "My Dashboard" }];
             SelectedDashboard = Dashboards[0];
             AddWidgetMenuItemViewModels = new ObservableCollection<MenuItemViewModel>();
+
 
             // --------------------------------------------------------------------------
             // Available Widgets
@@ -482,8 +496,7 @@ namespace DDT.Apps.DDTOrganizer.Views
 
             Loaded += (s, e) =>
             {
-                var widgetService = App.Current.Services.GetService<IWidgetService>();
-                ViewModel.Start(widgetService);
+                ViewModel.Start(App.Current.Services);
             };
         }
     }

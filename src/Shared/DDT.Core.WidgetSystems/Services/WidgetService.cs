@@ -36,7 +36,9 @@ public class WidgetService : IWidgetService
     public void LoadWidgetsFromDLL(string pathDLL)
     {
         Assembly a = Assembly.LoadFrom(pathDLL);
-        var types = a.GetTypes().Where(t => typeof(WidgetViewModelBase).IsAssignableFrom(t)); ;
+        var types = a.GetTypes().Where(t => typeof(WidgetViewModelBase).IsAssignableFrom(t));
+        List<WidgetGenerator> widgets = new List<WidgetGenerator>();
+
         foreach (var type in types)
         {
             System.Reflection.MemberInfo info = type;
@@ -44,7 +46,10 @@ public class WidgetService : IWidgetService
             if (attributes[0] is WidgetGeneratorAttribute)
             {
                 var value = ((WidgetGeneratorAttribute)attributes[0]).WidgetGenerator;
+                widgets.Add(value);
             }
         }
+
+        RegisterWidgets(widgets);
     }
 }

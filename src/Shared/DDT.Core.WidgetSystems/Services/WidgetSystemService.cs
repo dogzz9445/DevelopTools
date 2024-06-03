@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DDT.Core.WidgetSystems.Bases;
 using DDT.Core.WidgetSystems.Configurations;
 using Microsoft.Extensions.Configuration;
 
@@ -12,29 +13,98 @@ namespace DDT.Core.WidgetSystems.Services;
 
 public interface IWidgetSystemService
 {
-
 }
 
-public enum AuthorizationLevel
+public class WidgetSystemOption
 {
-    Guest,
-    Modifier,
-    Administrator,
+    public const string Section = "WidgetSystem";
+
+    public ProjectOption currentProject { get; set; }
+    public WorkflowOption currentWorkflow { get; set; }
 }
 
-public class AuthenticationInfo
-{
-    public string username;
-    public string password;
-}
+//{
+//    dragDrop: {},
+//    editMode: false,
+//    menuBar: true,
+//    appConfig:
+//{
+//mainHotkey: 'CmdOrCtrl+Shift+F',
+//      uiTheme: 'dark'
+//    },
+//    apps:
+//{
+//appIds: []
+//    },
+//    copy:
+//{
+//widgets:
+//    {
+//    entities: { },
+//        list: []
+//      },
+//      workflows:
+//    {
+//    entities: { },
+//        list: []
+//      }
+//},
+//    modalScreens:
+//{
+//data:
+//    {
+//    appManager:
+//        {
+//        currentAppId: '',
+//          deleteAppIds: null,
+//          apps: null,
+//          appIds: null
+//        },
+//        applicationSettings:
+//        {
+//        appConfig: null
+//        },
+//        projectManager:
+//        {
+//        currentProjectId: '',
+//          deleteProjectIds: null,
+//          projects: null,
+//          projectIds: null,
+//          duplicateProjectIds: null
+//        },
+//        widgetSettings:
+//        {
+//        widgetInEnv: null
+//        },
+//        workflowSettings:
+//        {
+//        workflow: null
+//        },
+//      },
+//      order: []
+//    },
+//    palette:
+//{
+//widgetTypeIds: []
+//    },
+//    projectSwitcher:
+//{
+//currentProjectId: '',
+//      projectIds: []
+//    },
+//    shelf:
+//{
+//widgetList: []
+//    },
+//    worktable: { }
+//  }
 
 public class WidgetSystemService : IWidgetSystemService
 {
-    private bool _isNeededAuthorization = true;
-    public bool IsAuthorized = false;
-
-    public WidgetSystemService()
+    public WidgetSystemService(IConfiguration configuration)
     {
+        var option = new WidgetSystemOption();
+        configuration.GetSection(WidgetSystemOption.Section).Bind(option);
     }
 
     private async Task InitializeAsync(string path, Task<AuthenticationInfo?> requestAuthentication)

@@ -49,7 +49,7 @@ public class EntityConfigurationOption
     {
         SqliteDatabaseFile = "database.db";
         DatabaseType = DatabaseConnectionType.Sqlite;
-        SqliteConnectionString = $"Data Source={SqliteDatabaseFile}";
+        SqliteConnectionString = $"Data Source={SqliteDatabaseFile};Version=3;";
         MySqlConnectionString = $"server=<server>;port=<port>;database=<database>;uid=<user>;password=<password>";
         MySqlCharSet = "utf8mb4";
     }
@@ -103,8 +103,6 @@ public class EntityConfigurationProvider(EntityConfigurationOption? options)
             StringComparer.OrdinalIgnoreCase)
         {
             ["WidgetOptions:IsInitialized"] = "false",
-            ["WidgetOptions:DisplayLabel"] = "Widgets Incorporated, LLC.",
-            ["WidgetOptions:WidgetRoute"] = "api/widgets"
         };
 
         context.Settings.AddRange(

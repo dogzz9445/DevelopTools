@@ -9,7 +9,7 @@ namespace DDT.Apps.DDTOrganizer.Configurations;
 
 public class AppOptions
 {
-    public const string Section = "DDT:WidgetSystems:App";
+    public const string Section = "WidgetSystems:App";
 
     /// <summary>
     /// Main Hot Key

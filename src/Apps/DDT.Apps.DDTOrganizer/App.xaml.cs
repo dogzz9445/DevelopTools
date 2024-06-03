@@ -87,11 +87,18 @@ public partial class App : Application
         var configuration = BuildConfiguration(args);
         serviceCollection.AddSingleton<IConfiguration>(configuration);
 
+        // Register services
+        serviceCollection.AddSingleton<ISecretService, ModelVersionSecretService>();
+        serviceCollection.AddSingleton<IAuthService, AuthService>();
+        serviceCollection.AddSingleton<IWidgetService, WidgetService>();
+        serviceCollection.AddSingleton<IWidgetSystemService, WidgetSystemService>();
+
+        // Register viewmodels
+
+
         //Logger.Configure(configuration);
         //serviceCollection.AddSingleton<SettingsController>();
         //Localizer.Configure(configuration);
-
-        serviceCollection.AddSingleton<IWidgetService, WidgetService>();
 
         return serviceCollection.BuildServiceProvider();
     }
