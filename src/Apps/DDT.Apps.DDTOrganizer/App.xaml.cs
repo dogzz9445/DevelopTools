@@ -8,12 +8,15 @@ using DDT.Apps.DDTOrganizer.Services;
 using DDT.Apps.DDTOrganizer.Views;
 using DDT.Core.WidgetSystems.Contracts.Services;
 using DDT.Core.WidgetSystems.Services;
+using DDT.Core.WPF.Appearances;
 using DDT.Core.WPF.Extensions;
 using DDT.Core.WPF.Utilities;
 using MahApps.Metro.Controls;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Windows.UI.ViewManagement.Core;
+using Wpf.Ui.Appearance;
+using ApplicationThemeManager = Wpf.Ui.Appearance.ApplicationThemeManager;
 
 
 namespace DDT.Apps.DDTOrganizer;
@@ -43,6 +46,7 @@ public partial class App : Application
         ThemeHelper.Register("Light", @"pack://application:,,,/DDT.Core.WidgetSystems;component/Themes/Light.xaml");
         ThemeHelper.Register("Dark", @"pack://application:,,,/DDT.Core.WidgetSystems;component/Themes/Dark.xaml");
         ThemeHelper.ChangeTheme(Resources, "Dark");
+        ApplicationThemeManager.Apply(ApplicationTheme.Dark);
 
         Application.Current.DispatcherUnhandledException += (sender, args) =>
         {

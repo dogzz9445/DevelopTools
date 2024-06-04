@@ -36,7 +36,7 @@ namespace DDT.Core.WidgetSystems.Controls
 
     public enum HitType
     {
-        None, Body, UL, UR, LR, LL, L, R, B, T
+        None, Body, TL, TR, BR, BL, L, R, B, T
     };
 
     /// <summary>
@@ -149,15 +149,15 @@ namespace DDT.Core.WidgetSystems.Controls
             if (point.X - left < _outlineGap)
             {
                 // Left edge.
-                if (point.Y - top < _outlineGap) return HitType.UL;
-                if (bottom - point.Y < _outlineGap) return HitType.LL;
+                if (point.Y - top < _outlineGap) return HitType.TL;
+                if (bottom - point.Y < _outlineGap) return HitType.BL;
                 return HitType.L;
             }
             else if (right - point.X < _outlineGap)
             {
                 // Right edge.
-                if (point.Y - top < _outlineGap) return HitType.UR;
-                if (bottom - point.Y < _outlineGap) return HitType.LR;
+                if (point.Y - top < _outlineGap) return HitType.TR;
+                if (bottom - point.Y < _outlineGap) return HitType.BR;
                 return HitType.R;
             }
             if (point.Y - top < _outlineGap) return HitType.T;

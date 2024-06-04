@@ -16,7 +16,20 @@ public interface IWidgetService
     List<WidgetGenerator> GetAvailableWidgets();
     void LoadWidgetsFromDLL(string pathDLL);
 }
-
+public class ProxyDomain : MarshalByRefObject
+{
+    public Assembly? GetAssembly(string assemblyPath)
+    {
+        try
+        {
+            return Assembly.Load(assemblyPath);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+}
 public class WidgetService : IWidgetService
 {
     /// <summary>
@@ -46,7 +59,13 @@ public class WidgetService : IWidgetService
         Assembly a = Assembly.LoadFrom(pathDLL);
         var types = a.GetTypes().Where(t => typeof(WidgetViewModelBase).IsAssignableFrom(t));
         List<WidgetGenerator> widgets = new List<WidgetGenerator>();
-
+        // TODO:
+        // 도메인 프록시 문제 해결 필요
+        //var setup = new AppDomainSetup
+        //{
+        //    ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
+        //    PrivateBinPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+        //};
         foreach (var type in types)
         {
             System.Reflection.MemberInfo info = type;
