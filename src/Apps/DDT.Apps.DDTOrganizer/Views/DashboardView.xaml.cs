@@ -77,6 +77,35 @@ namespace DDT.Apps.DDTOrganizer.Views
         [ObservableProperty]
         private ObservableCollection<WidgetViewModelBase> _widgets;
 
+        //private IAppStateService? _appState;
+
+        //[ObservableProperty]
+        //private WorkflowState? _workflow;
+        //[ObservableProperty]
+        //private ObservableCollection<WidgetHost> _widgetHosts;
+        //[ObservableProperty]
+        //private ObservableCollection<WidgetLayouts> _widgetLayouts;
+
+        //public DashboardHostViewModel()
+        //{
+        //    WidgetHosts = new ObservableCollection<WidgetHost>();
+        //    WidgetLayouts = new ObservableCollection<WidgetLayouts>();
+        //}
+
+        //public Task Start(IServiceProvider services, Guid workflowId)
+        //{
+        //    _appState = services.GetService<IAppStateService>();
+        //    if (_appState != null && _appState.TryGetWorkflow(workflowId, out var workflow))
+        //    {
+        //        Workflow = workflow;
+        //    }
+        //    else
+        //    {
+        //        Workflow = null;
+        //    }
+        //    return Task.CompletedTask;
+        //}
+
         public DashboardModel()
         {
             Widgets = new ObservableCollection<WidgetViewModelBase>();

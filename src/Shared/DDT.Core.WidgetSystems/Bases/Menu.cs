@@ -22,8 +22,8 @@ public static class MenuConstants
 
     public static readonly string[] MenuItemTypes =
     {
-    "normal", "separator", "submenu", "checkbox", "radio"
-};
+        "normal", "separator", "submenu", "checkbox", "radio"
+    };
 }
 
 public enum MenuItemRole

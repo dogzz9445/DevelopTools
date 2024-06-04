@@ -7,19 +7,12 @@ using System.Windows.Input;
 
 namespace DDT.Core.WidgetSystems.Bases;
 
-public class EntityUpdate<T> where T : IEntity
+public class EntityUpdateMessage<T> where T : IEntity
 {
     public Guid Id { get; set; }
     public Dictionary<string, object> Changes { get; set; }
 }
 
-public static class EntityCollectionExtensions
-{
-    public static EntityCollection<T> AddMany<T>(this EntityCollection<T> collection, IEnumerable<T> entities) where T : IEntity
-    {
-        return EntityCollectionUtils.AddManyToEntityCollection(collection, entities);
-    }
-}
 
 public class EntityCollection<T> : Dictionary<Guid, T> where T : IEntity
 {
@@ -35,6 +28,15 @@ public class EntityCollection<T> : Dictionary<Guid, T> where T : IEntity
         }
     }
 }
+
+public static class EntityCollectionExtensions
+{
+    public static EntityCollection<T> AddMany<T>(this EntityCollection<T> collection, IEnumerable<T> entities) where T : IEntity
+    {
+        return EntityCollectionUtils.AddManyToEntityCollection(collection, entities);
+    }
+}
+
 
 public static class EntityCollectionUtils
 {
@@ -131,7 +133,7 @@ public static class EntityCollectionUtils
         return RemoveManyFromEntityCollection(collection, new List<Guid> { id });
     }
 
-    public static EntityCollection<T> UpdateManyInEntityCollection<T>(EntityCollection<T> collection, IEnumerable<EntityUpdate<T>> updates) where T : IEntity
+    public static EntityCollection<T> UpdateManyInEntityCollection<T>(EntityCollection<T> collection, IEnumerable<EntityUpdateMessage<T>> updates) where T : IEntity
     {
         var changed = false;
         var newCollection = new EntityCollection<T>(collection);
@@ -171,9 +173,9 @@ public static class EntityCollectionUtils
         }
     }
 
-    public static EntityCollection<T> UpdateOneInEntityCollection<T>(EntityCollection<T> collection, EntityUpdate<T> update) where T : IEntity
+    public static EntityCollection<T> UpdateOneInEntityCollection<T>(EntityCollection<T> collection, EntityUpdateMessage<T> update) where T : IEntity
     {
-        return UpdateManyInEntityCollection(collection, new List<EntityUpdate<T>> { update });
+        return UpdateManyInEntityCollection(collection, new List<EntityUpdateMessage<T>> { update });
     }
 
     public static IReadOnlyList<T> GetManyFromEntityCollection<T>(EntityCollection<T> collection, IEnumerable<Guid> ids) where T : IEntity

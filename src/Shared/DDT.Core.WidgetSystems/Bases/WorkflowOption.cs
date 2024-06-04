@@ -20,14 +20,14 @@ public class WorkflowSettings : IWorkflowSettings
 
 public interface IWorkflowOption : IEntity
 {
-    List<WidgetLayoutItem> Layout { get; }
+    List<WidgetLayout> Layout { get; }
     IWorkflowSettings Settings { get; }
 }
 
 public class WorkflowOption : IWorkflowOption
 {
     public Guid Id { get; set; }
-    public List<WidgetLayoutItem> Layout { get; set; }
+    public List<WidgetLayout> Layout { get; set; }
     public IWorkflowSettings Settings { get; set; }
 
     public static WorkflowOption CreateWorkflow(Guid id, string name)
@@ -35,7 +35,7 @@ public class WorkflowOption : IWorkflowOption
         return new WorkflowOption
         {
             Id = id,
-            Layout = new List<WidgetLayoutItem>(),
+            Layout = new List<WidgetLayout>(),
             Settings = new WorkflowSettings
             {
                 Name = name
@@ -58,7 +58,7 @@ public class WorkflowOption : IWorkflowOption
         };
     }
 
-    public static WorkflowOption UpdateWorkflowLayout(WorkflowOption workflow, List<WidgetLayoutItem> layout)
+    public static WorkflowOption UpdateWorkflowLayout(WorkflowOption workflow, List<WidgetLayout> layout)
     {
         return new WorkflowOption
         {

@@ -11,23 +11,23 @@ public static class WidgetLayoutConstants
     public const int VisibleRows = 8;
 }
 
-public interface IWidgetLayoutItemXY
+public interface IWidgetLayoutXY
 {
     int X { get; }
     int Y { get; }
 }
 
-public interface IWidgetLayoutItemWH
+public interface IWidgetLayoutWH
 {
     int W { get; }
     int H { get; }
 }
 
-public interface IWidgetLayoutItemRect : IWidgetLayoutItemXY, IWidgetLayoutItemWH { }
+public interface IWidgetLayoutItemRect : IWidgetLayoutXY, IWidgetLayoutWH { }
 
 public interface IWidgetLayoutItem : IEntity
 {
-    string WidgetId { get; }
+    Guid WidgetId { get; }
     IWidgetLayoutItemRect Rect { get; }
 }
 
@@ -41,16 +41,16 @@ public class WidgetLayoutItemRect : IWidgetLayoutItemRect
     public int H { get; set; }
 }
 
-public class WidgetLayoutItem : IWidgetLayoutItem
+public class WidgetLayout : IWidgetLayoutItem
 {
     public Guid Id { get; set; }
-    public string WidgetId { get; set; }
+    public Guid WidgetId { get; set; }
     public IWidgetLayoutItemRect Rect { get; set; }
 }
 
-public class WidgetLayout : List<WidgetLayoutItem>, IEntityList<WidgetLayoutItem> { }
+public class Dashboard : List<WidgetLayout>, IEntityList<WidgetLayout> { }
 
-public class WidgetLayoutItemMutableRect : WidgetLayoutItem
+public class WidgetLayoutItemMutableRect : WidgetLayout
 {
     public new WidgetLayoutItemRect Rect { get; set; }
     public bool Initiator { get; set; }
@@ -58,7 +58,7 @@ public class WidgetLayoutItemMutableRect : WidgetLayoutItem
 
 public static class WidgetLayoutUtils
 {
-    public static bool ItemsCollide(WidgetLayoutItem item1, WidgetLayoutItem item2)
+    public static bool ItemsCollide(WidgetLayout item1, WidgetLayout item2)
     {
         return (
             item1.Id != item2.Id &&
@@ -67,12 +67,12 @@ public static class WidgetLayoutUtils
         );
     }
 
-    public static List<T> GetCollisions<T>(List<T> items, WidgetLayoutItem item) where T : WidgetLayoutItem
+    public static List<T> GetCollisions<T>(List<T> items, WidgetLayout item) where T : WidgetLayout
     {
         return items.Where(i => ItemsCollide(i, item)).ToList();
     }
 
-    public static List<T> SortItems<T>(List<T> items) where T : WidgetLayoutItem
+    public static List<T> SortItems<T>(List<T> items) where T : WidgetLayout
     {
         return items.OrderByDescending(a => a.Rect.Y).ThenByDescending(a => a.Rect.X).ToList();
     }
@@ -95,8 +95,8 @@ public static class WidgetLayoutUtils
         return layout;
     }
 
-    public static List<WidgetLayoutItem> FixCollisions(
-        List<WidgetLayoutItem> layout,
+    public static List<WidgetLayout> FixCollisions(
+        List<WidgetLayout> layout,
         Guid itemId)
     {
         var layoutMutableRect = layout.Select(item => new WidgetLayoutItemMutableRect
@@ -111,7 +111,7 @@ public static class WidgetLayoutUtils
         if (item == null) return layout;
 
         var newLayout = FixCollisionsIter(layoutMutableRect, item)
-            .Select(i => new WidgetLayoutItem
+            .Select(i => new WidgetLayout
             {
                 Id = i.Id,
                 WidgetId = i.WidgetId,
@@ -130,15 +130,15 @@ public static class WidgetLayoutUtils
         return new WidgetLayoutItemRect { X = x, Y = y, W = w, H = h };
     }
 
-    public static List<WidgetLayoutItem> UpdateLayoutItemRect(
-        List<WidgetLayoutItem> layout,
+    public static List<WidgetLayout> UpdateLayoutItemRect(
+        List<WidgetLayout> layout,
         Guid itemId,
         WidgetLayoutItemRect newRect)
     {
         var newLayout = layout.Select(item =>
         {
             if (item.Id == itemId)
-                return new WidgetLayoutItem
+                return new WidgetLayout
                 {
                     Id = item.Id,
                     WidgetId = item.WidgetId,
@@ -151,38 +151,38 @@ public static class WidgetLayoutUtils
         return FixCollisions(newLayout, itemId);
     }
 
-    public static List<WidgetLayoutItem> CreateLayout()
+    public static List<WidgetLayout> CreateLayout()
     {
-        return new List<WidgetLayoutItem>();
+        return new List<WidgetLayout>();
     }
 
-    public static (List<WidgetLayoutItem> Layout, WidgetLayoutItem LayoutItem) CreateLayoutItem(
-        List<WidgetLayoutItem> layout,
+    public static (List<WidgetLayout> Layout, WidgetLayout LayoutItem) CreateLayoutItem(
+        List<WidgetLayout> layout,
         Guid id,
         WidgetLayoutItemRect rect,
-        string widgetId)
+        Guid widgetId)
     {
         if (layout.Any(item => item.Id == id))
             return (layout, null);
 
-        var newItem = new WidgetLayoutItem
+        var newItem = new WidgetLayout
         {
             Id = id,
             Rect = FixRect(rect),
             WidgetId = widgetId
         };
 
-        var newLayout = new List<WidgetLayoutItem>(layout) { newItem };
+        var newLayout = new List<WidgetLayout>(layout) { newItem };
         newLayout = FixCollisions(newLayout, id);
 
         return (newLayout, newItem);
     }
 
-    public static (List<WidgetLayoutItem> Layout, WidgetLayoutItem LayoutItem) CreateLayoutItemAtFreeArea(
-        List<WidgetLayoutItem> layout,
+    public static (List<WidgetLayout> Layout, WidgetLayout LayoutItem) CreateLayoutItemAtFreeArea(
+        List<WidgetLayout> layout,
         Guid id,
         WidgetLayoutItemRect size,
-        string widgetId)
+        Guid widgetId)
     {
         if (layout.Any(item => item.Id == id))
             return (layout, null);
@@ -196,7 +196,7 @@ public static class WidgetLayoutUtils
         {
             for (int x = 0; x <= WidgetLayoutConstants.MaxCols - size.W;)
             {
-                var item = new WidgetLayoutItem
+                var item = new WidgetLayout
                 {
                     Id = id,
                     WidgetId = widgetId,
@@ -205,7 +205,7 @@ public static class WidgetLayoutUtils
                 var collisions = GetCollisions(sorted, item);
                 if (!collisions.Any())
                 {
-                    var newLayout = new List<WidgetLayoutItem>(layout) { item };
+                    var newLayout = new List<WidgetLayout>(layout) { item };
                     return (newLayout, item);
                 }
                 else
@@ -216,10 +216,10 @@ public static class WidgetLayoutUtils
         }
     }
 
-    public static List<WidgetLayoutItem> MoveLayoutItem(
-        List<WidgetLayoutItem> layout,
+    public static List<WidgetLayout> MoveLayoutItem(
+        List<WidgetLayout> layout,
         Guid itemId,
-        IWidgetLayoutItemXY toXY)
+        IWidgetLayoutXY toXY)
     {
         var item = layout.FirstOrDefault(i => i.Id == itemId);
         if (item == null) return layout;
@@ -238,15 +238,15 @@ public static class WidgetLayoutUtils
         return UpdateLayoutItemRect(layout, itemId, newRect);
     }
 
-    public static List<WidgetLayoutItem> RemoveLayoutItem(
-        List<WidgetLayoutItem> layout,
+    public static List<WidgetLayout> RemoveLayoutItem(
+        List<WidgetLayout> layout,
         Guid itemId)
     {
         return layout.Where(item => item.Id != itemId).ToList();
     }
 
-    public static List<WidgetLayoutItem> ResizeLayoutItemByEdges(
-        List<WidgetLayoutItem> layout,
+    public static List<WidgetLayout> ResizeLayoutItemByEdges(
+        List<WidgetLayout> layout,
         Guid itemId,
         (int? Left, int? Top, int? Right, int? Bottom) delta,
         (int W, int H) minSize)
@@ -288,23 +288,23 @@ public static class WidgetLayoutUtils
         return UpdateLayoutItemRect(layout, itemId, newRect);
     }
 
-    private static WidgetLayoutItem FindEntityOnList(List<WidgetLayoutItem> layout, Guid itemId)
+    private static WidgetLayout FindEntityOnList(List<WidgetLayout> layout, Guid itemId)
     {
         return layout.FirstOrDefault(item => item.Id == itemId);
     }
 
-    private static int FindEntityIndexOnList(List<WidgetLayoutItem> layout, Guid itemId)
+    private static int FindEntityIndexOnList(List<WidgetLayout> layout, Guid itemId)
     {
         return layout.FindIndex(item => item.Id == itemId);
     }
 
-    private static List<WidgetLayoutItem> RemoveEntityFromListAtIndex(List<WidgetLayoutItem> layout, int index)
+    private static List<WidgetLayout> RemoveEntityFromListAtIndex(List<WidgetLayout> layout, int index)
     {
         layout.RemoveAt(index);
         return layout;
     }
 
-    private static List<WidgetLayoutItem> UpdateEntityOnList(List<WidgetLayoutItem> layout, WidgetLayoutItem updatedItem)
+    private static List<WidgetLayout> UpdateEntityOnList(List<WidgetLayout> layout, WidgetLayout updatedItem)
     {
         return layout.Select(item => item.Id == updatedItem.Id ? updatedItem : item).ToList();
     }

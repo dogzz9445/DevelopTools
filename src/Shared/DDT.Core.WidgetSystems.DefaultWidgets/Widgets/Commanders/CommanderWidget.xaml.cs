@@ -39,7 +39,7 @@ namespace DDT.Core.WidgetSystems.DefaultWidgets.Widgets.Commanders
             RowSpanColumnSpan = new RowSpanColumnSpan(2, 2);
         }
     }
-
+    
     /// <summary>
     /// CommanderWidget.xaml에 대한 상호 작용 논리
     /// </summary>
