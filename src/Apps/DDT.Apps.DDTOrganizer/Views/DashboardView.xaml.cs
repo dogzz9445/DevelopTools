@@ -181,6 +181,12 @@ namespace DDT.Apps.DDTOrganizer.Views
             EditMode = true;
         });
 
+        [RelayCommand]
+        public void ToggleEditDashboard()
+        {
+            EditMode = !EditMode;
+        }
+
         /// <summary>
         /// Gets the command configure widget.
         /// </summary>

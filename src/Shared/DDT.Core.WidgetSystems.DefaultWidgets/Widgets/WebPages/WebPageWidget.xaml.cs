@@ -82,8 +82,17 @@ public partial class WebPageViewModel : WidgetViewModelBase
     public WebPageViewModel(IServiceProvider services) : base(services)
     {
         var widgetSystemService = services.GetService<IWidgetSystemService>();
-        if (!widgetSystemService.TryGetWidgetOption<WebPageOption>(Uid, out var option))
-        WidgetTitle = option.Name;
+        Guid uid = Guid.NewGuid();
+        if (!widgetSystemService.TryGetWidgetOption<WebPageOption>(uid, out var option))
+        {
+
+        }
+        Options = option;
+
+        if (option.Name != null)
+        {
+            WidgetTitle = option.Name;
+        }
         RowSpanColumnSpan = new RowSpanColumnSpan(2, 2);
     }
 }

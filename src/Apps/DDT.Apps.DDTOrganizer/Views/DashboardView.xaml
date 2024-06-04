@@ -13,7 +13,9 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/DDT.Core.WidgetSystems;component/Themes/Generic.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/DDT.Core.WidgetSystems.DefaultWidgets;component/Widgets/DataTemplates.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/DDT.Core.WidgetSystems;component/Styles/CustomStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <converters:InvertBoolToVisibilityConverter x:Key="InvertBoolToVis" />
@@ -21,143 +23,6 @@
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
             <converters:InvertNullToVisibilityConverter x:Key="InvertNullToVisibilityConverter" />
 
-            <Style x:Key="ButtonNoStyle"
-                   TargetType="{x:Type Button}">
-                <Setter Property="Background"
-                        Value="Transparent" />
-                <Setter Property="BorderBrush"
-                        Value="Transparent" />
-                <Setter Property="BorderThickness"
-                        Value="0" />
-                <Setter Property="Padding"
-                        Value="0" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type Button}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="ListBoxItemNoSelect"
-                   TargetType="{x:Type ListBoxItem}">
-                <Setter Property="FocusVisualStyle"
-                        Value="{x:Null}" />
-                <Setter Property="IsSelected"
-                        Value="{Binding IsSelected, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" />
-            </Style>
-
-            <Style x:Key="DashboardSelectorToggle"
-                   TargetType="{x:Type ToggleButton}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ToggleButton}">
-                            <Grid x:Name="ButtonContents"
-                                  Background="Transparent">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock x:Name="SelectedDashboardText"
-                                           Grid.Column="0"
-                                           MaxWidth="300"
-                                           Margin="5,0,0,0"
-                                           VerticalAlignment="Center"
-                                           FontSize="15"
-                                           Text="{Binding SelectedDashboard.Title}"
-                                           TextTrimming="CharacterEllipsis" />
-                                <Path Grid.Column="1"
-                                      Width="10"
-                                      Height="10"
-                                      Margin="5,3,5,0"
-                                      HorizontalAlignment="Right"
-                                      Data="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"
-                                      Fill="Black"
-                                      Stretch="Uniform" />
-                            </Grid>
-                            <ControlTemplate.Triggers>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}"
-                                                   Value="True" />
-                                        <Condition Binding="{Binding IsMouseOver, ElementName=DashboardSelectorPopup}"
-                                                   Value="False" />
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter TargetName="ButtonContents"
-                                            Property="Background"
-                                            Value="LightGray" />
-                                </MultiDataTrigger>
-
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}"
-                                                   Value="False" />
-                                        <Condition Binding="{Binding IsMouseOver, ElementName=DashboardSelectorPopup}"
-                                                   Value="True" />
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter TargetName="ButtonContents"
-                                            Property="Background"
-                                            Value="LightGray" />
-                                </MultiDataTrigger>
-
-                                <DataTrigger Value="True">
-                                    <DataTrigger.Binding>
-                                        <converters:DelayedMultiBinding Converter="{StaticResource DashboardSelectorIsCheckedConverter}"
-                                                                        Delay="0:0:0.1"
-                                                                        Mode="TwoWay">
-                                            <Binding Mode="OneWay"
-                                                     Path="IsChecked"
-                                                     RelativeSource="{RelativeSource Self}" />
-                                            <Binding Mode="OneWay"
-                                                     Path="IsMouseOver"
-                                                     RelativeSource="{RelativeSource Self}" />
-                                            <Binding ElementName="DashboardSelectorPopup"
-                                                     Mode="OneWay"
-                                                     Path="IsMouseOver" />
-                                        </converters:DelayedMultiBinding>
-                                    </DataTrigger.Binding>
-                                    <Setter Property="IsChecked"
-                                            Value="False" />
-                                </DataTrigger>
-
-                                <DataTrigger Binding="{Binding DashboardSelectorUncheck}"
-                                             Value="True">
-                                    <Setter Property="IsChecked"
-                                            Value="False" />
-                                </DataTrigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="MouseInteractionButton"
-                   BasedOn="{StaticResource ButtonNoStyle}"
-                   TargetType="{x:Type Button}">
-                <Setter Property="Foreground"
-                        Value="Black" />
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver"
-                             Value="True">
-                        <Setter Property="Background"
-                                Value="LightGray" />
-                    </Trigger>
-                    <Trigger Property="IsPressed"
-                             Value="True">
-                        <Setter Property="Background"
-                                Value="DarkGray" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="MenuButtonPath"
-                   TargetType="{x:Type Path}">
-                <Setter Property="Fill"
-                        Value="DodgerBlue" />
-            </Style>
         </ResourceDictionary>
 
     </UserControl.Resources>
@@ -228,8 +93,7 @@
                                 <Border Height="1"
                                         Background="LightGray" />
 
-                                <Button Command="{Binding CommandNewDashboard}"
-                                        Style="{StaticResource MouseInteractionButton}">
+                                <Button Command="{Binding CommandNewDashboard}">
                                     <StackPanel Margin="5,5,5,5"
                                                 Orientation="Horizontal">
                                         <Path Width="13"
@@ -253,7 +117,7 @@
                                   Margin="5,5,0,5"
                                   FocusVisualStyle="{x:Null}"
                                   Focusable="False"
-                                  Style="{StaticResource DashboardSelectorToggle}" />
+                                  Style="{DynamicResource DashboardSelectorToggle}" />
 
                     <!--  Configure Dashboard Button  -->
                     <Button Grid.Column="1"
@@ -280,6 +144,43 @@
 
                     <!--  Edit Button (Not Editing)  -->
                     <Button Grid.Column="3"
+                            Margin="10,4,4,4"
+                            Width="48"
+                            Height="48"
+                            Command="{Binding ToggleEditDashboardCommand}"
+                            ToolTip="Edit the dashboard">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding EditMode}"
+                                                 Value="false">
+                                        <Setter Property="Background"
+                                                Value="{DynamicResource PrimaryHueMidBrush}" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding EditMode}"
+                                                 Value="true">
+                                        <Setter Property="Background"
+                                                Value="{DynamicResource WarningAlertBrush}" />
+                                    </DataTrigger>
+                                    <Trigger Property="IsMouseOver"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="{DynamicResource PrimaryHueLightBrush}" />
+                                    </Trigger>
+                                </Style.Triggers>
+                                <Setter Property="Background"
+                                        Value="{DynamicResource PrimaryHueMidBrush}" />
+                            </Style>
+                        </Button.Style>
+                        <materialDesign:PackIcon Kind="PuzzleEdit"
+                                                 Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"
+                                                 Background="#00000000"
+                                                 Width="32"
+                                                 Height="32"/>
+                    </Button>
+                    
+                    <!--  Edit Button (Not Editing)  -->
+                    <!--<Button Grid.Column="3"
                             Margin="10,0,0,0"
                             Visibility="{Binding EditMode, Converter={StaticResource InvertBoolToVis}}"
                             Command="{Binding CommandEditDashboard}"
@@ -297,10 +198,10 @@
                             <TextBlock Margin="8,0,0,0"
                                        Text="Edit" />
                         </StackPanel>
-                    </Button>
+                    </Button>-->
 
                     <!--  Edit Button (Editing)  -->
-                    <Button Grid.Column="3"
+                    <!--<Button Grid.Column="3"
                             Margin="10,0,0,0"
                             Visibility="{Binding EditMode, Converter={StaticResource BoolToVis}}"
                             Command="{Binding CommandEditDashboard}"
@@ -335,7 +236,7 @@
                                    Foreground="White"
                                    Text="Done Editing"
                                    TextAlignment="Center" />
-                    </Button>
+                    </Button>-->
 
                     <!-- Tool bar (Editing) -->
                     <ToolBarTray Grid.Column="4"

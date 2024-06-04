@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DDT.Apps.DDTOrganizer.Views;
 using MahApps.Metro.Controls;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace DDT.Apps.DDTOrganizer
 {
@@ -22,6 +23,14 @@ namespace DDT.Apps.DDTOrganizer
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.LeftAlt || e.Key == Key.RightAlt)
+            {
+                ShowTitleBar = true;
+            }
         }
     }
 }

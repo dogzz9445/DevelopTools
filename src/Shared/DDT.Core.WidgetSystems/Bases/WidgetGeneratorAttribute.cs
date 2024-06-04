@@ -13,6 +13,7 @@ namespace DDT.Core.WidgetSystems.Bases;
 public class WidgetGeneratorAttribute : Attribute
 {
     public IServiceProvider Services { get; set; }
+
     public WidgetGenerator WidgetGenerator { get; private set; }
 
     public WidgetGeneratorAttribute(string name,
